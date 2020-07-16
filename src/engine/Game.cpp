@@ -51,11 +51,6 @@ void Game::initSDL() {
 }
 
 void Game::start() {
-    GameObject *go = new GameObject();
-    go->addComponent(new TestComponent(2));
-    int x = go->getComponent<TestComponent>()->value;
-    cout << x << endl;
-
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     std::clock_t start = std::clock();
 
