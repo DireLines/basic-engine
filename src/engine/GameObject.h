@@ -17,7 +17,15 @@ public:
     void addComponent(Component* c);
 
     template<typename C>
-    C* getComponent();
+    C* getComponent() {
+        for (Component* c : components) {
+            C* result = dynamic_cast<C*>(c);
+            if (result != NULL) {
+                return result;
+            }
+        }
+        return NULL;
+    }
 private:
     int id;
     set<Component*> components;

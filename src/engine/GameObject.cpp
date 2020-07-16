@@ -19,15 +19,3 @@ set<Component*> GameObject::getComponents() {
 void GameObject::addComponent(Component* c) {
     components.insert(c);
 }
-
-template<typename C>
-C* GameObject::getComponent() {
-    for (Component* c : components) {
-        C* result = dynamic_cast<C*>(c);
-        if (result != NULL) {
-            return result;
-        }
-    }
-    return NULL;
-}
-
