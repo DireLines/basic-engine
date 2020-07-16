@@ -3,7 +3,7 @@
 using namespace std;
 class Component {
 public:
-    Component();
-    ~Component();
+    Component() {}
+    virtual ~Component() {}
 };
 #endif

@@ -12,16 +12,22 @@ int GameObject::getID() {
     return id;
 }
 
-vector<Component*> GameObject::getComponents() {
-    return vector<Component*>();
+set<Component*> GameObject::getComponents() {
+    return set<Component*>();
 }
 
 void GameObject::addComponent(Component* c) {
-
+    components.insert(c);
 }
 
-template<class C>
+template<typename C>
 C* GameObject::getComponent() {
-    return new C();
+    for (Component* c : components) {
+        C* result = dynamic_cast<C*>(c);
+        if (result != NULL) {
+            return result;
+        }
+    }
+    return NULL;
 }
 

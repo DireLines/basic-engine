@@ -1,7 +1,7 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include <vector>
+#include <set>
 #include "Component.h"
 using namespace std;
 
@@ -12,15 +12,15 @@ public:
 
     int getID();
 
-    vector<Component*> getComponents();
+    set<Component*> getComponents();
 
     void addComponent(Component* c);
 
-    template<class C>
+    template<typename C>
     C* getComponent();
 private:
     int id;
-    vector<Component*> components;
+    set<Component*> components;
 };
 
 #endif
