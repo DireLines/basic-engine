@@ -7,6 +7,8 @@
 #include "DisplayObject.h"
 #include <vector>
 #include <set>
+#include "GameObject.h"
+#include "IDGenerator.h"
 
 using namespace std;
 
@@ -14,30 +16,30 @@ class Game {
 
 public:
 
-	/* Singleton pattern */
-	static Game* instance;
+    /* Singleton pattern */
+    static Game* instance;
 
-	int frames_per_sec = 60;
-	int windowWidth, windowHeight;
+    int frames_per_sec = 60;
+    int windowWidth, windowHeight;
 
-	SDL_Window * window;
-	static SDL_Renderer* renderer;
+    SDL_Window * window;
+    static SDL_Renderer* renderer;
 
-	//Global frame counter
-	static unsigned int frameCounter;
+    //Global frame counter
+    static unsigned int frameCounter;
 
-	Game(int windowWidth, int windowHeight);
-	virtual ~Game();
-	void start();
+    Game(int windowWidth, int windowHeight);
+    virtual ~Game();
+    void start();
 
-	virtual void update();
-	virtual void draw();
+    virtual void update();
+    virtual void draw();
 
 private:
 
-	void initSDL();
-	void quitSDL();
-	set<SDL_Scancode> pressedKeys;
+    void initSDL();
+    void quitSDL();
+    set<SDL_Scancode> pressedKeys;
 
 };
 
