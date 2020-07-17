@@ -9,7 +9,7 @@
 #include <set>
 #include "GameObject.h"
 #include "IDGenerator.h"
-#include "TestComponent.h"
+#include "Components.h"
 
 using namespace std;
 

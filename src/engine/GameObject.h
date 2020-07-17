@@ -5,7 +5,7 @@
 #include "Component.h"
 using namespace std;
 
-class GameObject : Component {
+class GameObject : public Component {
 public:
     GameObject();
     ~GameObject();

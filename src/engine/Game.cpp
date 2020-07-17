@@ -21,8 +21,6 @@ Game::Game(int windowWidth, int windowHeight) {
 
     initSDL();
     TTF_Init();
-
-
 }
 
 Game::~Game() {
