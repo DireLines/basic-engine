@@ -31,7 +31,7 @@ def assign(owner,field,value):
         value = '"' + value + '"'
     if(type(value) == bool):
         value = str(value).lower()
-    if(type(value) == dict):
+    if(type(value) == dict and 'code' in value):
         value = value['code']
     return owner + '->' + field + ' = ' + str(value) + ';\n'
 
@@ -54,8 +54,9 @@ def component_code(component, owner_name):
     result += spaces + declare(component_type,component_name)
     if(type(component) == dict):
         fields = component[component_type]
-        for field in fields:
-            result += spaces + assign(component_name, field, fields[field])
+        if fields is not None:
+            for field in fields:
+                result += spaces + assign(component_name, field, fields[field])
     result += spaces + add_component(owner_name, component_name)
     return result
 

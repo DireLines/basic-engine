@@ -5,7 +5,9 @@ GameObject::GameObject() {
     id = IDGenerator::instance->next();
 }
 GameObject::~GameObject() {
-
+    for (Component* c : components) {
+        delete c;
+    }
 }
 
 int GameObject::getID() {

@@ -20,7 +20,7 @@ public:
     C* getComponent() {
         for (Component* c : components) {
             C* result = dynamic_cast<C*>(c);
-            if (result != NULL) {
+            if (result != NULL && result->enabled) {
                 return result;
             }
         }
@@ -32,7 +32,7 @@ public:
         set<C*> results;
         for (Component* c : components) {
             C* component = dynamic_cast<C*>(c);
-            if (component != NULL) {
+            if (component != NULL && component->enabled) {
                 results.insert(component);
             }
         }
