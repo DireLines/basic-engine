@@ -1,4 +1,6 @@
 # codegen.py
+# searches for .object files, which are yaml specifications of GameObject instances,
+# and turns them into C++ implementations in a file called GameObjects.h
 import subprocess
 import yaml
 import os
@@ -18,6 +20,8 @@ def filename(filepath):
 # construct a C++ assignment statement
 # assign('steve','favorite_color','green') = 'steve->favorite_color = green;'
 def assign(owner,field,value):
+    #TODO: figure out how to write single quotes or double quotes when appropriate
+    #yaml.safe_load parses both as strings, but c++ wants chars in single quotes and strings in double quotes
     if(type(value) == str):
         value = '"' + value + '"'
     return owner + '->' + field + ' = ' + str(value) + ';\n'
@@ -72,7 +76,7 @@ for obj_filename in sorted(obj_filenames):
                 component_type = list(component.keys())[0]
             components_needed.add(component_type)
             constructor_code += component_code(component, 'this')
-            #TODO: handle child GameObjects
+            #TODO: handle child GameObjects by putting this into a recursive function which changes owner
         class_code = """
 class Example: public GameObject {
 public:
@@ -87,6 +91,8 @@ component_includes = ""
 for component in sorted(components_needed - classes_declared):
     component_includes += '#include "' + component + '.h"\n'
 
+#TODO: these don't actually solve all the circular dependency problems I anticipated they would
+#don't spend too much time thinking about it though
 forward_decls = "\n"
 for class_name in sorted(classes_declared):
     forward_decls += "class " + class_name + ";\n"
@@ -94,6 +100,8 @@ for class_name in sorted(classes_declared):
 
 footer = "\n\n#endif\n"
 code = header + component_includes + forward_decls + classes + footer
+
+#TODO: determine when no objects have been changed and avoid writing to the file to save compile time
 gameobjects_file = open('./src/generated/GameObjects.h','w')
 gameobjects_file.write(code)
 
