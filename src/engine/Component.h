@@ -5,5 +5,6 @@ class Component {
 public:
     Component() {}
     virtual ~Component() {}
+    bool enabled = true;
 };
 #endif

@@ -25,10 +25,13 @@ def filename(filepath):
 # construct a C++ assignment statement
 # assign('steve','favorite_color','green') = 'steve->favorite_color = green;'
 def assign(owner,field,value):
-    #TODO: figure out how to write single quotes or double quotes when appropriate
-    #yaml.safe_load parses both as strings, but c++ wants chars in single quotes and strings in double quotes
+    #some special cases for literals
     if(type(value) == str):
         value = '"' + value + '"'
+    if(type(value) == bool):
+        value = str(value).lower()
+    if(type(value) == dict):
+        value = value['code']
     return owner + '->' + field + ' = ' + str(value) + ';\n'
 
 # construct a C++ declare/initialize statement
