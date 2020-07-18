@@ -1,0 +1,6 @@
+- TestComponent:
+    schmalue: 4
+    value: 2
+- TestComponent:
+    value: 2
+- TestComponent

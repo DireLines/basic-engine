@@ -8,7 +8,7 @@
 #include <vector>
 #include <set>
 #include "IDGenerator.h"
-#include "Components.h"
+#include "GameObjects.h"
 
 using namespace std;
 

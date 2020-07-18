@@ -4,8 +4,8 @@
 using namespace std;
 class TestComponent: public Component {
 public:
-    TestComponent(int v) {
-        this->value = v;
+    TestComponent() {
+        value = 0;
     }
     ~TestComponent() {}
     int value;
