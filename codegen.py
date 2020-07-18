@@ -34,7 +34,6 @@ def add_component(owner_name, var_name):
     return owner_name + "->addComponent(" + var_name + ");\n"
 
 def component_code(component, owner_name):
-    print(component)
     result = ""
     spaces = "        "
     component_type = component
@@ -100,8 +99,9 @@ for class_name in sorted(classes_declared):
 
 footer = "\n\n#endif\n"
 code = header + component_includes + forward_decls + classes + footer
-
-#TODO: determine when no objects have been changed and avoid writing to the file to save compile time
+gameobjects_filepath = './src/generated/GameObjects.h'
+if(open(gameobjects_filepath,'r').read() == code):
+    exit() #if generated code was unchanged, don't make the compiler think it was
 gameobjects_file = open('./src/generated/GameObjects.h','w')
 gameobjects_file.write(code)
 
