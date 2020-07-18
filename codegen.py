@@ -80,7 +80,7 @@ public:
     Example();
 };
         """.replace("Example",class_name)
-        classes += class_decl
+        classes += class_decl.rstrip() + '\n'
         constructor_code = ""
         components = yaml.safe_load(obj_file.read())
         for component in components:
@@ -95,7 +95,7 @@ Example::Example(){
 //initialization
 }
         """.replace("Example",class_name).replace("//initialization",constructor_code.rstrip())
-        constructors += constructor_code
+        constructors += constructor_code.rstrip() + '\n'
 
 component_includes = ""
 for component in sorted(components_needed - classes_declared):
