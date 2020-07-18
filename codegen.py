@@ -6,6 +6,7 @@ import os
 try:
     import yaml
 except ImportError:
+    print("you are missing pyyaml")
     print("pip3 install pyyaml --user")
     exit()
 #helpers
