@@ -33,14 +33,14 @@ def assign(owner,field,value):
         value = str(value).lower()
     if(type(value) == dict and 'code' in value):
         value = value['code']
-    return owner + '->' + field + ' = ' + str(value) + ';\n'
+    return f'{owner}->{field} = {str(value)};\n'
 
 # construct a C++ declare/initialize statement
 def declare(var_type, var_name):
-    return var_type + "* " + var_name + " = new " + var_type + "();\n"
+    return f'{var_type}* {var_name} = new {var_type}();\n'
 
 def add_component(owner_name, var_name):
-    return owner_name + "->addComponent(" + var_name + ");\n"
+    return f'{owner_name}->addComponent({var_name});\n'
 
 def component_code(component, owner_name):
     result = ""
@@ -106,7 +106,7 @@ Example::Example(){
 
 component_includes = ""
 for component in sorted(components_needed - classes_declared):
-    component_includes += '#include "' + component + '.h"\n'
+    component_includes += f'#include "{component}.h"\n'
 
 footer = "\n#endif\n"
 
