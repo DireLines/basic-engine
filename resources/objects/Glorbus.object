@@ -1,7 +1,7 @@
 - TestComponent:
     value: 2
     name: glorbus
-    enabled: True
+    enabled: false
 - TestComponent:
     value: 
       code: 2 + 3

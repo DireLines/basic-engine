@@ -74,7 +74,7 @@ constructor_include = """#include "GameObjects.h"
 """ 
 classes = ""
 constructors = ""
-obj_filenames = subprocess.run('find ./src -name *.object'.split(), capture_output=True).stdout.decode('ascii').split('\n')[:-1]
+obj_filenames = subprocess.run('find . -name *.object'.split(), capture_output=True).stdout.decode('ascii').split('\n')[:-1]
 for obj_filename in sorted(obj_filenames):
     with open(obj_filename, 'r') as obj_file:
         class_name = filename(obj_filename)
