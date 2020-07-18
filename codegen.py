@@ -2,8 +2,15 @@
 # searches for .object files, which are yaml specifications of GameObject instances,
 # and turns them into C++ implementations in a file called GameObjects.h
 import subprocess
-import yaml
 import os
+try:
+    import yaml
+except ImportError:
+    print("pip3 install pyyaml --user")
+    exit()
+#set up directory structure
+
+#helpers
 class NameGenerator:
     def __init__(self,variable_name):
         self.id = 0
@@ -99,8 +106,11 @@ for class_name in sorted(classes_declared):
 
 footer = "\n#endif\n"
 code = header + component_includes + forward_decls + classes + footer
-gameobjects_filepath = './src/generated/GameObjects.h'
-if(open(gameobjects_filepath,'r').read() == code):
+output_directory = './src/generated/'
+if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
+gameobjects_filepath = output_directory + 'GameObjects.h'
+if(os.path.exists(gameobjects_filepath) and open(gameobjects_filepath,'r').read() == code):
     exit() #if generated code was unchanged, don't make the compiler think it was
 gameobjects_file = open(gameobjects_filepath,'w')
 gameobjects_file.write(code)
