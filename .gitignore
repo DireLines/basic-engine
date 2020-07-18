@@ -122,6 +122,8 @@ Temporary Items
 
 bin/
 
+src/generated/
+
 # david
 .Identifier
 *.Identifier

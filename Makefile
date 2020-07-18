@@ -1,3 +1,5 @@
+bogus_name := $(shell python3 codegen.py)
+
 TARGET_EXEC ?= Game
 
 BUILD_DIR ?= ./bin

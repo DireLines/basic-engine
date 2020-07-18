@@ -1,0 +1,3 @@
+# codegen.py
+
+print("hello")

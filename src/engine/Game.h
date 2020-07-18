@@ -7,7 +7,6 @@
 #include "DisplayObject.h"
 #include <vector>
 #include <set>
-#include "GameObject.h"
 #include "IDGenerator.h"
 #include "Components.h"
 
