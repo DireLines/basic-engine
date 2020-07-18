@@ -26,6 +26,18 @@ public:
         }
         return NULL;
     }
+
+    template<typename C>
+    set<C*> getComponents() {
+        set<C*> results;
+        for (Component* c : components) {
+            C* component = dynamic_cast<C*>(c);
+            if (component != NULL) {
+                results.insert(component);
+            }
+        }
+        return results;
+    }
 private:
     int id;
     set<Component*> components;

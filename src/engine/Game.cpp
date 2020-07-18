@@ -55,6 +55,11 @@ void Game::start() {
     bool quit = false;
     SDL_Event event;
 
+    Glorbus* g = new Glorbus();
+    for (Script* s : g->getComponents<Script>()) {
+        s->start();
+    }
+
     while (!quit) {
         std::clock_t end = std::clock();
         double duration = (( end - start ) / (double) CLOCKS_PER_SEC) * 1000;
@@ -62,6 +67,9 @@ void Game::start() {
             start = end;
             //call systems
             this->update();
+            for (Script* s : g->getComponents<Script>()) {
+                s->update();
+            }
             this->draw();
         }
 
