@@ -7,7 +7,7 @@ public:
     TestComponent() {
         value = 0;
     }
-    ~TestComponent() {}
+    // ~TestComponent() {}
     int value;
 };
 #endif
