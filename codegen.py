@@ -18,6 +18,8 @@ def filename(filepath):
 # construct a C++ assignment statement
 # assign('steve','favorite_color','green') = 'steve->favorite_color = green;'
 def assign(owner,field,value):
+    if(type(value) == str):
+        value = '"' + value + '"'
     return owner + '->' + field + ' = ' + str(value) + ';\n'
 
 # construct a C++ declare/initialize statement
@@ -28,19 +30,21 @@ def add_component(owner_name, var_name):
     return owner_name + "->addComponent(" + var_name + ");\n"
 
 def component_code(component, owner_name):
+    print(component)
     result = ""
+    spaces = "        "
     component_type = component
     if(type(component) == dict):
         component_type = list(component.keys())[0]
     if component_type not in variable_name_generator:
         variable_name_generator[component_type] = NameGenerator(component_type)
     component_name = variable_name_generator[component_type].next()
-    result += "\t\t" + declare(component_type,component_name)
+    result += spaces + declare(component_type,component_name)
     if(type(component) == dict):
         fields = component[component_type]
         for field in fields:
-            result += "\t\t" + assign(component_name, field, fields[field])
-    result += "\t\t" + add_component(owner_name, component_name)
+            result += spaces + assign(component_name, field, fields[field])
+    result += spaces + add_component(owner_name, component_name)
     return result
 
 header = """#ifndef GAMEOBJECTS_H
@@ -68,15 +72,15 @@ for obj_filename in sorted(obj_filenames):
                 component_type = list(component.keys())[0]
             components_needed.add(component_type)
             constructor_code += component_code(component, 'this')
+            #TODO: handle child GameObjects
         class_code = """
 class Example: public GameObject {
 public:
     Example() { 
-    
 INITIALIZATION
     }
 };
-        """.replace("Example",class_name).replace("INITIALIZATION",constructor_code)
+        """.replace("Example",class_name).replace("INITIALIZATION",constructor_code.rstrip())
         classes += class_code
 
 component_includes = ""
