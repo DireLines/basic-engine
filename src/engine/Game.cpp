@@ -55,9 +55,6 @@ void Game::start() {
     bool quit = false;
     SDL_Event event;
 
-    Glorbus* g = new Glorbus();
-    cout << g->getComponent<TestComponent>()->name << endl;
-
     while (!quit) {
         std::clock_t end = std::clock();
         double duration = (( end - start ) / (double) CLOCKS_PER_SEC) * 1000;

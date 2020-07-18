@@ -5,11 +5,7 @@
 using namespace std;
 class TestComponent: public Component {
 public:
-    TestComponent() {
-        value = 0;
-        name = "default";
-    }
-    int value;
-    string name;
+    int value = 0;
+    string name = "default";
 };
 #endif
