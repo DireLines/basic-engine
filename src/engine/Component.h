@@ -5,7 +5,5 @@ class Component {
 public:
     Component() {}
     virtual ~Component() {}
-    virtual void start() {}
-    virtual void update() {}
 };
 #endif

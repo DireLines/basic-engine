@@ -1,3 +1,4 @@
 - TestComponent:
     value: 2
     name: "glorbus"
+- TestObject

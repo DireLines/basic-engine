@@ -8,8 +8,6 @@ try:
 except ImportError:
     print("pip3 install pyyaml --user")
     exit()
-#set up directory structure
-
 #helpers
 class NameGenerator:
     def __init__(self,variable_name):
@@ -42,7 +40,7 @@ def add_component(owner_name, var_name):
 
 def component_code(component, owner_name):
     result = ""
-    spaces = "        "
+    spaces = "    "
     component_type = component
     if(type(component) == dict):
         component_type = list(component.keys())[0]
@@ -68,12 +66,21 @@ using namespace std;
 components_needed = set()
 classes_declared = set()
 
+constructor_include = '#include "GameObjects.h"\n' 
 classes = ""
+constructors = ""
 obj_filenames = subprocess.run('find ./src -name *.object'.split(), capture_output=True).stdout.decode('ascii').split('\n')[:-1]
 for obj_filename in sorted(obj_filenames):
     with open(obj_filename, 'r') as obj_file:
         class_name = filename(obj_filename)
         classes_declared.add(class_name)
+        class_decl = """
+class Example: public GameObject {
+public:
+    Example();
+};
+        """.replace("Example",class_name)
+        classes += class_decl
         constructor_code = ""
         components = yaml.safe_load(obj_file.read())
         for component in components:
@@ -83,35 +90,31 @@ for obj_filename in sorted(obj_filenames):
             components_needed.add(component_type)
             constructor_code += component_code(component, 'this')
             #TODO: handle child GameObjects by putting this into a recursive function which changes owner
-        class_code = """
-class Example: public GameObject {
-public:
-    Example() { 
+        constructor_code = """
+Example::Example(){
 //initialization
-    }
-};
+}
         """.replace("Example",class_name).replace("//initialization",constructor_code.rstrip())
-        classes += class_code
+        constructors += constructor_code
 
 component_includes = ""
 for component in sorted(components_needed - classes_declared):
     component_includes += '#include "' + component + '.h"\n'
 
-#TODO: these don't actually solve all the circular dependency problems I anticipated they would
-#don't spend too much time thinking about it though
-forward_decls = "\n"
-for class_name in sorted(classes_declared):
-    forward_decls += "class " + class_name + ";\n"
-
-
 footer = "\n#endif\n"
-code = header + component_includes + forward_decls + classes + footer
+
+header_code = header + component_includes + classes + footer
+constructor_code = constructor_include + constructors
 output_directory = './src/generated/'
 if not os.path.exists(output_directory):
     os.makedirs(output_directory)
-gameobjects_filepath = output_directory + 'GameObjects.h'
-if(os.path.exists(gameobjects_filepath) and open(gameobjects_filepath,'r').read() == code):
-    exit() #if generated code was unchanged, don't make the compiler think it was
-gameobjects_file = open(gameobjects_filepath,'w')
-gameobjects_file.write(code)
+header_filepath = output_directory + 'GameObjects.h'
+constructor_filepath = output_directory + 'GameObjects.cpp'
+if(os.path.exists(header_filepath) and open(header_filepath,'r').read() == header_code):
+    if(os.path.exists(constructor_filepath) and open(constructor_filepath,'r').read() == constructor_code):
+        exit() #if generated code was unchanged, don't make the compiler think it was
+header_file = open(header_filepath,'w')
+header_file.write(header_code)
+constructor_file = open(constructor_filepath, 'w')
+constructor_file.write(constructor_code)
 
