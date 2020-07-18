@@ -56,7 +56,7 @@ void Game::start() {
     SDL_Event event;
 
     Glorbus* g = new Glorbus();
-    cout << g->getComponent<TestComponent>()->value << endl;
+    cout << g->getComponent<TestComponent>()->name << endl;
 
     while (!quit) {
         std::clock_t end = std::clock();

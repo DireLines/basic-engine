@@ -80,10 +80,10 @@ for obj_filename in sorted(obj_filenames):
 class Example: public GameObject {
 public:
     Example() { 
-INITIALIZATION
+//initialization
     }
 };
-        """.replace("Example",class_name).replace("INITIALIZATION",constructor_code.rstrip())
+        """.replace("Example",class_name).replace("//initialization",constructor_code.rstrip())
         classes += class_code
 
 component_includes = ""
@@ -97,11 +97,11 @@ for class_name in sorted(classes_declared):
     forward_decls += "class " + class_name + ";\n"
 
 
-footer = "\n\n#endif\n"
+footer = "\n#endif\n"
 code = header + component_includes + forward_decls + classes + footer
 gameobjects_filepath = './src/generated/GameObjects.h'
 if(open(gameobjects_filepath,'r').read() == code):
     exit() #if generated code was unchanged, don't make the compiler think it was
-gameobjects_file = open('./src/generated/GameObjects.h','w')
+gameobjects_file = open(gameobjects_filepath,'w')
 gameobjects_file.write(code)
 
