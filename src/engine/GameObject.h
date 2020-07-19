@@ -12,8 +12,10 @@ public:
     ~GameObject();
 
     int getID();
+
     //if adding a new public variable to GameObject,
     //also add it to the list game_object_fields in codegen.py
+    //or .object file parser will assume it's the name of some component
     string name;
 
     set<Component*> getComponents();
@@ -57,6 +59,9 @@ public:
 
     GameObject* getChild(int id);
     GameObject* getChild(string name);
+    set<GameObject*> getChildren() {
+        return getComponents<GameObject>();
+    }
 private:
     int id;
     set<Component*> components;
