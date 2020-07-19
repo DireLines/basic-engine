@@ -1,0 +1,22 @@
+- Transform:
+    position:
+      code: Vector2(1,1)
+- Rigidbody #you can attach a component with default values like this
+
+#you can add more than one of a particular component type,
+#but you'll have a hell of a time distinguishing between them later
+- TestComponent:
+    value: 2
+    name: glorbus
+    enabled: false
+- TestComponent:
+    value: 
+      code: 2 + 3
+    name: 2 + 3
+- BasicObject: 
+    #a child object; specified components will be modified rather than added
+    - Rigidbody:
+        mass: 4000
+    - Transform:
+        position: 
+          code: this->getComponent<Transform>()->position + Vector2(4.0,4.5)

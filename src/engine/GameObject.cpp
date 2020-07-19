@@ -3,6 +3,7 @@
 
 GameObject::GameObject() {
     id = IDGenerator::instance->next();
+    name = to_string(id);
 }
 GameObject::~GameObject() {
     for (Component* c : components) {
@@ -20,4 +21,22 @@ set<Component*> GameObject::getComponents() {
 
 void GameObject::addComponent(Component* c) {
     components.insert(c);
+}
+
+GameObject* GameObject::getChild(int id) {
+    for (GameObject* obj : getComponents<GameObject>()) {
+        if (obj->getID() == id) {
+            return obj;
+        }
+    }
+    return NULL;
+}
+
+GameObject* GameObject::getChild(string name) {
+    for (GameObject* obj : getComponents<GameObject>()) {
+        if (obj->name == name) {
+            return obj;
+        }
+    }
+    return NULL;
 }

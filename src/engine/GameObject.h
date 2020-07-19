@@ -2,6 +2,7 @@
 #define GAMEOBJECT_H
 
 #include <set>
+#include <string>
 #include "Component.h"
 using namespace std;
 
@@ -11,6 +12,7 @@ public:
     ~GameObject();
 
     int getID();
+    string name;
 
     set<Component*> getComponents();
 
@@ -50,6 +52,9 @@ public:
         }
         return results;
     }
+
+    GameObject* getChild(int id);
+    GameObject* getChild(string name);
 private:
     int id;
     set<Component*> components;
