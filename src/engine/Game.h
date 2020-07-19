@@ -57,6 +57,8 @@ private:
     set<GameObject*> objects;
 
     ScriptRunner* scriptRunner;
+
+    double averageFrameLength = 0;
 };
 
 #endif

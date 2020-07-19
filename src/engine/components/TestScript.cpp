@@ -2,8 +2,8 @@
 #include <iostream>
 
 void TestScript::start() {
-    cout << "John Madden" << endl;
+    i = 0;
 }
 void TestScript::update() {
-    cout << "aeiou" << endl;
+    i++;
 }

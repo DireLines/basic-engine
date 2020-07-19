@@ -24,6 +24,10 @@ Game::Game(int windowWidth, int windowHeight) {
 }
 
 Game::~Game() {
+    averageFrameLength /= frameCounter;
+    double averageFPS = 1000.0 / averageFrameLength;
+    cout << "target FPS: " << frames_per_sec << endl;
+    cout << "actual FPS: " << averageFPS << endl;
     quitSDL();
 }
 
@@ -52,6 +56,10 @@ void Game::start() {
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     std::clock_t start = std::clock();
 
+    for (int i = 0; i < 100000; ++i) {
+        instantiate(new BasicObject());
+    }
+
     bool quit = false;
     SDL_Event event;
 
@@ -59,6 +67,7 @@ void Game::start() {
         std::clock_t end = std::clock();
         double duration = (( end - start ) / (double) CLOCKS_PER_SEC) * 1000;
         if (duration > ms_per_frame) {
+            averageFrameLength += duration;
             start = end;
             //call systems
             this->update();
