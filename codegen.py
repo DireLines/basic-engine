@@ -80,8 +80,6 @@ def constructor_body(components, owner_name, child = True):
         component_type = component
         if(type(component) == dict):
             component_type = list(component.keys())[0]
-            #TODO: make this neater, and allow ability to modify components instead of
-            #adding new ones
             if(type(component[component_type]) == list):#another GameObject
                 new_obj_name = variable_name(component_type)
                 if(child):
