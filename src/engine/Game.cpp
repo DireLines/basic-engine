@@ -56,7 +56,7 @@ void Game::start() {
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     std::clock_t start = std::clock();
 
-    for (int i = 0; i < 100000; ++i) {
+    for (int i = 0; i < 10000; ++i) {
         instantiate(new BasicObject());
     }
 
