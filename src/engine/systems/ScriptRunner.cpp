@@ -24,3 +24,6 @@ void ScriptRunner::removeObject(GameObject* obj) {
         scripts.erase(script);
     }
 }
+bool ScriptRunner::needObject(GameObject* obj) {
+    return obj->hasComponent<Script>();
+}

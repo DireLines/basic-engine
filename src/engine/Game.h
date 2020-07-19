@@ -9,6 +9,7 @@
 #include <set>
 #include "IDGenerator.h"
 #include "GameObjects.h"
+#include "System.h"
 #include "ScriptRunner.h"
 
 using namespace std;
@@ -55,7 +56,7 @@ private:
 
     set<GameObject*> objects;
 
-    ScriptRunner* scriptRunner;
+    set<System*> systems;
 
     double averageFrameLength = 0;
 };

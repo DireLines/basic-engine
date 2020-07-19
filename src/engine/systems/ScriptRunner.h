@@ -13,6 +13,7 @@ public:
     ScriptRunner();
     ~ScriptRunner();
     void update();
+    bool needObject(GameObject* obj);
     void addObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:

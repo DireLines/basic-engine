@@ -17,7 +17,7 @@ Game::Game(int windowWidth, int windowHeight) {
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
-    scriptRunner = new ScriptRunner();
+    systems.insert(new ScriptRunner());
 
     initSDL();
     TTF_Init();
@@ -54,7 +54,7 @@ void Game::initSDL() {
 
 void Game::start() {
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
-    for (int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 10; ++i) {
         instantiate(new Square());
     }
     std::clock_t start = std::clock();
@@ -90,7 +90,9 @@ void Game::start() {
 }
 
 void Game::update() {
-    scriptRunner->update();
+    for (System* system : systems) {
+        system->update();
+    }
     frameCounter++;
 }
 void Game::draw() {
@@ -99,17 +101,16 @@ void Game::draw() {
 
 void Game::instantiate(GameObject* obj) {
     objects.insert(obj);
-    //TODO: attach obj to all the other lists that care about it
-    if (obj->hasComponent<Script>()) {
-        scriptRunner->addObject(obj);
+    for (System* system : systems) {
+        system->maybeAddObject(obj);
     }
 }
 
 void Game::destroy(GameObject* obj) {
     objects.erase(obj);
     //TODO: remove obj from all the other lists that care about it
-    if (obj->hasComponent<Script>()) {
-        scriptRunner->removeObject(obj);
-    }
+    // if (obj->hasComponent<Script>()) {
+    // scriptRunner->removeObject(obj);
+    // }
     delete obj;
 }
