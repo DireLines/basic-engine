@@ -68,10 +68,12 @@ def component_code(component, owner_name, modify_comps=True):
         return result
     components_needed.add(component_type)
     component_name = variable_name(component_type)
+    statement = ""
     if(modify_comps):
-        result += spaces + modify(component_type,component_name, owner_name)
+        statement = modify(component_type,component_name, owner_name)
     else:
-        result += spaces + declare(component_type,component_name, owner_name)
+        statement = declare(component_type,component_name, owner_name)
+    result += spaces + statement
     if(type(component) == dict):
         fields = component[component_type]
         if fields is not None:
