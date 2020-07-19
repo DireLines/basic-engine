@@ -91,6 +91,7 @@ void Game::start() {
 }
 
 void Game::update() {
+    scriptRunner->update();
     frameCounter++;
 }
 void Game::draw() {

@@ -1,0 +1,5 @@
+- Transform
+- Sprite:
+    # filename: square.png
+- Rigidbody
+- Collider
