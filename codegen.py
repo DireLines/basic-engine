@@ -29,6 +29,11 @@ def variable_name(var_type):
 def filename(filepath):
     return os.path.splitext(os.path.basename(obj_filename))[0]
 
+# if adding a new public variable to GameObject.h,
+# also add it to this list, or .object file parser
+# will assume it's the name of some component
+game_object_fields = ["name"]
+
 components_needed = set()
 classes_declared = set()
 
@@ -58,6 +63,9 @@ def component_code(component, owner_name, modify_comps=True):
     component_type = component
     if(type(component) == dict):
         component_type = list(component.keys())[0]
+    if component_type in game_object_fields:
+        result += spaces + assign(owner_name, component_type, component[component_type])
+        return result
     components_needed.add(component_type)
     component_name = variable_name(component_type)
     if(modify_comps):
