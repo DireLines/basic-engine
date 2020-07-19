@@ -2,10 +2,8 @@
 #include "Game.h"
 #include <string>
 #include <ctime>
-#include "DisplayObject.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <iostream>
 
 using namespace std;
 
@@ -89,6 +87,6 @@ void Game::draw() {
 }
 
 void Game::instantiate(GameObject* obj) {
-    objects->insert(obj);
+    objects.insert(obj);
     //TODO: attach obj to all the other lists that care about it
 }
