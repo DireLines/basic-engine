@@ -11,7 +11,8 @@ public:
     virtual void update() {}
 
     //if this returns true, this script promises not to
-    //induce race conditions when run in parallel
+    //induce race conditions when all instances of
+    //the script are run in parallel
     virtual bool parallelizable() {
         return false;
     }
