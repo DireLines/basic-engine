@@ -17,6 +17,8 @@ Game::Game(int windowWidth, int windowHeight) {
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
+    scriptRunner = new ScriptRunner();
+
     initSDL();
     TTF_Init();
 }
@@ -89,4 +91,16 @@ void Game::draw() {
 void Game::instantiate(GameObject* obj) {
     objects.insert(obj);
     //TODO: attach obj to all the other lists that care about it
+    if (obj->hasComponent<Script>()) {
+        scriptRunner->addObject(obj);
+    }
+}
+
+void Game::destroy(GameObject* obj) {
+    objects.erase(obj);
+    //TODO: remove obj from all the other lists that care about it
+    if (obj->hasComponent<Script>()) {
+        scriptRunner->removeObject(obj);
+    }
+    delete obj;
 }

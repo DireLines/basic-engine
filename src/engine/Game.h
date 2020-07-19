@@ -10,6 +10,7 @@
 #include "IDGenerator.h"
 #include "GameObjects.h"
 #include "Vector2.h"
+#include "ScriptRunner.h"
 
 using namespace std;
 
@@ -55,6 +56,7 @@ private:
 
     set<GameObject*> objects;
 
+    ScriptRunner* scriptRunner;
 };
 
 #endif

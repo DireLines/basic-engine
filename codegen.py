@@ -32,7 +32,7 @@ def filename(filepath):
 # if adding a new public variable to GameObject.h,
 # also add it to this list, or .object file parser
 # will assume it's the name of some component
-game_object_fields = ["name"]
+game_object_fields = ["enabled", "name"]
 
 components_needed = set()
 classes_declared = set()
