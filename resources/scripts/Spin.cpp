@@ -1,4 +1,6 @@
 #include "Spin.h"
+#include <iostream>
 void Spin::update() {
-    // gameObject->getComponent<Transform>()->rotation += speed;
+    // cout << gameObject->getComponent<Transform>()->rotation << endl;
+    gameObject->getComponent<Transform>()->rotation += speed;
 }

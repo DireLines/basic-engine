@@ -4,4 +4,4 @@
 - Rigidbody
 - Collider
 - Spin:
-    speed: 2
+    speed: 0.01

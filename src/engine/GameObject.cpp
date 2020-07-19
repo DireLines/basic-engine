@@ -21,6 +21,7 @@ set<Component*> GameObject::getComponents() {
 
 void GameObject::addComponent(Component* c) {
     components.insert(c);
+    c->gameObject = this;
 }
 
 GameObject* GameObject::getChild(int id) {

@@ -2,6 +2,7 @@
 #define SCRIPT_H
 
 #include "Component.h"
+#include "GameObject.h"
 using namespace std;
 class Script: public Component {
 public:

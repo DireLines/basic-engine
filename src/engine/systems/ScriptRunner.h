@@ -3,11 +3,12 @@
 
 #include "GameObject.h"
 #include "Script.h"
+#include "System.h"
 #include <set>
 
 using namespace std;
 
-class ScriptRunner {
+class ScriptRunner : public System {
 public:
     ScriptRunner();
     ~ScriptRunner();
@@ -15,7 +16,7 @@ public:
     void addObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
-    set<GameObject*> objects;
+    set<Script*> scripts;
 };
 
 #endif
