@@ -87,3 +87,8 @@ void Game::update() {
 void Game::draw() {
 
 }
+
+void Game::instantiate(GameObject* obj) {
+    objects->insert(obj);
+    //TODO: attach obj to all the other lists that care about it
+}

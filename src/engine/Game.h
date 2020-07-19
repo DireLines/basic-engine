@@ -9,6 +9,7 @@
 #include <set>
 #include "IDGenerator.h"
 #include "GameObjects.h"
+#include "Vector2.h"
 
 using namespace std;
 
@@ -35,11 +36,24 @@ public:
     virtual void update();
     virtual void draw();
 
+    void instantiate(GameObject* obj);
+    // TODO: instantiate overloads for position & rotation and all that
+    // void instantiate(GameObject* obj, Vector2 pos, double rotation);
+    // void instantiate(GameObject* obj, Vector2 pos, double rotation, Vector2 scale);
+    // void instantiate(GameObject* obj, Transform transform);
+
+    void destroy(GameObject* obj);
+    //TODO: destroy overload for object by id
+    // void destroy(int id);
+    // GameObject* objectByID(int id);
+
 private:
 
     void initSDL();
     void quitSDL();
     set<SDL_Scancode> pressedKeys;
+
+    set<GameObject*> objects;
 
 };
 
