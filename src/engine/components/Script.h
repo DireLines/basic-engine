@@ -8,9 +8,12 @@ public:
     virtual void awake() {}
     virtual void start() {}
     virtual void update() {}
-    //if set to true, this script promises not to
+
+    //if this returns true, this script promises not to
     //induce race conditions when run in parallel
-    const bool parallelizable = false;
+    virtual bool parallelizable() {
+        return false;
+    }
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "ScriptRunner.h"
+#include <iostream>
 
 ScriptRunner::ScriptRunner() {}
 void ScriptRunner::update() {

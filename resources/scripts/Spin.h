@@ -7,7 +7,9 @@
 using namespace std;
 class Spin: public Script {
 public:
-    const bool parallelizable = true;
+    bool parallelizable() {
+        return true;
+    }
     double speed;
     void update();
 };
