@@ -36,11 +36,8 @@ def assign(owner,field,value):
     return f'{owner}->{field} = {str(value)};\n'
 
 # construct a C++ declare/initialize statement
-def declare(var_type, var_name):
-    return f'{var_type}* {var_name} = new {var_type}();\n'
-
-def add_component(owner_name, var_name):
-    return f'{owner_name}->addComponent({var_name});\n'
+def declare(var_type, var_name, owner_name):
+    return f'{var_type}* {var_name} = {owner_name}->addComponent<{var_type}>();\n'
 
 def component_code(component, owner_name):
     result = ""
@@ -51,13 +48,12 @@ def component_code(component, owner_name):
     if component_type not in variable_name_generator:
         variable_name_generator[component_type] = NameGenerator(component_type)
     component_name = variable_name_generator[component_type].next()
-    result += spaces + declare(component_type,component_name)
+    result += spaces + declare(component_type,component_name, owner_name)
     if(type(component) == dict):
         fields = component[component_type]
         if fields is not None:
             for field in fields:
                 result += spaces + assign(component_name, field, fields[field])
-    result += spaces + add_component(owner_name, component_name)
     return result
 
 header = """#ifndef GAMEOBJECTS_H
@@ -90,6 +86,8 @@ public:
         classes += class_decl.rstrip() + '\n'
         constructor_code = ""
         components = yaml.safe_load(obj_file.read())
+        if components is None:
+            continue
         for component in components:
             component_type = component
             if(type(component) == dict):

@@ -17,6 +17,18 @@ public:
     void addComponent(Component* c);
 
     template<typename C>
+    C* addComponent() {
+        C* c = new C();
+        addComponent(c);
+        return c;
+    }
+
+    template<typename C>
+    bool hasComponent() {
+        return getComponent<C>() != NULL;
+    }
+
+    template<typename C>
     C* getComponent() {
         for (Component* c : components) {
             C* result = dynamic_cast<C*>(c);
