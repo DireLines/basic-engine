@@ -57,7 +57,7 @@ void Game::start() {
     std::clock_t start = std::clock();
 
     for (int i = 0; i < 10000; ++i) {
-        instantiate(new BasicObject());
+        instantiate(new Square());
     }
 
     bool quit = false;

@@ -3,3 +3,5 @@
     # filename: square.png
 - Rigidbody
 - Collider
+- Spin:
+    speed: 2

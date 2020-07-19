@@ -6,11 +6,11 @@
 
 #you can add more than one of a particular component type,
 #but you'll have a hell of a time distinguishing between them later
-- TestComponent:
+- ExampleComponent:
     value: 2
     name: glorbus
     enabled: false
-- TestComponent:
+- ExampleComponent:
     value: 
       code: 2 + 3 #ends up in the code exactly as written
     name: 2 + 3 #ends up as a string, in quotes

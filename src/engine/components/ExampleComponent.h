@@ -1,9 +1,9 @@
-#ifndef TESTCOMPONENT_H
-#define TESTCOMPONENT_H
+#ifndef EXAMPLECOMPONENT_H
+#define EXAMPLECOMPONENT_H
 #include "Component.h"
 #include <string>
 using namespace std;
-class TestComponent: public Component {
+class ExampleComponent: public Component {
 public:
     int value = 0;
     string name = "default";
