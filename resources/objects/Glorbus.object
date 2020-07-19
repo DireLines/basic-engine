@@ -6,3 +6,9 @@
     value: 
       code: 2 + 3
     name: 2 + 3
+- BasicObject:
+    - Rigidbody:
+        mass: 4000
+    - Transform:
+        position:
+          code: Vector2(3,2)
