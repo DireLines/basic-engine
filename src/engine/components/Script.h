@@ -19,7 +19,8 @@ public:
 
     //if this returns true, this script promises not to
     //induce race conditions when all instances of
-    //the script are run in parallel
+    //the script are run in parallel.
+    //EXERCISE CAUTION
     virtual bool parallelizable() {
         return false;
     }

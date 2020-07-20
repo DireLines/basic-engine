@@ -1,8 +1,9 @@
 #include "Renderer.h"
 #include "Game.h"
 #include <algorithm>
-#define VECTOR_ERASE(v,value) (v.erase(std::remove(v.begin(), v.end(), value), v.end()))
-#define VECTOR_DEDUP(v) (v.erase(std::unique(v.begin(), v.end()), v.end()))
+#define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
+#define VECTOR_DEDUP(v) ((v).erase(std::unique((v).begin(), (v).end()), (v).end()))
+#define UINT8(d) ((int)((d) * 255) % 255)
 
 Renderer::Renderer() {
     camera = new Camera();
@@ -41,31 +42,33 @@ bool Renderer::needObject(GameObject* obj) {
 
 void Renderer::draw(GameObject* obj) {
     Sprite* s = obj->getComponent<Sprite>();
-    if (s->enabled) {
+    if (s && s->enabled) {
         Transform* cam_t = camera->getComponent<Transform>();
         Transform* obj_t = obj->getComponent<Transform>();
         SDL_Texture* texture = s->texture;
         SDL_Surface* image = s->image;
         //TODO: figure out where the object is on screen
-        if (texture != NULL) {
-            SDL_Rect dstrect = { 0, 0, image->w , image->h};
-            SDL_SetTextureAlphaMod(texture, 255);
-            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, 0, NULL, SDL_FLIP_NONE);
+        if (texture) {
+            SDL_Rect dstrect = { 500, 500, image->w , image->h};
+            SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
+            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, 90, NULL, SDL_FLIP_NONE);
         }
     }
 }
 
 SDL_Texture* Renderer::addTexture(Sprite* sprite) {
     string filename = sprites_basepath + sprite->filename;
-    SDL_Surface* image = IMG_Load(filename.c_str());
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::renderer,  image);
-    if (images.find(filename) == images.end()) {
-        images[filename] = image;
-    }
     if (textures.find(filename) == textures.end()) {
+        SDL_Surface* image = IMG_Load(filename.c_str());
+        if (!image) {
+            printf("IMG_Load: %s %s\n", IMG_GetError(), filename.c_str());
+            image = SDL_CreateRGBSurface(0, 100, 100, 32, 0, 0, 0, 0x000000ff);
+        }
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(Game::renderer,  image);
+        images[filename] = image;
         textures[filename] = texture;
     }
     sprite->image = images[filename];
     sprite->texture = textures[filename];
-    return texture;
+    return textures[filename];
 }

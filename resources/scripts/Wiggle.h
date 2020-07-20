@@ -3,7 +3,6 @@
 
 #include "Script.h"
 
-using namespace std;
 class Wiggle: public Script {
 public:
     bool parallelizable() {

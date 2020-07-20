@@ -4,7 +4,6 @@
 #include "Script.h"
 #include "Transform.h"
 
-using namespace std;
 class Spin: public Script {
 public:
     bool parallelizable() {

@@ -3,7 +3,6 @@
 
 #include "Script.h"
 
-using namespace std;
 class TestScript: public Script {
 public:
     void start();
