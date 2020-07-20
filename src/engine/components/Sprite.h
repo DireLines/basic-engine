@@ -1,6 +1,6 @@
 #ifndef SPRITE_H
 #define SPRITE_H
-#include "Component.h"
+
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>

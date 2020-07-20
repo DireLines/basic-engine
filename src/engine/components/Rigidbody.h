@@ -1,6 +1,6 @@
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
-#include "Component.h"
+
 #include "Vector2.h"
 using namespace std;
 class Rigidbody: public Component {
