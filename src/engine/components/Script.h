@@ -24,6 +24,16 @@ public:
     virtual bool parallelizable() {
         return false;
     }
+
+    //TODO: where to put this?
+    double randrange(double lowerLimit, double upperLimit) {
+        if (lowerLimit > upperLimit) {
+            double tmp = lowerLimit;
+            lowerLimit = upperLimit;
+            upperLimit = tmp;
+        }
+        return ((double)rand() / RAND_MAX) * (upperLimit - lowerLimit) + lowerLimit;
+    }
 };
 
 #endif

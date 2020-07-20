@@ -49,11 +49,16 @@ void Renderer::draw(GameObject* obj) {
         SDL_Surface* image = s->image;
         if (texture) {
             //TODO: figure out where the object is on screen
+            //TODO: scaling, rotation
             Transform* cam_t = camera->getComponent<Transform>();
             Transform* obj_t = obj->getComponent<Transform>();
-            SDL_Rect dstrect = { 0, 0, image->w , image->h};
+            Vector2 cam_pos = cam_t->position;
+            Vector2 obj_pos = obj_t->position;
+            double angle = obj_t->rotation - cam_t->rotation;
+            SDL_Point origin = (obj_pos - cam_pos).toPixel();
+            SDL_Rect dstrect = { origin.x, origin.y, image->w , image->h};
             SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
-            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, 0, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, angle , NULL, SDL_FLIP_NONE);
         }
     }
 }

@@ -15,6 +15,7 @@ public:
     Vector2 operator-(Vector2 const &other) const;
     Vector2& operator+=(const Vector2& rhs);
     Vector2& operator-=(const Vector2& rhs);
+    SDL_Point toPixel();
     void print() const;
     double magnitude() const;
     double sqrMagnitude() const;

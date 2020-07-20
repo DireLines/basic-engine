@@ -1,13 +1,9 @@
-- Transform:
-    position:
-      code: Vector2((rand() / (RAND_MAX))*200, (rand() / (RAND_MAX))*200)
+- Transform
 - Sprite:
     z:
       code: rand() / (RAND_MAX)
-    filename: Square.png
+    filename: Coin.png
 - Rigidbody
 - Collider
 - Wiggle:
-    strength: 0.02
-- Spin:
-    speed: 0.01
+    strength: 1.5

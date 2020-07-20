@@ -36,3 +36,7 @@ void Vector2::print() const { cout << "(" << x << ", " << y << ")" << endl; }
 double Vector2::magnitude() const { return sqrt(sqrMagnitude()); }
 
 double Vector2::sqrMagnitude() const { return x * x + y * y; }
+
+SDL_Point Vector2::toPixel() {
+    return {(int)round(x), (int)round(y)};
+}
