@@ -1,7 +1,11 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
+//some engine internals that scripts frequently interact with
 #include "GameObject.h"
+#include "Vector2.h"
+#include "Transform.h"
+
 using namespace std;
 class Script: public Component {
 public:
@@ -14,6 +18,10 @@ public:
     //the script are run in parallel
     virtual bool parallelizable() {
         return false;
+    }
+
+    double random() {
+        return (double)rand() / (RAND_MAX);
     }
 };
 

@@ -23,6 +23,7 @@ Game::Game(int windowWidth, int windowHeight) {
 
 Game::~Game() {
     averageFrameLength /= frameCounter;
+    cout << "average frame took " << averageFrameLength << " milliseconds" << endl;
     double averageFPS = 1000.0 / averageFrameLength;
     cout << "target FPS: " << frames_per_sec << endl;
     cout << "actual FPS: " << averageFPS << endl;

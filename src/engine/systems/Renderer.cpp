@@ -5,12 +5,12 @@
 
 Renderer::Renderer() {}
 
-bool z_greater(GameObject* a, GameObject* b) {
+bool z_less(GameObject* a, GameObject* b) {
     return a->getComponent<Sprite>()->z < b->getComponent<Sprite>()->z;
 }
 
 void Renderer::sort_objects_by_z() {
-    std::sort(objects.begin(), objects.end(), z_greater);
+    std::sort(objects.begin(), objects.end(), z_less);
 }
 
 void Renderer::update() {

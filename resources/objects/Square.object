@@ -1,9 +1,13 @@
-- Transform
+- Transform:
+    position:
+      code: Vector2(random() * 100,random() * 100)
 - Sprite:
     z:
-      code: (rand() % 1000) * 0.001
+      code: random()
     filename: square.png
 - Rigidbody
 - Collider
+- Wiggle:
+    strength: 0.02
 - Spin:
     speed: 0.01

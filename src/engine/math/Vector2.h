@@ -13,6 +13,8 @@ public:
     Vector2(double _x, double _y);
     Vector2 operator+(Vector2 const &other) const;
     Vector2 operator-(Vector2 const &other) const;
+    Vector2& operator+=(const Vector2& rhs);
+    Vector2& operator-=(const Vector2& rhs);
     void print() const;
     double magnitude() const;
     double sqrMagnitude() const;

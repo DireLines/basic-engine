@@ -19,6 +19,18 @@ Vector2 Vector2::operator-(Vector2 const &other) const {
     return Vector2(x - other.x, y - other.y);
 }
 
+Vector2& Vector2::operator+=(const Vector2& rhs) {
+    this->x += rhs.x;
+    this->y += rhs.y;
+    return *this;
+}
+
+Vector2& Vector2::operator-=(const Vector2& rhs) {
+    this->x -= rhs.x;
+    this->y -= rhs.y;
+    return *this;
+}
+
 void Vector2::print() const { cout << "(" << x << ", " << y << ")" << endl; }
 
 double Vector2::magnitude() const { return sqrt(sqrMagnitude()); }
