@@ -23,11 +23,6 @@ public:
     virtual bool parallelizable() {
         return false;
     }
-
-    //TODO: where should this be?
-    double random() {
-        return (double)rand() / (RAND_MAX);
-    }
 };
 
 #endif

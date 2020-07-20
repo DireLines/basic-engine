@@ -37,6 +37,10 @@ game_object_fields = ["enabled", "name"]
 components_needed = set()
 classes_declared = set()
 
+#the script header contains some useful stuff 
+#which GameObjects should always know about
+components_needed.add("Script")
+
 # construct a C++ assignment statement
 # assign('steve','favorite_color','green') = 'steve->favorite_color = green;'
 def assign(owner,field,value):
