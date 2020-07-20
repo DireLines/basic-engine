@@ -15,7 +15,8 @@ Game::Game(int windowWidth, int windowHeight) {
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
-    systems.insert(new ScriptRunner());
+    systems.push_back(new ScriptRunner());
+    systems.push_back(new Renderer());
 
     initSDL();
 }
@@ -52,7 +53,7 @@ void Game::initSDL() {
 
 void Game::start() {
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 100; ++i) {
         instantiate(new Square());
     }
     std::clock_t start = std::clock();
@@ -68,7 +69,6 @@ void Game::start() {
             start = end;
             //call systems
             this->update();
-            this->draw();
         }
 
         SDL_PollEvent(&event);
@@ -92,9 +92,6 @@ void Game::update() {
         system->update();
     }
     frameCounter++;
-}
-void Game::draw() {
-
 }
 
 void Game::instantiate(GameObject* obj) {

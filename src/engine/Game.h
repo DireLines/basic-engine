@@ -36,7 +36,6 @@ public:
     void start();
 
     virtual void update();
-    virtual void draw();
 
     void instantiate(GameObject* obj);
     // TODO: instantiate overloads for position & rotation and all that
@@ -57,7 +56,7 @@ private:
 
     set<GameObject*> objects;
 
-    set<System*> systems;
+    vector<System*> systems;
 
     double averageFrameLength = 0;
 };

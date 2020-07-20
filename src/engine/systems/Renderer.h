@@ -20,7 +20,6 @@ public:
 private:
     void draw(GameObject* obj);
     void sort_objects_by_z();
-    void remove_duplicate_objects();
     vector<GameObject*> objects;
 };
 

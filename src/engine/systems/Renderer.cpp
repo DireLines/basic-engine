@@ -6,7 +6,7 @@
 Renderer::Renderer() {}
 
 bool z_greater(GameObject* a, GameObject* b) {
-    return a->getComponent<Sprite>()->z > b->getComponent<Sprite>()->z;
+    return a->getComponent<Sprite>()->z < b->getComponent<Sprite>()->z;
 }
 
 void Renderer::sort_objects_by_z() {

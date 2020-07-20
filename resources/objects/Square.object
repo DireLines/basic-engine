@@ -1,6 +1,8 @@
 - Transform
 - Sprite:
-    # filename: square.png
+    z:
+      code: (rand() % 1000) * 0.001
+    filename: square.png
 - Rigidbody
 - Collider
 - Spin:
