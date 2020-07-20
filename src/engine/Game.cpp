@@ -15,7 +15,22 @@ Game::Game(int windowWidth, int windowHeight) {
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
+    //eventual goal:
+
+    //spawn & setup objects at start
+
+    //run scripts
     systems.push_back(new ScriptRunner());
+
+    //apply forces
+    //update position/velocity
+    //systems.push_back(new PhysicsSystem());
+
+    //detect collisions
+    //resolve collisions
+    //systems.push_back(new CollisionSystem());
+
+    //draw results
     systems.push_back(new Renderer());
 
     initSDL();

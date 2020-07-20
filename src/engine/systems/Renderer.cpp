@@ -37,7 +37,8 @@ bool Renderer::needObject(GameObject* obj) {
 void Renderer::draw(GameObject* obj) {
     Sprite* s = obj->getComponent<Sprite>();
     if (s->enabled) {
-        Transform* t = obj->getComponent<Transform>();
+        Transform* cam_t = camera->getComponent<Transform>();
+        Transform* obj_t = obj->getComponent<Transform>();
         //TODO: draw the sprite
     }
 }
