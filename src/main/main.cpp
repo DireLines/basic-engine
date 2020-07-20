@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(int argc, char ** argv) {
-    Game* game = new Game(1200, 1000);
+    Game* game = new Game(1500, 1000);
     game->start();
 
     delete game;

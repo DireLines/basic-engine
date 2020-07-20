@@ -1,9 +1,7 @@
-- Transform:
-    position:
-      code: Vector2(random() * 100,random() * 100)
+- Transform
 - Sprite:
     z:
-      code: random()
+      code: rand() / (RAND_MAX)
     filename: square.png
 - Rigidbody
 - Collider

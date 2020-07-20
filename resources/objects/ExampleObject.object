@@ -14,9 +14,10 @@
     value: 
       code: 2 + 3 #ends up in the code exactly as written
     name: 2 + 3 #ends up as a string, in quotes
+
+#a child object; specified components will be modified rather than added
 - BasicObject: 
     - name: my basic object
-    #a child object; specified components will be modified rather than added
     - Rigidbody:
         mass: 4000
     - Transform:

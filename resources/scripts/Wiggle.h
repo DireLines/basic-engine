@@ -10,6 +10,10 @@ public:
         return true;
     }
     double strength = 1;
+    //TODO: where to put this?
+    double random() {
+        return (double)rand() / RAND_MAX;
+    }
     void update() {
         Vector2 perturb(strength * random(), strength * random());
         gameObject->getComponent<Transform>()->position += perturb;

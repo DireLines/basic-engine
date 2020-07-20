@@ -53,11 +53,11 @@ def assign(owner,field,value):
         value = value['code']
     return f'{owner}->{field} = {str(value)};\n'
 
-# add a component and get a reference to it
+# add a component and get a pointer to it
 def declare(var_type, var_name, owner_name):
     return f'{var_type}* {var_name} = {owner_name}->addComponent<{var_type}>();\n'
 
-# get a reference to an existing component
+# get a pointer to an existing component
 def modify(var_type, var_name, owner_name):
     return f'{var_type}* {var_name} = {owner_name}->getComponent<{var_type}>();\n'
 
