@@ -1,4 +1,6 @@
-- Transform
+- Transform:
+    position:
+      code: Vector2((rand() / (RAND_MAX))*200, (rand() / (RAND_MAX))*200)
 - Sprite:
     z:
       code: rand() / (RAND_MAX)

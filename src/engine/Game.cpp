@@ -109,9 +109,11 @@ void Game::update() {
     frameCounter++;
 }
 
-//TODO: call recursively on child objects
 void Game::instantiate(GameObject* obj) {
     objects.insert(obj);
+    for (GameObject* child : obj->getChildren()) {
+        instantiate(child);
+    }
     for (System* system : systems) {
         system->maybeAddObject(obj);
     }
@@ -119,6 +121,9 @@ void Game::instantiate(GameObject* obj) {
 void Game::destroy(GameObject* obj) {
     for (System* system : systems) {
         system->removeObject(obj);
+    }
+    for (GameObject* child : obj->getChildren()) {
+        destroy(child);
     }
     objects.erase(obj);
     delete obj;

@@ -45,12 +45,12 @@ bool Renderer::needObject(GameObject* obj) {
 void Renderer::draw(GameObject* obj) {
     Sprite* s = obj->getComponent<Sprite>();
     if (s && s->enabled) {
-        Transform* cam_t = camera->getComponent<Transform>();
-        Transform* obj_t = obj->getComponent<Transform>();
         SDL_Texture* texture = s->texture;
         SDL_Surface* image = s->image;
-        //TODO: figure out where the object is on screen
         if (texture) {
+            //TODO: figure out where the object is on screen
+            Transform* cam_t = camera->getComponent<Transform>();
+            Transform* obj_t = obj->getComponent<Transform>();
             SDL_Rect dstrect = { 0, 0, image->w , image->h};
             SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
             SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, 0, NULL, SDL_FLIP_NONE);
