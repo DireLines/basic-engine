@@ -49,7 +49,6 @@ void Renderer::draw(GameObject* obj) {
         Transform* obj_t = obj->getComponent<Transform>();
         SDL_Texture* texture = s->texture;
         SDL_Surface* image = s->image;
-        cout << image->w << " " << image->h << endl;
         //TODO: figure out where the object is on screen
         if (texture) {
             SDL_Rect dstrect = { 0, 0, image->w , image->h};

@@ -2,8 +2,7 @@
 - Sprite:
     z:
       code: rand() / (RAND_MAX)
-    filename: 
-      code: 'rand() % 2 == 0 ? "square.png" : "Coin.png"'
+    filename: Square.png
 - Rigidbody
 - Collider
 - Wiggle:
