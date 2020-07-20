@@ -21,6 +21,7 @@ public:
     void removeObject(GameObject* obj);
 private:
     set<GameObject*> objects;
+    void addObject(GameObject* obj);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
 };

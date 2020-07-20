@@ -17,6 +17,7 @@ public:
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
+    void addObject(GameObject* obj);
     set<GameObject*> objects;
     void move(GameObject* obj);
 };
