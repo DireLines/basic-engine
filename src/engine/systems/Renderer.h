@@ -2,11 +2,10 @@
 #define RENDERER_H
 
 #include "GameObject.h"
-#include "Script.h"
 #include "System.h"
 #include "Sprite.h"
 #include "Transform.h"
-#include <set>
+#include <vector>
 
 using namespace std;
 
@@ -20,7 +19,9 @@ public:
     void removeObject(GameObject* obj);
 private:
     void draw(GameObject* obj);
-    set<GameObject*> objects;
+    void sort_objects_by_z();
+    void remove_duplicate_objects();
+    vector<GameObject*> objects;
 };
 
 #endif
