@@ -23,12 +23,14 @@ public:
     Camera* getCamera() {return camera;}
     void setCamera(Camera* cam) {camera = cam;}
 private:
+    string sprites_basepath = "./resources/sprites/";
     void addObject(GameObject* obj);
-    SDL_Texture* addTexture(string filename);
+    SDL_Texture* addTexture(Sprite* sprite);
     void draw(GameObject* obj);
     void sort_objects_by_z();
     vector<GameObject*> objects;
     unordered_map<string, SDL_Texture*> textures;
+    unordered_map<string, SDL_Surface*> images;
     Camera* camera = NULL;
 };
 

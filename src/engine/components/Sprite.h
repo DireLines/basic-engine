@@ -10,11 +10,11 @@ public:
     //TODO: figure out how to represent the actual sprite
     string filename;
     double z; //rendering order
-    void setTexture(SDL_Texture* tex) {
-        texture = tex;
-    }
+    double alpha = 1.0;
 private:
+    SDL_Surface* image = NULL;
     SDL_Texture* texture = NULL;
+    friend class Renderer;
 };
 
 #endif
