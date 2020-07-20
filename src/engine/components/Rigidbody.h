@@ -8,11 +8,12 @@ public:
     Vector2 centerOfMass = Vector2();
 
     double mass = 1.0;
-    Vector2 velocity = Vector2();
-    Vector2 force = Vector2();
-
     double momentOfInertia = 1.0;
+
+    Vector2 velocity = Vector2();
     Vector2 angularVelocity = Vector2();
+
+    Vector2 force = Vector2();
     Vector2 torque = Vector2();
 };
 #endif

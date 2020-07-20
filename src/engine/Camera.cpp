@@ -1,6 +1,6 @@
 #include "Camera.h"
+#include "Game.h"
 
 Camera::Camera() {
-    this->enabled = false;
-    this->addComponent<Transform>();
+    Transform* t = this->addComponent<Transform>();
 }

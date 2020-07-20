@@ -2,7 +2,6 @@
 #define WIGGLE_H
 
 #include "Script.h"
-
 class Wiggle: public Script {
 public:
     bool parallelizable() {
@@ -14,7 +13,6 @@ public:
         return (double)rand() / RAND_MAX;
     }
     void start() {
-        gameObject->getComponent<Transform>()->position = Vector2(randrange(200, 800), randrange(200, 800));
         gameObject->getComponent<Transform>()->rotation = randrange(0, 360);
     }
     void update() {

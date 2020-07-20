@@ -1,7 +1,8 @@
 - Transform
 - Rigidbody
 - Collider
-- Wiggle
+- Wiggle:
+    strength: 5
 - Sprite:
-    filename: square.png
+    filename: Coin.png
 - Reproduce

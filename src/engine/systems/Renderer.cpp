@@ -7,6 +7,7 @@
 
 Renderer::Renderer() {
     camera = new Camera();
+    camera->getComponent<Transform>()->position = Vector2(-Game::instance->windowWidth / 2, -Game::instance->windowHeight / 2);
     Game::instance->instantiate(camera);
 }
 
@@ -58,7 +59,7 @@ void Renderer::draw(GameObject* obj) {
             SDL_Point origin = (obj_pos - cam_pos).toPixel();
             SDL_Rect dstrect = { origin.x, origin.y, image->w , image->h};
             SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
-            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, angle , NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, angle, NULL, SDL_FLIP_NONE);
         }
     }
 }
