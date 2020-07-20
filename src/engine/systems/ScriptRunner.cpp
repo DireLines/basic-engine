@@ -34,12 +34,10 @@ void ScriptRunner::addObject(GameObject* obj) {
     }
 }
 void ScriptRunner::removeObject(GameObject* obj) {
-    cout << "removing " << obj->getID() << endl;
     for (Script* script : obj->getComponents<Script>()) {
         script->enabled = false;
         script->removed = true;
     }
-    cout << "removed " << obj->getID() << endl;
 }
 bool ScriptRunner::needObject(GameObject* obj) {
     return obj->hasComponent<Script>();
