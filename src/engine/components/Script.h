@@ -7,10 +7,6 @@
 #include "Transform.h"
 
 using namespace std;
-
-double random() {
-    return (double)rand() / (RAND_MAX);
-}
 class Script: public Component {
 public:
     virtual void awake() {}
@@ -22,6 +18,10 @@ public:
     //the script are run in parallel
     virtual bool parallelizable() {
         return false;
+    }
+
+    double random() {
+        return (double)rand() / (RAND_MAX);
     }
 };
 
