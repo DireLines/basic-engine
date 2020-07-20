@@ -54,7 +54,7 @@ void Game::initSDL() {
 
 void Game::start() {
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 10000; ++i) {
         instantiate(new Square());
     }
     std::clock_t start = std::clock();
@@ -68,8 +68,7 @@ void Game::start() {
         if (duration > ms_per_frame) {
             averageFrameLength += duration;
             start = end;
-            //call systems
-            this->update();
+            update();
         }
 
         SDL_PollEvent(&event);
@@ -95,18 +94,17 @@ void Game::update() {
     frameCounter++;
 }
 
+//TODO: call recursively on child objects
 void Game::instantiate(GameObject* obj) {
     objects.insert(obj);
     for (System* system : systems) {
         system->maybeAddObject(obj);
     }
 }
-
 void Game::destroy(GameObject* obj) {
+    for (System* system : systems) {
+        system->removeObject(obj);
+    }
     objects.erase(obj);
-    //TODO: remove obj from all the other lists that care about it
-    // if (obj->hasComponent<Script>()) {
-    // scriptRunner->removeObject(obj);
-    // }
     delete obj;
 }

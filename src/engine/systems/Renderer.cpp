@@ -9,8 +9,12 @@ bool z_less(GameObject* a, GameObject* b) {
     return a->getComponent<Sprite>()->z < b->getComponent<Sprite>()->z;
 }
 
+//objects is almost always sorted,
+//and checking if sorted is faster than sorting
 void Renderer::sort_objects_by_z() {
-    std::sort(objects.begin(), objects.end(), z_less);
+    if (!std::is_sorted(objects.begin(), objects.end(), z_less)) {
+        std::sort(objects.begin(), objects.end(), z_less);
+    }
 }
 
 void Renderer::update() {
@@ -22,7 +26,6 @@ void Renderer::update() {
 void Renderer::addObject(GameObject* obj) {
     objects.push_back(obj);
     VECTOR_DEDUP(objects);
-    sort_objects_by_z();
 }
 void Renderer::removeObject(GameObject* obj) {
     VECTOR_ERASE(objects, obj);
