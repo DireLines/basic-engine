@@ -12,6 +12,8 @@
 #include "System.h"
 #include "ScriptRunner.h"
 #include "Renderer.h"
+#include "PhysicsSystem.h"
+#include "CollisionSystem.h"
 
 using namespace std;
 

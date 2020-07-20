@@ -6,6 +6,7 @@
 #define UINT8(d) ((int)((d) * 255) % 256)
 
 Renderer::Renderer() {
+    name = "Renderer";
     camera = new Camera();
     camera->getComponent<Transform>()->position = Vector2(-Game::instance->windowWidth / 2, -Game::instance->windowHeight / 2);
     Game::instance->instantiate(camera);

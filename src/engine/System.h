@@ -16,7 +16,9 @@ public:
         }
     }
     virtual void removeObject(GameObject* obj) {}
+    string getName() {return name;}
 protected:
     virtual void addObject(GameObject* obj) {}
+    string name = "system"; //for debugging
 };
 #endif

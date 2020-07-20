@@ -1,7 +1,7 @@
 #include "CollisionSystem.h"
 
 CollisionSystem::CollisionSystem() {
-
+    name = "CollisionSystem";
 }
 CollisionSystem::~CollisionSystem() {
 

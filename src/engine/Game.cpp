@@ -24,11 +24,11 @@ Game::Game(int windowWidth, int windowHeight) {
 
     //apply forces
     //update position/velocity
-    //systems.push_back(new PhysicsSystem());
+    systems.push_back(new PhysicsSystem());
 
     //detect collisions
     //resolve collisions
-    //systems.push_back(new CollisionSystem());
+    systems.push_back(new CollisionSystem());
 
     //draw results
     systems.push_back(new Renderer());
@@ -69,8 +69,8 @@ void Game::initSDL() {
 
 void Game::start() {
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
-    for (int i = 0; i < 100; ++i) {
-        instantiate(new Square());
+    for (int i = 0; i < 1000; ++i) {
+        instantiate(new Cell());
     }
     std::clock_t start = std::clock();
 
@@ -104,8 +104,10 @@ void Game::start() {
 
 void Game::update() {
     for (System* system : systems) {
+        // cout << system->getName() << " update" << endl;
         system->update();
     }
+    std::for_each(objectsToDelete.begin(), objectsToDelete.end(), [](GameObject * obj) { delete obj; });
     objectsToDelete.clear();
     frameCounter++;
 }
@@ -116,11 +118,13 @@ void Game::instantiate(GameObject* obj) {
         instantiate(child);
     }
     for (System* system : systems) {
+        // cout << system->getName() << " add" << endl;
         system->maybeAddObject(obj);
     }
 }
 void Game::destroy(GameObject* obj) {
     for (System* system : systems) {
+        // cout << system->getName() << " remove" << endl;
         system->removeObject(obj);
     }
     for (GameObject* child : obj->getChildren()) {

@@ -1,6 +1,8 @@
 #include "ScriptRunner.h"
 
-ScriptRunner::ScriptRunner() {}
+ScriptRunner::ScriptRunner() {
+    name = "ScriptRunner";
+}
 void ScriptRunner::update() {
     //TODO: if a script destroys the GameObject it's part of, don't try to execute the rest
     //of the GameObject's scripts
@@ -9,6 +11,8 @@ void ScriptRunner::update() {
         if (script->enabled) {
             script->update();
         }
+    }
+    for (Script* script : scripts) {
         if (script->removed) {
             removedScripts.insert(script);
         }
@@ -16,7 +20,7 @@ void ScriptRunner::update() {
     for (Script* script : removedScripts) {
         scripts.erase(script);
     }
-
+    removedScripts.clear();
 }
 void ScriptRunner::addObject(GameObject* obj) {
     for (Script* script : obj->getComponents<Script>()) {
@@ -30,10 +34,12 @@ void ScriptRunner::addObject(GameObject* obj) {
     }
 }
 void ScriptRunner::removeObject(GameObject* obj) {
+    cout << "removing " << obj->getID() << endl;
     for (Script* script : obj->getComponents<Script>()) {
         script->enabled = false;
         script->removed = true;
     }
+    cout << "removed " << obj->getID() << endl;
 }
 bool ScriptRunner::needObject(GameObject* obj) {
     return obj->hasComponent<Script>();
