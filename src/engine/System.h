@@ -15,7 +15,8 @@ public:
             addObject(obj);
         }
     }
-    virtual void addObject(GameObject* obj) {}
     virtual void removeObject(GameObject* obj) {}
+protected:
+    virtual void addObject(GameObject* obj) {}
 };
 #endif

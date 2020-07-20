@@ -14,9 +14,9 @@ public:
     ~ScriptRunner();
     void update();
     bool needObject(GameObject* obj);
-    void addObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
+    void addObject(GameObject* obj);
     set<Script*> scripts;
 };
 
