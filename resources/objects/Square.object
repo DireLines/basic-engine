@@ -2,8 +2,7 @@
 - Sprite:
     z:
       code: rand() / (RAND_MAX)
-    filename: Coin.png
+    filename: square.png
 - Rigidbody
 - Collider
-- Wiggle:
-    strength: 1.5
+- Wiggle
