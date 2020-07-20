@@ -4,21 +4,15 @@
 #include "Script.h"
 class Wiggle: public Script {
 public:
-    bool parallelizable() {
-        return true;
-    }
     double strength = 1;
-    //TODO: where to put this?
-    double random() {
-        return (double)rand() / RAND_MAX;
-    }
-    void start() {
-        gameObject->getComponent<Transform>()->rotation = randrange(0, 360);
-    }
+
     void update() {
         Vector2 perturb(strength * randrange(-1, 1), strength * randrange(-1, 1));
         gameObject->getComponent<Transform>()->position += perturb;
         gameObject->getComponent<Transform>()->rotation += randrange(-strength, strength);
+    }
+    bool parallelizable() {
+        return true;
     }
 };
 

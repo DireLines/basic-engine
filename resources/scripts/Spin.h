@@ -6,11 +6,11 @@
 
 class Spin: public Script {
 public:
+    double speed;
+    void update();
     bool parallelizable() {
         return true;
     }
-    double speed;
-    void update();
 };
 
 #endif
