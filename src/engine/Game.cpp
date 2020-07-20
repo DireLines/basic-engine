@@ -104,6 +104,7 @@ void Game::update() {
     for (System* system : systems) {
         system->update();
     }
+    objectsToDelete.clear();
     frameCounter++;
 }
 
@@ -124,5 +125,5 @@ void Game::destroy(GameObject* obj) {
         destroy(child);
     }
     objects.erase(obj);
-    delete obj;
+    objectsToDelete.insert(obj);
 }

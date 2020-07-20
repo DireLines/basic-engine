@@ -58,6 +58,8 @@ private:
 
     vector<System*> systems;
 
+    set<GameObject*> objectsToDelete;
+
     double averageFrameLength = 0;
 };
 

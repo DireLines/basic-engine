@@ -8,4 +8,7 @@ void Reproduce::update() {
         s->getComponent<Transform>()->position = gameObject->getComponent<Transform>()->position;
         Game::instance->instantiate(s);
     }
+    if (rand() % 1000 == 0) {
+        Game::instance->destroy(gameObject);
+    }
 }

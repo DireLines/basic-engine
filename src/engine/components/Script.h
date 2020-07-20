@@ -8,7 +8,7 @@
 
 using namespace std;
 class Script: public Component {
-public:
+protected:
     virtual void awake() {}
     virtual void start() {}
     virtual void update() {}
@@ -34,6 +34,10 @@ public:
         }
         return ((double)rand() / RAND_MAX) * (upperLimit - lowerLimit) + lowerLimit;
     }
+
+    bool removed = false;//marker for ScriptRunner to delete this script at end of update
+    friend class ScriptRunner;
+    friend class CollisionSystem;
 };
 
 #endif
