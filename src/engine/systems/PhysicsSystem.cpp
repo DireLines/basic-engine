@@ -18,3 +18,8 @@ void PhysicsSystem::removeObject(GameObject* obj) {
 void PhysicsSystem::move(GameObject* obj) {
 
 }
+
+
+void PhysicsSystem::addObject(GameObject* obj) {
+
+}

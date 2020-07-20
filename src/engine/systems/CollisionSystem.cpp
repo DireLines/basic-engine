@@ -15,3 +15,13 @@ bool CollisionSystem::needObject(GameObject* obj) {
 void CollisionSystem::removeObject(GameObject* obj) {
 
 }
+void CollisionSystem::addObject(GameObject* obj) {
+
+}
+
+bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
+    return false;
+}
+void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
+
+}
