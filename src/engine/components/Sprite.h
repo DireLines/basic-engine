@@ -7,7 +7,7 @@
 using namespace std;
 class Sprite: public Component {
 public:
-    string filename;
+    string file = "default.png";
     double z; //rendering order
     double alpha = 1.0;
 private:

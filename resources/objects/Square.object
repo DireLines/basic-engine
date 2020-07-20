@@ -3,5 +3,5 @@
 - Collider
 - Wiggle
 - Sprite:
-    filename: square.png
+    file: square.png
 - Reproduce

@@ -4,5 +4,5 @@
 - Wiggle:
     strength: 5
 - Sprite:
-    filename: Coin.png
+    file: Coin.png
 - Reproduce

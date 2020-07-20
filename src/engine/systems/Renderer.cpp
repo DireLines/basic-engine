@@ -65,7 +65,7 @@ void Renderer::draw(GameObject* obj) {
 }
 
 SDL_Texture* Renderer::addTexture(Sprite* sprite) {
-    string filename = sprites_basepath + sprite->filename;
+    string filename = sprites_basepath + sprite->file;
     if (textures.find(filename) == textures.end()) {
         SDL_Surface* image = IMG_Load(filename.c_str());
         if (!image) {
