@@ -19,6 +19,7 @@ public:
     void addObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
+    void draw(GameObject* obj);
     set<GameObject*> objects;
 };
 

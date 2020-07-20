@@ -2,8 +2,6 @@
 #include "Game.h"
 #include <string>
 #include <ctime>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 using namespace std;
 
@@ -20,7 +18,6 @@ Game::Game(int windowWidth, int windowHeight) {
     systems.insert(new ScriptRunner());
 
     initSDL();
-    TTF_Init();
 }
 
 Game::~Game() {
@@ -41,6 +38,7 @@ void Game::quitSDL() {
 }
 
 void Game::initSDL() {
+    TTF_Init();
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 

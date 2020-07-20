@@ -7,6 +7,7 @@ class System {
 public:
     System() {}
     ~System() {}
+    virtual void start() {}
     virtual void update() {}
     virtual bool needObject(GameObject* obj) {return true;}
     void maybeAddObject(GameObject* obj) {
