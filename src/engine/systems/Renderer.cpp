@@ -3,7 +3,7 @@
 #include <algorithm>
 #define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
 #define VECTOR_DEDUP(v) ((v).erase(std::unique((v).begin(), (v).end()), (v).end()))
-#define UINT8(d) ((int)((d) * 255) % 255)
+#define UINT8(d) ((int)((d) * 255) % 256)
 
 Renderer::Renderer() {
     camera = new Camera();
@@ -23,10 +23,12 @@ void Renderer::sort_objects_by_z() {
 }
 
 void Renderer::update() {
+    SDL_RenderClear(Game::renderer);
     sort_objects_by_z();
     for (GameObject* obj : objects) {
         draw(obj);
     }
+    SDL_RenderPresent(Game::renderer);
 }
 void Renderer::addObject(GameObject* obj) {
     objects.push_back(obj);
@@ -50,9 +52,9 @@ void Renderer::draw(GameObject* obj) {
         cout << image->w << " " << image->h << endl;
         //TODO: figure out where the object is on screen
         if (texture) {
-            SDL_Rect dstrect = { 500, 500, image->w , image->h};
+            SDL_Rect dstrect = { 0, 0, image->w , image->h};
             SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
-            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, 90, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, 0, NULL, SDL_FLIP_NONE);
         }
     }
 }
