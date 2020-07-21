@@ -69,7 +69,7 @@ void Game::initSDL() {
 
 void Game::start() {
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
-    instantiate(new Squares());
+    instantiate(new ExampleScene());
     std::clock_t start = std::clock();
 
     bool quit = false;
