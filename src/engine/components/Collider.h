@@ -6,5 +6,7 @@ using namespace std;
 class Collider: public Component {
 public:
     Polygon region;
+    bool isTrigger = false;
+
 };
 #endif
