@@ -6,12 +6,12 @@ ScriptRunner::ScriptRunner() {
 void ScriptRunner::update() {
     //TODO: if a script destroys the GameObject it's part of, don't try to execute the rest
     //of the GameObject's scripts
-    set<Script*> removedScripts;
     for (Script* script : scripts) {
         if (script->enabled) {
             script->update();
         }
     }
+    set<Script*> removedScripts;
     for (Script* script : scripts) {
         if (script->removed) {
             removedScripts.insert(script);
@@ -20,7 +20,6 @@ void ScriptRunner::update() {
     for (Script* script : removedScripts) {
         scripts.erase(script);
     }
-    removedScripts.clear();
 }
 void ScriptRunner::addObject(GameObject* obj) {
     for (Script* script : obj->getComponents<Script>()) {
