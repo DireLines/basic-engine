@@ -1,0 +1,12 @@
+- Square:
+  - Transform:
+      position:
+        code: Vector2(300,300)
+- Square:
+  - Transform:
+      position:
+        code: Vector2(-300,300)
+- Square:
+  - Transform:
+      position:
+        code: Vector2(300,-300)

@@ -1,7 +1,7 @@
 - Transform
 - Rigidbody
 - Collider
-- Scatter
+# - Scatter
 - Wiggle
 - Sprite:
     file: square.png
