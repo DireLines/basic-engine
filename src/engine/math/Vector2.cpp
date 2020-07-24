@@ -1,4 +1,6 @@
 #include <Vector2.h>
+#define PI 3.14159265
+
 Vector2::Vector2() {
     x = 0;
     y = 0;
@@ -37,6 +39,16 @@ double Vector2::magnitude() const { return sqrt(sqrMagnitude()); }
 
 double Vector2::sqrMagnitude() const { return x * x + y * y; }
 
+double Vector2::distance(Vector2 a, Vector2 b) {
+    return (b - a).magnitude();
+}
+double Vector2::calculateRotation(Vector2 origin, Vector2 p) {
+    double y = p.y - origin.y;
+    double x = p.x - origin.x;
+    return (atan2(y, x) * 180 / PI);
+}
+
 SDL_Point Vector2::toPixel() {
     return {(int)round(x), (int)round(y)};
 }
+

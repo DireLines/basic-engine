@@ -28,8 +28,6 @@ private:
     SDL_Texture* addTexture(Sprite* sprite);
     void draw(GameObject* obj, Matrix3& cam_t);
     void sort_objects_by_z();
-    double distance(Vector2 a, Vector2 b);
-    double calculateRotation(Vector2 origin, Vector2 p);
 
     vector<GameObject*> objects;
     unordered_map<string, SDL_Texture*> textures;

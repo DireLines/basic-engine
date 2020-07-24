@@ -4,7 +4,6 @@
 #define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
 #define VECTOR_DEDUP(v) ((v).erase(std::unique((v).begin(), (v).end()), (v).end()))
 #define UINT8(d) ((int)((d) * 255) % 256)
-#define PI 3.14159265
 
 Renderer::Renderer() {
     name = "Renderer";
@@ -64,10 +63,10 @@ void Renderer::draw(GameObject* obj, Matrix3& cam_t) {
             Vector2 topRight = transform * Vector2(image->w, 0);
             Vector2 bottomRight = transform * Vector2(image->w, image->h);
 
-            int w = (int)round(distance(topLeft, topRight));
-            int h = (int)round(distance(topRight, bottomRight));
+            int w = (int)round(Vector2::distance(topLeft, topRight));
+            int h = (int)round(Vector2::distance(topRight, bottomRight));
 
-            double displayAngle = calculateRotation(topLeft, topRight);
+            double displayAngle = Vector2::calculateRotation(topLeft, topRight);
             SDL_Point origin = topLeft.toPixel();
             SDL_Point corner = {0, 0};
 
@@ -93,13 +92,4 @@ SDL_Texture* Renderer::addTexture(Sprite* sprite) {
     sprite->image = images[filename];
     sprite->texture = textures[filename];
     return textures[filename];
-}
-
-double Renderer::distance(Vector2 a, Vector2 b) {
-    return (b - a).magnitude();
-}
-double Renderer::calculateRotation(Vector2 origin, Vector2 p) {
-    double y = p.y - origin.y;
-    double x = p.x - origin.x;
-    return (atan2(y, x) * 180 / PI);
 }
