@@ -8,8 +8,8 @@ public:
 
     void update() {
         Vector2 perturb(strength * randrange(-1, 1), strength * randrange(-1, 1));
-        gameObject->getComponent<Transform>()->position += perturb;
-        gameObject->getComponent<Transform>()->rotation += randrange(-strength, strength);
+        gameObject->getComponent<Rigidbody>()->force += perturb;
+        // gameObject->getComponent<Transform>()->rotation += randrange(-strength, strength);
     }
     bool parallelizable() {
         return true;

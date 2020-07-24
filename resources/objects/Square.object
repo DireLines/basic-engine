@@ -1,7 +1,9 @@
 - Transform
 - Rigidbody
 - Collider
-# - Scatter
-- Wiggle
+- Scatter:
+    maxSpeed: 15
+- Wiggle:
+    strength: 200
 - Sprite:
     file: square.png
