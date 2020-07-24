@@ -4,7 +4,4 @@
 
 Camera::Camera() {
     Transform* t = this->addComponent<Transform>();
-    t->scale = Vector2(2, 2);
-    Spin* s = this->addComponent<Spin>();
-    s->speed = 1;
 }

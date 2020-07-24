@@ -27,8 +27,10 @@ void Renderer::sort_objects_by_z() {
 void Renderer::update() {
     SDL_RenderClear(Game::renderer);
     sort_objects_by_z();
-    Matrix3 cam_t;
-    // Matrix3 cam_t = camera->getComponent<Transform>()->Reverse();
+    Matrix3 center = Transform::Translate(
+                         Game::instance->windowWidth / 2,
+                         Game::instance->windowHeight / 2);
+    Matrix3 cam_t = center * camera->getComponent<Transform>()->Reverse();
     for (GameObject* obj : objects) {
         draw(obj, cam_t);
     }
@@ -39,6 +41,7 @@ void Renderer::addObject(GameObject* obj) {
     VECTOR_DEDUP(objects);
     addTexture(obj->getComponent<Sprite>());
     SDL_Surface* img = obj->getComponent<Sprite>()->image;
+    //TODO: figure out how to not set this
     Transform* t = obj->getComponent<Transform>();
     t->pivot = Vector2(img->w / 2, img->h / 2);
 }
