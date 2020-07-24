@@ -11,7 +11,7 @@ public:
     GameObject();
     ~GameObject();
 
-    int getID();
+    int ID();
 
     //if adding a new public variable to GameObject,
     //also add it to the list game_object_fields in codegen.py

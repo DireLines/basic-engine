@@ -11,7 +11,7 @@ GameObject::~GameObject() {
     }
 }
 
-int GameObject::getID() {
+int GameObject::ID() {
     return id;
 }
 
@@ -26,7 +26,7 @@ void GameObject::addComponent(Component* c) {
 
 GameObject* GameObject::getChild(int id) {
     for (GameObject* obj : getComponents<GameObject>()) {
-        if (obj->getID() == id) {
+        if (obj->ID() == id) {
             return obj;
         }
     }
