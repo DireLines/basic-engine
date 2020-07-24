@@ -6,7 +6,7 @@
 
 class Spin: public Script {
 public:
-    double speed;
+    double speed = 1;
     void update();
     bool parallelizable() {
         return true;

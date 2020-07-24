@@ -4,11 +4,14 @@
 #define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
 #define VECTOR_DEDUP(v) ((v).erase(std::unique((v).begin(), (v).end()), (v).end()))
 #define UINT8(d) ((int)((d) * 255) % 256)
+#define PI 3.14159265
 
 Renderer::Renderer() {
     name = "Renderer";
     camera = new Camera();
-    camera->getComponent<Transform>()->position = Vector2(-Game::instance->windowWidth / 2, -Game::instance->windowHeight / 2);
+    // camera->getComponent<Transform>()->position =
+    //     Vector2(-Game::instance->windowWidth / 2,
+    //             -Game::instance->windowHeight / 2);
     Game::instance->instantiate(camera);
 }
 
@@ -27,8 +30,11 @@ void Renderer::sort_objects_by_z() {
 void Renderer::update() {
     SDL_RenderClear(Game::renderer);
     sort_objects_by_z();
+    Matrix3 center = Transform::Translate(Game::instance->windowWidth / 2,
+                                          Game::instance->windowHeight / 2);
+    Matrix3 cam_t = camera->getComponent<Transform>()->Reverse() * center;
     for (GameObject* obj : objects) {
-        draw(obj);
+        draw(obj, cam_t);
     }
     SDL_RenderPresent(Game::renderer);
 }
@@ -44,23 +50,27 @@ bool Renderer::needObject(GameObject* obj) {
     return obj->hasComponent<Sprite>() && obj->hasComponent<Transform>();
 }
 
-void Renderer::draw(GameObject* obj) {
+void Renderer::draw(GameObject* obj, Matrix3& cam_t) {
     Sprite* s = obj->getComponent<Sprite>();
     if (s && s->enabled) {
         SDL_Texture* texture = s->texture;
         SDL_Surface* image = s->image;
         if (texture) {
-            //TODO: figure out where the object is on screen
-            //TODO: scaling, rotation
-            Transform* cam_t = camera->getComponent<Transform>();
             Transform* obj_t = obj->getComponent<Transform>();
-            Vector2 cam_pos = cam_t->position;
-            Vector2 obj_pos = obj_t->position;
-            double angle = obj_t->rotation - cam_t->rotation;
-            SDL_Point origin = (obj_pos - cam_pos).toPixel();
-            SDL_Rect dstrect = { origin.x, origin.y, image->w , image->h};
+            Matrix3 transform = cam_t * obj_t->Apply();
+            Vector2 topLeft = transform * Vector2(0, 0);
+            Vector2 topRight = transform * Vector2(image->w, 0);
+            Vector2 bottomRight = transform * Vector2(image->w, image->h);
+
+            int w = (int)round(distance(topLeft, topRight));
+            int h = (int)round(distance(topRight, bottomRight));
+
+            double displayAngle = calculateRotation(topLeft, topRight);
+            SDL_Point origin = topLeft.toPixel();
+
+            SDL_Rect dstrect = { origin.x, origin.y, w, h};
             SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
-            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, angle, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, displayAngle, NULL, SDL_FLIP_NONE);
         }
     }
 }
@@ -80,4 +90,13 @@ SDL_Texture* Renderer::addTexture(Sprite* sprite) {
     sprite->image = images[filename];
     sprite->texture = textures[filename];
     return textures[filename];
+}
+
+double Renderer::distance(Vector2 a, Vector2 b) {
+    return (b - a).magnitude();
+}
+double Renderer::calculateRotation(Vector2 origin, Vector2 p) {
+    double y = p.y - origin.y;
+    double x = p.x - origin.x;
+    return (atan2(y, x) * 180 / PI);
 }

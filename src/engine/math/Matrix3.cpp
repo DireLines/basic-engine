@@ -24,7 +24,6 @@ double** Matrix3::identity() {
 //matrix multiply
 Matrix3 Matrix3::operator*(Matrix3 const &other) const {
     Matrix3 result;
-    //perform multiplication
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             result.m[i][j] = 0;

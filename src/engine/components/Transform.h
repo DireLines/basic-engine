@@ -10,7 +10,10 @@ public:
     Vector2 position = Vector2(0, 0);
     double rotation = 0;
     Vector2 scale = Vector2(1, 1);
+    //TODO: I want to set pivot to the midpoint of the sprite most of the time
+    //but you should be able to specify otherwise. How?
     Vector2 pivot = Vector2(0, 0);
+
     Matrix3 toMatrix();
     Matrix3 Apply();
     Matrix3 Reverse();
