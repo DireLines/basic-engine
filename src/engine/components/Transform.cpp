@@ -1,7 +1,14 @@
 #include "Transform.h"
 
 Matrix3 Transform::toMatrix() {
-    return toMatrix(*this);
+    return Apply(*this);
+}
+
+Matrix3 Transform::Apply() {
+    return Apply(*this);
+}
+Matrix3 Transform::Reverse() {
+    return Reverse(*this);
 }
 Matrix3 Transform::Unpivot() {
     return Translate(-pivot.x, -pivot.y);
@@ -32,6 +39,14 @@ Matrix3 Transform::Scale(double x, double y) {
 Matrix3 Transform::Scale(Vector2 v) {
     return Scale(v.x, v.y);
 }
-Matrix3 Transform::toMatrix(Transform& t) {
-    return Translate(t.position) * Rotate(t.rotation) * Scale(t.scale);
+Matrix3 Transform::Apply(Transform& t) {
+    return Translate(t.position) *
+           Rotate(t.rotation) *
+           Scale(t.scale);
+}
+
+Matrix3 Transform::Reverse(Transform& t) {
+    return Scale(1.0 / t.scale.x, 1.0 / t.scale.y) *
+           Rotate(-t.rotation) *
+           Translate(-t.position.x, -t.position.y);
 }
