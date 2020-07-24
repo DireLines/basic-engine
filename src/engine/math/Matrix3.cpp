@@ -24,10 +24,15 @@ double** Matrix3::identity() {
 //matrix multiply
 Matrix3 Matrix3::operator*(Matrix3 const &other) const {
     Matrix3 result;
+    //zero out result
+    result.m[0][0] = 0;
+    result.m[1][1] = 0;
+    result.m[2][2] = 0;
+    //perform multiplication
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
-                result.m[i][j] = this->m[i][k] * other.m[k][j];
+                result.m[i][j] += this->m[i][k] * other.m[k][j];
             }
         }
     }
@@ -48,7 +53,9 @@ Vector2 Matrix3::operator*(Vector2 const &other) const {
 
 
 void Matrix3::print() const {
-    printf("%4.2f %4.2f %4.2f\n", m[0][0], m[0][1], m[0][2]);
-    printf("%4.2f %4.2f %4.2f\n", m[1][0], m[1][1], m[1][2]);
-    printf("%4.2f %4.2f %4.2f\n", m[2][0], m[2][1], m[2][2]);
+    printf("[\n");
+    printf("\t%4.2f %4.2f %4.2f\n", m[0][0], m[0][1], m[0][2]);
+    printf("\t%4.2f %4.2f %4.2f\n", m[1][0], m[1][1], m[1][2]);
+    printf("\t%4.2f %4.2f %4.2f\n", m[2][0], m[2][1], m[2][2]);
+    printf("]\n");
 }
