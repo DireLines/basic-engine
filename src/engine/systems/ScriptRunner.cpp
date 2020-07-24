@@ -4,8 +4,6 @@ ScriptRunner::ScriptRunner() {
     name = "ScriptRunner";
 }
 void ScriptRunner::update() {
-    //TODO: if a script destroys the GameObject it's part of, don't try to execute the rest
-    //of the GameObject's scripts
     for (Script* script : scripts) {
         if (script->enabled) {
             script->update();
