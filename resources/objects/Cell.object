@@ -2,7 +2,9 @@
 - Rigidbody
 - Collider
 - Wiggle:
-    strength: 5
+    strength: 200
 - Sprite:
     file: Coin.png
+    z:
+      code: rand() / RAND_MAX
 - Reproduce
