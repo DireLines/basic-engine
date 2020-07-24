@@ -24,13 +24,10 @@ double** Matrix3::identity() {
 //matrix multiply
 Matrix3 Matrix3::operator*(Matrix3 const &other) const {
     Matrix3 result;
-    //zero out result
-    result.m[0][0] = 0;
-    result.m[1][1] = 0;
-    result.m[2][2] = 0;
     //perform multiplication
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
+            result.m[i][j] = 0;
             for (int k = 0; k < 3; k++) {
                 result.m[i][j] += this->m[i][k] * other.m[k][j];
             }

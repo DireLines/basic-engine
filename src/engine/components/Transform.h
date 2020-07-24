@@ -10,7 +10,9 @@ public:
     Vector2 position = Vector2(0, 0);
     double rotation = 0;
     Vector2 scale = Vector2(1, 1);
+    Vector2 pivot = Vector2(0, 0);
     Matrix3 toMatrix();
+    Matrix3 Unpivot();
     static Matrix3 Translate(double x, double y);
     static Matrix3 Translate(Vector2 v);
     static Matrix3 Rotate(double r);

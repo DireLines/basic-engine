@@ -5,8 +5,6 @@
 using namespace std;
 class Rigidbody: public Component {
 public:
-    Vector2 centerOfMass = Vector2();
-
     double mass = 1.0;
     double momentOfInertia = 1.0;
 
