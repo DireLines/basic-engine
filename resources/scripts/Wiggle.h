@@ -9,7 +9,7 @@ public:
     void update() {
         Vector2 perturb(strength * randrange(-1, 1), strength * randrange(-1, 1));
         gameObject->getComponent<Rigidbody>()->force += perturb;
-        // gameObject->getComponent<Transform>()->rotation += randrange(-strength, strength);
+        gameObject->getComponent<Rigidbody>()->torque += randrange(-strength, strength);
     }
     bool parallelizable() {
         return true;

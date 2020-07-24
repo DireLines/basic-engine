@@ -70,7 +70,6 @@ void Game::start() {
     for (int i = 0; i < 100; ++i) {
         instantiate(new Square());
     }
-    // instantiate(new ExampleScene());
 
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     std::clock_t start = std::clock();
