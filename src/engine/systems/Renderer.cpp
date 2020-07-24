@@ -17,7 +17,8 @@ void Renderer::update() {
     sort_objects_by_z();
     Matrix3 center = Transform::Translate(
                          Game::instance->windowWidth / 2,
-                         Game::instance->windowHeight / 2);
+                         Game::instance->windowHeight / 2
+                     );
     Matrix3 cam_t = center * camera->getComponent<Transform>()->Reverse();
     for (GameObject* obj : objects) {
         draw(obj, cam_t);

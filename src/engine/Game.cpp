@@ -18,8 +18,6 @@ Game::Game(int windowWidth, int windowHeight) {
 
     //eventual goal:
 
-    //spawn & setup objects at start
-
     //run scripts
     systems.push_back(new ScriptRunner());
 
@@ -69,8 +67,9 @@ void Game::initSDL() {
 }
 
 void Game::start() {
-    int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     instantiate(new ExampleScene());
+
+    int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     std::clock_t start = std::clock();
 
     bool quit = false;
