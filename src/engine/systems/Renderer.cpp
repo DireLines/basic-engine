@@ -9,9 +9,6 @@
 Renderer::Renderer() {
     name = "Renderer";
     camera = new Camera();
-    // camera->getComponent<Transform>()->position =
-    //     Vector2(-Game::instance->windowWidth / 2,
-    //             -Game::instance->windowHeight / 2);
     Game::instance->instantiate(camera);
 }
 
@@ -30,9 +27,8 @@ void Renderer::sort_objects_by_z() {
 void Renderer::update() {
     SDL_RenderClear(Game::renderer);
     sort_objects_by_z();
-    Matrix3 center = Transform::Translate(Game::instance->windowWidth / 2,
-                                          Game::instance->windowHeight / 2);
-    Matrix3 cam_t = camera->getComponent<Transform>()->Reverse() * center;
+    Matrix3 cam_t;
+    // Matrix3 cam_t = camera->getComponent<Transform>()->Reverse();
     for (GameObject* obj : objects) {
         draw(obj, cam_t);
     }
@@ -42,6 +38,9 @@ void Renderer::addObject(GameObject* obj) {
     objects.push_back(obj);
     VECTOR_DEDUP(objects);
     addTexture(obj->getComponent<Sprite>());
+    SDL_Surface* img = obj->getComponent<Sprite>()->image;
+    Transform* t = obj->getComponent<Transform>();
+    t->pivot = Vector2(img->w / 2, img->h / 2);
 }
 void Renderer::removeObject(GameObject* obj) {
     VECTOR_ERASE(objects, obj);
@@ -57,7 +56,7 @@ void Renderer::draw(GameObject* obj, Matrix3& cam_t) {
         SDL_Surface* image = s->image;
         if (texture) {
             Transform* obj_t = obj->getComponent<Transform>();
-            Matrix3 transform = cam_t * obj_t->Apply();
+            Matrix3 transform = cam_t * obj_t->Apply() * obj_t->Unpivot();
             Vector2 topLeft = transform * Vector2(0, 0);
             Vector2 topRight = transform * Vector2(image->w, 0);
             Vector2 bottomRight = transform * Vector2(image->w, image->h);
@@ -67,10 +66,11 @@ void Renderer::draw(GameObject* obj, Matrix3& cam_t) {
 
             double displayAngle = calculateRotation(topLeft, topRight);
             SDL_Point origin = topLeft.toPixel();
+            SDL_Point corner = {0, 0};
 
             SDL_Rect dstrect = { origin.x, origin.y, w, h};
             SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
-            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, displayAngle, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, displayAngle, &corner, SDL_FLIP_NONE);
         }
     }
 }
