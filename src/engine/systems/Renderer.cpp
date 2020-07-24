@@ -7,20 +7,9 @@
 
 Renderer::Renderer() {
     name = "Renderer";
+    //TODO: set camera based on information from scene
     camera = new Camera();
     Game::instance->instantiate(camera);
-}
-
-bool z_less(GameObject* a, GameObject* b) {
-    return a->getComponent<Sprite>()->z < b->getComponent<Sprite>()->z;
-}
-
-//objects is almost always sorted,
-//and checking if sorted is faster than sorting
-void Renderer::sort_objects_by_z() {
-    if (!std::is_sorted(objects.begin(), objects.end(), z_less)) {
-        std::sort(objects.begin(), objects.end(), z_less);
-    }
 }
 
 void Renderer::update() {
@@ -35,6 +24,19 @@ void Renderer::update() {
     }
     SDL_RenderPresent(Game::renderer);
 }
+
+bool z_less(GameObject* a, GameObject* b) {
+    return a->getComponent<Sprite>()->z < b->getComponent<Sprite>()->z;
+}
+
+//objects is almost always sorted,
+//and checking if sorted is faster than sorting
+void Renderer::sort_objects_by_z() {
+    if (!std::is_sorted(objects.begin(), objects.end(), z_less)) {
+        std::sort(objects.begin(), objects.end(), z_less);
+    }
+}
+
 void Renderer::addObject(GameObject* obj) {
     objects.push_back(obj);
     VECTOR_DEDUP(objects);
