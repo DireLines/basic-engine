@@ -13,6 +13,7 @@
 #include "Renderer.h"
 #include "PhysicsSystem.h"
 #include "CollisionSystem.h"
+#include "GameTimer.h"
 
 using namespace std;
 

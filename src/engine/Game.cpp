@@ -13,6 +13,7 @@ unsigned int Game::frameCounter = 0;
 Game::Game(int windowWidth, int windowHeight) {
     Game::instance = this;
     IDGenerator::instance = new IDGenerator();
+    GameTimer::instance = new GameTimer();
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
