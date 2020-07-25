@@ -17,7 +17,7 @@ public:
     double torque = 0.0;
 
     void addForce(Vector2 f);//assumes adding force at center of mass
-    void addForce(Vector2 f, Vector2 p);//adds force at a particular point p, computing the torque/force components
+    void addForceAtPoint(Vector2 f, Vector2 p);//adds force at a particular point p, computing the torque/force components
     void addTorque(double t);
 };
 #endif

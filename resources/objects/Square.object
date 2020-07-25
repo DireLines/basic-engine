@@ -7,4 +7,3 @@
     strength: 200
 - Sprite:
     file: square.png
-    alpha: 0.5

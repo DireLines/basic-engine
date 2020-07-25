@@ -68,8 +68,8 @@ void Game::initSDL() {
 }
 
 void Game::start() {
-    for (int i = 0; i < 10; ++i) {
-        instantiate(new Cell());
+    for (int i = 0; i < 100; ++i) {
+        instantiate(new Square());
     }
 
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;

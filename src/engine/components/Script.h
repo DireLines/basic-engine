@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Vector2.h"
 #include "Transform.h"
+#include "Rigidbody.h"
 
 using namespace std;
 class Script: public Component {
