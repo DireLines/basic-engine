@@ -12,3 +12,9 @@ int main(int argc, char ** argv) {
     delete game;
     return 0;
 }
+
+void Game::initialize() {
+    for (int i = 0; i < 1000; ++i) {
+        instantiate(new Square());
+    }
+}

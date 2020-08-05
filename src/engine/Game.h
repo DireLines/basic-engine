@@ -36,8 +36,10 @@ public:
     Game(int windowWidth, int windowHeight);
     virtual ~Game();
     void start();
+    void initialize(); //game-specific initialization of objects
 
     virtual void update();
+
 
     void instantiate(GameObject* obj);
     // TODO: instantiate overloads for position & rotation and all that
