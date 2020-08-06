@@ -1,8 +1,14 @@
 #include "Matrix3.h"
 Matrix3::Matrix3() {
+    //TODO: object pooling for m
+    //maybe put in constructor/destructor,
+    //maybe override new and delete
     m = identity();
 }
 Matrix3::~Matrix3() {
+    //TODO: object pooling for m
+    //maybe put in constructor/destructor,
+    //maybe override new and delete
     for (int i = 0; i < 3; i++)
         delete m[i];
     delete m;
