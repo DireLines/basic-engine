@@ -1,22 +1,16 @@
 #include "Matrix3.h"
+#include "MatrixPool.h"
+
+static MatrixPool matrixPool;
 Matrix3::Matrix3() {
-    //TODO: object pooling for m
-    //maybe put in constructor/destructor,
-    //maybe override new and delete
     m = identity();
 }
 Matrix3::~Matrix3() {
-    //TODO: object pooling for m
-    //maybe put in constructor/destructor,
-    //maybe override new and delete
-    for (int i = 0; i < 3; i++)
-        delete m[i];
-    delete m;
+    matrixPool.release(m);
 }
 double** Matrix3::identity() {
-    double **id = new double *[3];
+    double **id = matrixPool.create();
     for (int i = 0; i < 3; i++) {
-        id[i] = new double[3];
         for (int j = 0; j < 3; j++) {
             if (i == j)
                 id[i][j] = 1.0;
