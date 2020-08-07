@@ -5,6 +5,7 @@
 - Collider
 - Scatter:
     range: 200
-    maxSpeed: 15
+- Wiggle:
+    strength: 300
 - Sprite:
     file: square.png

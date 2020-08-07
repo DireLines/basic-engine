@@ -14,7 +14,8 @@ int main(int argc, char ** argv) {
 }
 
 void Game::initialize() {
-    for (int i = 0; i < 17000; ++i) {
+    SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
+    for (int i = 0; i < 5000; ++i) {
         instantiate(new Square());
     }
 }
