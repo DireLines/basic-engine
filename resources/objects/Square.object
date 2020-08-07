@@ -1,9 +1,10 @@
-- Transform
+- Transform:
+    scale:
+      code: Vector2(0.15,0.15)
 - Rigidbody
 - Collider
 - Scatter:
+    range: 200
     maxSpeed: 15
-- Wiggle:
-    strength: 200
 - Sprite:
     file: square.png

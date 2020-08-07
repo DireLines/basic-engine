@@ -14,7 +14,7 @@ int main(int argc, char ** argv) {
 }
 
 void Game::initialize() {
-    for (int i = 0; i < 13500; ++i) {
-        instantiate(new Cell());
+    for (int i = 0; i < 17000; ++i) {
+        instantiate(new Square());
     }
 }
