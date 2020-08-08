@@ -20,14 +20,14 @@ void Renderer::update() {
                          Game::instance->windowHeight / 2
                      );
     Matrix3 cam_t = center * camera->getComponent<Transform>()->Reverse();
-    for (GameObject* obj : objects) {
+    for (SpriteTransform* obj : objects) {
         draw(obj, cam_t);
     }
     SDL_RenderPresent(Game::renderer);
 }
 
-bool z_less(GameObject* a, GameObject* b) {
-    return a->getComponent<Sprite>()->z < b->getComponent<Sprite>()->z;
+bool z_less(SpriteTransform* a, SpriteTransform* b) {
+    return a->sprite->z < b->sprite->z;
 }
 
 //objects is almost always sorted,
@@ -39,28 +39,39 @@ void Renderer::sort_objects_by_z() {
 }
 
 void Renderer::addObject(GameObject* obj) {
-    objects.push_back(obj);
-    VECTOR_DEDUP(objects);
-    addTexture(obj->getComponent<Sprite>());
-    SDL_Surface* img = obj->getComponent<Sprite>()->image;
-    //TODO: figure out how to not set this
+    Sprite* s = obj->getComponent<Sprite>();
     Transform* t = obj->getComponent<Transform>();
+
+    SpriteTransform* st = new SpriteTransform();
+    st->sprite = s;
+    st->transform = t;
+    objects.push_back(st);
+
+    VECTOR_DEDUP(objects);
+    addTexture(s);
+    SDL_Surface* img = s->image;
+    //TODO: figure out how to not set this
     t->pivot = Vector2(img->w / 2, img->h / 2);
 }
 void Renderer::removeObject(GameObject* obj) {
-    VECTOR_ERASE(objects, obj);
+    for (SpriteTransform* st : objects) {
+        if (st->sprite->gameObject == obj) {
+            VECTOR_ERASE(objects, st);
+            return;
+        }
+    }
 }
 bool Renderer::needObject(GameObject* obj) {
     return obj->hasComponent<Sprite>() && obj->hasComponent<Transform>();
 }
 
-void Renderer::draw(GameObject* obj, Matrix3& cam_t) {
-    Sprite* s = obj->getComponent<Sprite>();
+void Renderer::draw(SpriteTransform* obj, Matrix3& cam_t) {
+    Sprite* s = obj->sprite;
     if (s && s->enabled) {
         SDL_Texture* texture = s->texture;
         SDL_Surface* image = s->image;
         if (texture) {
-            Transform* obj_t = obj->getComponent<Transform>();
+            Transform* obj_t = obj->transform;
             Matrix3 transform = cam_t * obj_t->Apply() * obj_t->Unpivot();
             Vector2 topLeft = transform * Vector2(0, 0);
             Vector2 topRight = transform * Vector2(image->w, 0);

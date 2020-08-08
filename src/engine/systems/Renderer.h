@@ -13,6 +13,11 @@
 
 using namespace std;
 
+struct SpriteTransform {
+    Sprite* sprite;
+    Transform* transform;
+};
+
 class Renderer : public System {
 public:
     Renderer();
@@ -26,10 +31,10 @@ private:
     string sprites_basepath = "./resources/sprites/";
     void addObject(GameObject* obj);
     SDL_Texture* addTexture(Sprite* sprite);
-    void draw(GameObject* obj, Matrix3& cam_t);
+    void draw(SpriteTransform* obj, Matrix3& cam_t);
     void sort_objects_by_z();
 
-    vector<GameObject*> objects;
+    vector<SpriteTransform*> objects;
     unordered_map<string, SDL_Texture*> textures;
     unordered_map<string, SDL_Surface*> images;
     Camera* camera = NULL;

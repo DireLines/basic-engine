@@ -2,7 +2,7 @@
 - Rigidbody
 - Collider
 - Wiggle:
-    strength: 200
+    strength: 2
 - Sprite:
     file: Coin.png
     z:

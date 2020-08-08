@@ -14,6 +14,7 @@ bool PhysicsSystem::needObject(GameObject* obj) {
 }
 
 void PhysicsSystem::addObject(GameObject* obj) {
+    //TODO: keep track of rigidbody/transform pairs and not GameObjects to avoid dynamic_cast
     objects.insert(obj);
 }
 
