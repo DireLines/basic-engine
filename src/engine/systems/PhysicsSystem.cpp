@@ -5,7 +5,7 @@ PhysicsSystem::PhysicsSystem() {
 }
 void PhysicsSystem::update() {
     //TODO: do this in parallel as much as possible
-    for (GameObject* obj : objects) {
+    for (RigidbodyTransform* obj : objects) {
         move(obj);
     }
 }
@@ -14,16 +14,25 @@ bool PhysicsSystem::needObject(GameObject* obj) {
 }
 
 void PhysicsSystem::addObject(GameObject* obj) {
-    //TODO: keep track of rigidbody/transform pairs and not GameObjects to avoid dynamic_cast
-    objects.insert(obj);
+    Rigidbody* rb = obj->getComponent<Rigidbody>();
+    Transform* t = obj->getComponent<Transform>();
+    RigidbodyTransform* rbt = new RigidbodyTransform();
+    rbt->rigidbody = rb;
+    rbt->transform = t;
+    objects.insert(rbt);
 }
 
 void PhysicsSystem::removeObject(GameObject* obj) {
-    objects.erase(obj);
+    for (RigidbodyTransform* rbt : objects) {
+        if (rbt->rigidbody->gameObject == obj) {
+            objects.erase(rbt);
+            return;
+        }
+    }
 }
-void PhysicsSystem::move(GameObject* obj) {
-    Rigidbody* rb = obj->getComponent<Rigidbody>();
-    Transform* t = obj->getComponent<Transform>();
+void PhysicsSystem::move(RigidbodyTransform* obj) {
+    Rigidbody* rb = obj->rigidbody;
+    Transform* t = obj->transform;
     double dt = 0.016;//TODO: hook time up
 
     Vector2 acceleration = Vector2(rb->force.x / rb->mass, rb->force.y / rb->mass);

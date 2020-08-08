@@ -9,6 +9,11 @@
 
 using namespace std;
 
+struct RigidbodyTransform {
+    Rigidbody* rigidbody;
+    Transform* transform;
+};
+
 class PhysicsSystem : public System {
 public:
     PhysicsSystem();
@@ -18,8 +23,8 @@ public:
     void removeObject(GameObject* obj);
 private:
     void addObject(GameObject* obj);
-    set<GameObject*> objects;
-    void move(GameObject* obj);
+    set<RigidbodyTransform*> objects;
+    void move(RigidbodyTransform* obj);
 };
 
 #endif
