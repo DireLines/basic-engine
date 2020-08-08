@@ -20,8 +20,6 @@ public:
 
     set<Component*> getComponents();
 
-    void addComponent(Component* c);
-
     template<typename C>
     C* addComponent() {
         C* c = new C();
@@ -65,6 +63,7 @@ public:
 private:
     int id;
     set<Component*> components;
+    void addComponent(Component* c);
 };
 
 #endif

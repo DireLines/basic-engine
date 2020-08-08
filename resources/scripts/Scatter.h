@@ -6,7 +6,7 @@ class Scatter: public Script {
 public:
     double range = 500;
     double rotationRange = 180;
-    double maxSpeed = 1;
+    double maxSpeed = 0;
     void start() {
         Transform* t = gameObject->getComponent<Transform>();
         t->rotation = randrange(-rotationRange, rotationRange);

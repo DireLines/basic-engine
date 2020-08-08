@@ -6,6 +6,6 @@
 - Scatter:
     range: 200
 - Wiggle:
-    strength: 300
+    strength: 1
 - Sprite:
     file: square.png

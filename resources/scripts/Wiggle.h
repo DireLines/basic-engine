@@ -5,11 +5,16 @@
 class Wiggle: public Script {
 public:
     double strength = 1;
+    Transform* t;
+
+    void start() {
+        t = gameObject->getComponent<Transform>();
+    }
 
     void update() {
         Vector2 perturb(strength * randrange(-1, 1), strength * randrange(-1, 1));
-        gameObject->getComponent<Rigidbody>()->force += perturb;
-        gameObject->getComponent<Rigidbody>()->torque += randrange(-strength, strength);
+        t->position += perturb;
+        t->rotation += randrange(-strength, strength);
     }
     bool parallelizable() {
         return true;
