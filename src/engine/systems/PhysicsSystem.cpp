@@ -1,4 +1,5 @@
 #include "PhysicsSystem.h"
+#define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
 
 PhysicsSystem::PhysicsSystem() {
     name = "PhysicsSystem";
@@ -19,13 +20,13 @@ void PhysicsSystem::addObject(GameObject* obj) {
     RigidbodyTransform* rbt = new RigidbodyTransform();
     rbt->rigidbody = rb;
     rbt->transform = t;
-    objects.insert(rbt);
+    objects.push_back(rbt);
 }
 
 void PhysicsSystem::removeObject(GameObject* obj) {
     for (RigidbodyTransform* rbt : objects) {
         if (rbt->rigidbody->gameObject == obj) {
-            objects.erase(rbt);
+            VECTOR_ERASE(objects, rbt);
             return;
         }
     }

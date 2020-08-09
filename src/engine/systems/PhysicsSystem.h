@@ -5,7 +5,7 @@
 #include "System.h"
 #include "Rigidbody.h"
 #include "Transform.h"
-#include <set>
+#include <vector>
 
 using namespace std;
 
@@ -23,7 +23,7 @@ public:
     void removeObject(GameObject* obj);
 private:
     void addObject(GameObject* obj);
-    set<RigidbodyTransform*> objects;
+    vector<RigidbodyTransform*> objects;
     void move(RigidbodyTransform* obj);
 };
 
