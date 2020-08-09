@@ -2,7 +2,6 @@
 #define MATRIX3_H
 
 #include <iostream>
-#include <math.h>
 #include "Vector2.h"
 using namespace std;
 class Matrix3 {

@@ -2,7 +2,6 @@
 #define VECTOR2_H
 #include <SDL2/SDL.h>
 #include <iostream>
-#include <math.h>
 using namespace std;
 class Vector2 {
 public:

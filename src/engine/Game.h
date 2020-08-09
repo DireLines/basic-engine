@@ -8,7 +8,6 @@
 #include <set>
 #include "IDGenerator.h"
 #include "GameObjects.h"
-#include "System.h"
 #include "ScriptRunner.h"
 #include "Renderer.h"
 #include "PhysicsSystem.h"
