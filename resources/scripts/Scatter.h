@@ -13,6 +13,7 @@ public:
         t->position = Vector2(randrange(-range, range), randrange(-range, range));
         gameObject->getComponent<Rigidbody>()->velocity =
             Vector2(randrange(-maxSpeed, maxSpeed), randrange(-maxSpeed, maxSpeed));
+        gameObject->getComponent<Rigidbody>()->angularVelocity = randrange(-maxSpeed, maxSpeed);
     }
     bool parallelizable() {
         return true;
