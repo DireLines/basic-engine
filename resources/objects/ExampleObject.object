@@ -1,6 +1,6 @@
 - Transform:
     position:
-      code: Vector2(1,1)
+      code: Vector2(100,100)
     rotation: 5.03
 - Rigidbody #you can attach a component with default values like this
 

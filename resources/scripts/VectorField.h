@@ -15,7 +15,10 @@ public:
     Vector2 f(Vector2 xy) {
         double x = xy.x / 30;
         double y = xy.y / 30;
-        return Vector2(x * x - y * y - 4 , 2 * x * y);
+        return Vector2(
+                   x * sin(x) - y * sin(y) - 4 ,
+                   2 * sin(x) * y
+               );
     }
 
     void update() {
