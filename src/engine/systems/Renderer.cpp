@@ -34,7 +34,7 @@ bool z_less(SpriteTransform* a, SpriteTransform* b) {
 //and checking if sorted is faster than sorting
 void Renderer::sort_objects_by_z() {
     if (!std::is_sorted(objects.begin(), objects.end(), z_less)) {
-        std::sort(objects.begin(), objects.end(), z_less);
+        std::stable_sort(objects.begin(), objects.end(), z_less);
     }
 }
 
