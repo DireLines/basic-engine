@@ -16,11 +16,17 @@ int main(int argc, char ** argv) {
 //game-specific initialization code
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
-    for (int i = 0; i < 100; ++i) {
-        for (int j = 0; j < 100; ++j) {
+    int resolution = 165;
+    int spacing = 950 / resolution;
+    for (int i = 0; i < resolution; ++i) {
+        for (int j = 0; j < resolution; ++j) {
             Square* s = new Square();
             instantiate(s);
-            s->getComponent<Transform>()->position = Vector2((i - 50) * 9, (j - 50) * 9);
+            s->getComponent<Transform>()->position =
+                Vector2(
+                    (i - (resolution / 2)) * spacing,
+                    (j - (resolution / 2)) * spacing
+                );
         }
     }
 }
