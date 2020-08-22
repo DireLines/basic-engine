@@ -1,5 +1,4 @@
 #include "PhysicsSystem.h"
-#define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
 
 PhysicsSystem::PhysicsSystem() {
     name = "PhysicsSystem";

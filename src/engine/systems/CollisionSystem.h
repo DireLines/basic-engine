@@ -8,18 +8,14 @@
 #include "Script.h"
 #include "Collider.h"
 #include "Vector2.h"
-#include <set>
+#include <vector>
 
 using namespace std;
 
-struct AxisAlignedBoundingBox {
-    Vector2 min; //corner with smallest x and y vals
-    Vector2 max; //corner with largest x and y vals
-};
-
-struct BoundingBoxEndpoint {
+struct IntervalEndpoint {
+    double pos;
     bool begin;
-    AxisAlignedBoundingBox* box;
+    Collider* collider;
 };
 
 class CollisionSystem : public System {
@@ -30,11 +26,11 @@ public:
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
-    vector<GameObject*> objects;
+    vector<IntervalEndpoint*> endpoints;
     void addObject(GameObject* obj);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
-    void sort_intervals();
+    void sort_endpoints();
 };
 
 #endif

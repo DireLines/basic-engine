@@ -4,3 +4,4 @@
 - Scatter
 - Sprite:
     file: square.png
+- PrintCollisions
