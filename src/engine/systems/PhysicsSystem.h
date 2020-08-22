@@ -5,6 +5,7 @@
 #include "System.h"
 #include "Rigidbody.h"
 #include "Transform.h"
+#include "GameTimer.h"
 #include <vector>
 
 using namespace std;
@@ -24,7 +25,7 @@ public:
 private:
     void addObject(GameObject* obj);
     vector<RigidbodyTransform*> objects;
-    void move(RigidbodyTransform* obj);
+    void move(RigidbodyTransform* obj, double dt);
 };
 
 #endif

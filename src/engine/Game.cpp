@@ -70,6 +70,7 @@ void Game::start() {
     initialize();
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     std::clock_t start = std::clock();
+    GameTimer::time = 0;
 
     bool quit = false;
     SDL_Event event;
@@ -80,6 +81,8 @@ void Game::start() {
         if (duration > ms_per_frame) {
             averageFrameLength += duration;
             start = end;
+            GameTimer::deltaTime = duration / 1000;
+            GameTimer::time += GameTimer::deltaTime;
             update();
         }
 

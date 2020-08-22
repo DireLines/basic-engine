@@ -6,6 +6,7 @@
 #include "Vector2.h"
 #include "Transform.h"
 #include "Rigidbody.h"
+#include "GameTimer.h"
 
 using namespace std;
 class Script: public Component {

@@ -1,8 +1,6 @@
 #include "Renderer.h"
 #include "Game.h"
 #include <algorithm>
-#define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
-#define VECTOR_DEDUP(v) ((v).erase(std::unique((v).begin(), (v).end()), (v).end()))
 #define UINT8(d) ((int)((d) * 255) % 256)
 
 Renderer::Renderer() {

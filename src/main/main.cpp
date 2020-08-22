@@ -16,7 +16,7 @@ int main(int argc, char ** argv) {
 //game-specific initialization code
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
-    int resolution = 165;
+    int resolution = 10;
     int spacing = 950 / resolution;
     for (int i = 0; i < resolution; ++i) {
         for (int j = 0; j < resolution; ++j) {

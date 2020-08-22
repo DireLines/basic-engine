@@ -23,7 +23,7 @@ public:
     /* Singleton pattern */
     static Game* instance;
 
-    int frames_per_sec = 60;
+    int frames_per_sec = 120;
     int windowWidth, windowHeight;
 
     SDL_Window * window;

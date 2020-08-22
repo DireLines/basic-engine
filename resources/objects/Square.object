@@ -1,8 +1,6 @@
-- Transform:
-    scale:
-      code: Vector2(0.05, 0.05)
+- Transform
 - Rigidbody
 - Collider
-- VectorField
+- Scatter
 - Sprite:
     file: square.png

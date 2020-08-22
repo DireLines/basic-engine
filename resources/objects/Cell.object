@@ -1,4 +1,6 @@
-- Transform
+- Transform:
+    scale:
+      code: Vector2(0.3, 0.3)
 - Rigidbody
 - Collider
 - Wiggle:

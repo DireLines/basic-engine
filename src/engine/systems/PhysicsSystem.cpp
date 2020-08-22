@@ -6,8 +6,9 @@ PhysicsSystem::PhysicsSystem() {
 }
 void PhysicsSystem::update() {
     //TODO: do this in parallel as much as possible
+    double dt = GameTimer::DeltaTime();
     for (RigidbodyTransform* obj : objects) {
-        move(obj);
+        move(obj, dt);
     }
 }
 bool PhysicsSystem::needObject(GameObject* obj) {
@@ -31,10 +32,9 @@ void PhysicsSystem::removeObject(GameObject* obj) {
         }
     }
 }
-void PhysicsSystem::move(RigidbodyTransform* obj) {
+void PhysicsSystem::move(RigidbodyTransform* obj, double dt) {
     Rigidbody* rb = obj->rigidbody;
     Transform* t = obj->transform;
-    double dt = 0.016;//TODO: hook time up
 
     Vector2 acceleration = Vector2(rb->force.x / rb->mass, rb->force.y / rb->mass);
     rb->velocity.x += acceleration.x * dt;

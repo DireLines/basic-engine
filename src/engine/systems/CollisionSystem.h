@@ -7,10 +7,20 @@
 #include "Transform.h"
 #include "Script.h"
 #include "Collider.h"
+#include "Vector2.h"
 #include <set>
-//TODO: store things in a quadtree
 
 using namespace std;
+
+struct AxisAlignedBoundingBox {
+    Vector2 min; //corner with smallest x and y vals
+    Vector2 max; //corner with largest x and y vals
+};
+
+struct BoundingBoxEndpoint {
+    bool begin;
+    AxisAlignedBoundingBox* box;
+};
 
 class CollisionSystem : public System {
 public:
@@ -20,10 +30,11 @@ public:
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
-    set<GameObject*> objects;
+    vector<GameObject*> objects;
     void addObject(GameObject* obj);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
+    void sort_intervals();
 };
 
 #endif

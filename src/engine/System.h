@@ -1,6 +1,9 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#define VECTOR_ERASE(v,value) ((v).erase(std::remove((v).begin(), (v).end(), (value)), (v).end()))
+#define VECTOR_DEDUP(v) ((v).erase(std::unique((v).begin(), (v).end()), (v).end()))
+
 #include "GameObject.h"
 
 class System {
