@@ -33,6 +33,10 @@ Vector2& Vector2::operator-=(const Vector2& rhs) {
     return *this;
 }
 
+Vector2 Vector2::operator*(double s) {
+    return Vector2(x * s, y * s);
+}
+
 void Vector2::print() const { cout << "(" << x << ", " << y << ")" << endl; }
 
 double Vector2::magnitude() const { return sqrt(sqrMagnitude()); }
@@ -48,6 +52,10 @@ double Vector2::calculateRotation(Vector2 origin, Vector2 p) {
     return (atan2(y, x) * 180 / PI);
 }
 
+Vector2 Vector2::normalized() {
+    double m = this->magnitude();
+    return Vector2(x / m, y / m);
+}
 SDL_Point Vector2::toPixel() {
     return {(int)round(x), (int)round(y)};
 }

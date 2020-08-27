@@ -1,6 +1,6 @@
 - Transform
 - Rigidbody
-- Collider
+- BoxCollider
 - Scatter
 - Sprite:
     file: square.png

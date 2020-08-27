@@ -1,4 +1,4 @@
 - Transform
 - Sprite
 - Rigidbody
-- Collider
+- BoxCollider
