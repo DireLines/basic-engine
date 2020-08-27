@@ -7,7 +7,7 @@ class PolygonCollider: public Collider {
 public:
     Polygon region;
     Vector2 support(Vector2 direction) {
-        return direction;
+        return region.support(direction);
     }
 };
 #endif
