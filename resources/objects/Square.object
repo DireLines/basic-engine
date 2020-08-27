@@ -1,6 +1,7 @@
 - Transform
 - Rigidbody
-- BoxCollider
+- CircleCollider: #TODO: change to BoxCollider with width/height 30
+    radius: 15
 - Scatter
 - Sprite:
     file: square.png
