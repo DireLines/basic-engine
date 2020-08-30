@@ -5,8 +5,12 @@
 class Fall: public Script {
 public:
     double strength = 9.81;
+    Rigidbody* rb;
+    void start() {
+        rb = gameObject->getComponent<Rigidbody>();
+    }
     void update() {
-        gameObject->getComponent<Rigidbody>()->force += Vector2(0, strength);
+        rb->addForce(Vector2(0, strength));
     }
     bool parallelizable() {
         return true;
