@@ -12,7 +12,7 @@ public:
     }
 
     void update() {
-        Vector2 perturb(strength * Random::range(-1, 1), strength * Random::range(-1, 1));
+        Vector2 perturb = Random::insideUnitCircle() * strength;
         t->position += perturb;
         t->rotation += Random::range(-strength, strength);
     }

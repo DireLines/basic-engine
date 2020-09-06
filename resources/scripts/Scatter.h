@@ -10,9 +10,8 @@ public:
     void start() {
         Transform* t = gameObject->getComponent<Transform>();
         t->rotation = Random::range(-rotationRange, rotationRange);
-        t->position = Vector2(Random::range(-range, range), Random::range(-range, range));
-        gameObject->getComponent<Rigidbody>()->velocity =
-            Vector2(Random::range(-maxSpeed, maxSpeed), Random::range(-maxSpeed, maxSpeed));
+        t->position = Random::insideUnitCircle() * range;
+        gameObject->getComponent<Rigidbody>()->velocity = Random::insideUnitCircle() * maxSpeed;
         gameObject->getComponent<Rigidbody>()->angularVelocity = Random::range(-maxSpeed, maxSpeed);
     }
     bool parallelizable() {
