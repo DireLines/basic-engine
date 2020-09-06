@@ -14,7 +14,7 @@ public:
     }
     static double standard_gaussian() {
         //TODO: sample from standard gaussian
-        return 0;
+        return 1;
     }
     static Vector2 unitVector() {
         return Vector2(standard_gaussian(), standard_gaussian()).normalized();
