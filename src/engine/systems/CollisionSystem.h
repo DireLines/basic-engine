@@ -9,6 +9,7 @@
 #include "Collider.h"
 #include "Vector2.h"
 #include <vector>
+#include "Random.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ public:
 private:
     vector<IntervalEndpoint*> endpoints;
     void addObject(GameObject* obj);
+    bool GJK_collide(Collider* a, Collider* b);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
     void sort_endpoints();

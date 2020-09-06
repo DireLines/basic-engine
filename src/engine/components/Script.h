@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "Rigidbody.h"
 #include "GameTimer.h"
+#include "Random.h"
 
 using namespace std;
 class Script: public Component {
@@ -25,16 +26,6 @@ protected:
     //EXERCISE CAUTION
     virtual bool parallelizable() {
         return false;
-    }
-
-    //TODO: where to put this?
-    double randrange(double lowerLimit, double upperLimit) {
-        if (lowerLimit > upperLimit) {
-            double tmp = lowerLimit;
-            lowerLimit = upperLimit;
-            upperLimit = tmp;
-        }
-        return ((double)rand() / RAND_MAX) * (upperLimit - lowerLimit) + lowerLimit;
     }
 
     bool removed = false;//marker for ScriptRunner to delete this script at end of update

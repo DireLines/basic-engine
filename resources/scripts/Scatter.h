@@ -9,11 +9,11 @@ public:
     double maxSpeed = 100;
     void start() {
         Transform* t = gameObject->getComponent<Transform>();
-        t->rotation = randrange(-rotationRange, rotationRange);
-        t->position = Vector2(randrange(-range, range), randrange(-range, range));
+        t->rotation = Random::range(-rotationRange, rotationRange);
+        t->position = Vector2(Random::range(-range, range), Random::range(-range, range));
         gameObject->getComponent<Rigidbody>()->velocity =
-            Vector2(randrange(-maxSpeed, maxSpeed), randrange(-maxSpeed, maxSpeed));
-        gameObject->getComponent<Rigidbody>()->angularVelocity = randrange(-maxSpeed, maxSpeed);
+            Vector2(Random::range(-maxSpeed, maxSpeed), Random::range(-maxSpeed, maxSpeed));
+        gameObject->getComponent<Rigidbody>()->angularVelocity = Random::range(-maxSpeed, maxSpeed);
     }
     bool parallelizable() {
         return true;

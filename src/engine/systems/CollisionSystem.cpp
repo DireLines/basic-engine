@@ -14,6 +14,9 @@ void CollisionSystem::removeObject(GameObject* obj) {
 void CollisionSystem::addObject(GameObject* obj) {
 }
 
+bool CollisionSystem::GJK_collide(Collider* a, Collider* b) {
+    Vector2 d1 = Random::unitVector();
+}
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
     return false;
 }

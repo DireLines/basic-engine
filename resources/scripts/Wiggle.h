@@ -12,9 +12,9 @@ public:
     }
 
     void update() {
-        Vector2 perturb(strength * randrange(-1, 1), strength * randrange(-1, 1));
+        Vector2 perturb(strength * Random::range(-1, 1), strength * Random::range(-1, 1));
         t->position += perturb;
-        t->rotation += randrange(-strength, strength);
+        t->rotation += Random::range(-strength, strength);
     }
     bool parallelizable() {
         return true;
