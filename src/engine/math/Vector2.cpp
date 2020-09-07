@@ -35,6 +35,9 @@ Vector2& Vector2::operator-=(const Vector2& rhs) {
 Vector2 Vector2::operator*(double s) {
     return Vector2(x * s, y * s);
 }
+Vector2 Vector2::operator-() {
+    return Vector2(x, y) * -1;
+}
 
 void Vector2::print() const { cout << "(" << x << ", " << y << ")" << endl; }
 

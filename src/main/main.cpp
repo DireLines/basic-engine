@@ -23,7 +23,7 @@ void Game::initialize() {
     o1->getComponent<Transform>()->position = Vector2(-100, 0);
     o2->getComponent<Transform>()->position = Vector2(-90, 0);
 
-    // int resolution = 2;
+    // int resolution = 5;
     // int spacing = 950 / resolution;
     // for (int i = 0; i < resolution; ++i) {
     //     for (int j = 0; j < resolution; ++j) {

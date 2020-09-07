@@ -32,8 +32,6 @@ public:
     ~MinkowskiDifferenceSupport();
 
     Vector2 operator()(Vector2 direction);
-    //actually do the minkowski sum, because it's easier to check correctness
-    Vector2 sum(Vector2 direction);
     static Vector2 transformedSupport(Vector2 direction, Matrix3& t, Collider* collider);
 private:
     Matrix3 A_transform;

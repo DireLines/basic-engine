@@ -15,14 +15,9 @@ MinkowskiDifferenceSupport::~MinkowskiDifferenceSupport() {
 }
 
 Vector2 MinkowskiDifferenceSupport::operator()(Vector2 direction) {
-    return transformedSupport(direction, A_transform, A_collider) - transformedSupport(direction * -1, B_transform, B_collider);
-}
-//actually do the minkowski sum, because it's easier to check correctness
-Vector2 MinkowskiDifferenceSupport::sum(Vector2 direction) {
-    return transformedSupport(direction, A_transform, A_collider) + transformedSupport(direction, B_transform, B_collider);
+    return transformedSupport(direction, A_transform, A_collider) - transformedSupport(-direction, B_transform, B_collider);
 }
 Vector2 MinkowskiDifferenceSupport::transformedSupport(Vector2 direction, Matrix3& t, Collider* collider) {
     double rotation = Vector2::calculateRotation(Vector2(0, 0), t * Vector2(1, 0) - t * Vector2(0, 0));
-    Vector2 orig_support = collider->support(Transform::Rotate(-rotation) * direction);
-    return t * orig_support;
+    return t * collider->support(Transform::Rotate(-rotation) * direction);
 }

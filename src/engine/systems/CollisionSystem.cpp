@@ -6,7 +6,7 @@ CollisionSystem::CollisionSystem() {
 }
 
 void CollisionSystem::start() {
-    for (int i = 0; i < 360; ++i) {
+    for (int i = 0; i < 361; ++i) {
         Point* p = new Point();
         plotpoints.push_back(p);
         Game::instance->instantiate(p);
@@ -26,20 +26,20 @@ void CollisionSystem::update() {
         Vector2 v = s(dir);
         plotpoints[i]->getComponent<Transform>()->position = v;
     }
-    plotpoints[0]->getComponent<Transform>()->position = Vector2(0, 0);
-    // for (int i = 0; i < objects.size(); ++i) {
-    //     ColliderTransform* A = objects[i];
-    //     Matrix3& a_mat = matrices[i];
-    //     Collider* a_col = A->collider;
-    //     for (int j = i + 1; j < objects.size(); ++j) {
-    //         ColliderTransform* B = objects[j];
-    //         Matrix3& b_mat = matrices[j];
-    //         Collider* b_col = B->collider;
-    //         MinkowskiDifferenceSupport s(a_mat, a_col, b_mat, b_col);
-    //         Vector2 dir(1, 0);
-    //         s(dir);
-    //     }
-    // }
+    plotpoints[360]->getComponent<Transform>()->position = Vector2(0, 0);
+    for (int i = 0; i < objects.size(); ++i) {
+        ColliderTransform* A = objects[i];
+        Matrix3& a_mat = matrices[i];
+        Collider* a_col = A->collider;
+        for (int j = i + 1; j < objects.size(); ++j) {
+            ColliderTransform* B = objects[j];
+            Matrix3& b_mat = matrices[j];
+            Collider* b_col = B->collider;
+            MinkowskiDifferenceSupport s(a_mat, a_col, b_mat, b_col);
+            Vector2 dir(1, 0);
+            s(dir);
+        }
+    }
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
