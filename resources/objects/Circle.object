@@ -1,0 +1,8 @@
+- Transform
+- Rigidbody
+- CircleCollider:
+    radius: 15
+- Scatter
+- Sprite:
+    file: circle.png
+- PrintCollisions

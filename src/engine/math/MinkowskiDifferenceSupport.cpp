@@ -15,7 +15,7 @@ MinkowskiDifferenceSupport::~MinkowskiDifferenceSupport() {
 }
 
 Vector2 MinkowskiDifferenceSupport::operator()(Vector2 direction) {
-    return transformedSupport(direction, A_transform, A_collider) - transformedSupport(direction, B_transform, B_collider);
+    return transformedSupport(direction, A_transform, A_collider) - transformedSupport(direction * -1, B_transform, B_collider);
 }
 //actually do the minkowski sum, because it's easier to check correctness
 Vector2 MinkowskiDifferenceSupport::sum(Vector2 direction) {

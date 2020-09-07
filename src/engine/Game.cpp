@@ -67,6 +67,10 @@ void Game::initSDL() {
 }
 
 void Game::start() {
+    for (System* system : systems) {
+        // cout << system->getName() << " start" << endl;
+        system->start();
+    }
     initialize();
     int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     std::clock_t start = std::clock();
@@ -113,6 +117,7 @@ void Game::update() {
 }
 
 void Game::instantiate(GameObject* obj) {
+    // cout << "instantiate " << obj->name << endl;
     objects.insert(obj);
     for (GameObject* child : obj->getChildren()) {
         instantiate(child);
