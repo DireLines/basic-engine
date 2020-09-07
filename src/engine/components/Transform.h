@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "Vector2.h"
 #include "Matrix3.h"
+#include "MathUtils.h"
 using namespace std;
 class Transform: public Component {
 public:

@@ -38,6 +38,9 @@ public:
         B_transform = b_mat;
         B_collider = b_col;
     }
+    ~MinkowskiDifferenceSupport() {
+    }
+
     Vector2 operator()(Vector2 direction) {
         return transformedSupport(direction, A_transform, A_collider) - transformedSupport(direction, B_transform, B_collider);
     }

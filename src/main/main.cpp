@@ -16,11 +16,11 @@ int main(int argc, char ** argv) {
 //game-specific initialization code
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
-    int resolution = 5;
+    int resolution = 10;
     int spacing = 950 / resolution;
     for (int i = 0; i < resolution; ++i) {
         for (int j = 0; j < resolution; ++j) {
-            Cell* s = new Cell();
+            Square* s = new Square();
             instantiate(s);
             s->getComponent<Transform>()->position =
                 Vector2(

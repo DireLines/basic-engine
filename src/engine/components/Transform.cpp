@@ -1,5 +1,4 @@
 #include "Transform.h"
-#define PI 3.14159265
 
 Matrix3 Transform::toMatrix() {
     return Apply(*this);
@@ -42,12 +41,12 @@ Matrix3 Transform::Scale(Vector2 v) {
 }
 Matrix3 Transform::Apply(Transform& t) {
     return Translate(t.position) *
-           Rotate(t.rotation * (PI / 180)) *
+           Rotate(MathUtils::deg2rad(t.rotation)) *
            Scale(t.scale);
 }
 
 Matrix3 Transform::Reverse(Transform& t) {
     return Scale(1.0 / t.scale.x, 1.0 / t.scale.y) *
-           Rotate(-t.rotation * (PI / 180)) *
+           Rotate(MathUtils::deg2rad(-t.rotation)) *
            Translate(-t.position.x, -t.position.y);
 }
