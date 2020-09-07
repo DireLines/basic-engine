@@ -12,10 +12,9 @@ public:
     Vector2 operator*(Vector2 const &other) const;
     Matrix3& operator=(const Matrix3& other);
     void print() const;
-    double** m;
 private:
     double** identity();
-    // double** m;
+    double** m;
     friend class Transform;
 };
 
