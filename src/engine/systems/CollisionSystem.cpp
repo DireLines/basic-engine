@@ -67,8 +67,20 @@ void CollisionSystem::removeObject(GameObject* obj) {
     }
 }
 
+bool sameHalfSpace(Vector2 a, Vector2 b) {
+    return Vector2::dot(a, b) > 0;
+}
 bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
-    Vector2 d1 = Random::unitVector();
+    return false;
+    // MinkowskiDifferenceSupport s(a, b);
+    // Vector2 p1 = s(Random::unitVector());
+    // Vector2 p2 = s(-p1);
+    // if (sameHalfSpace(p1, p2)) {
+    //     return false;
+    // }
+    // Vector2 diff = p2 - p1;
+    // Vector2 perp(-diff.y, diff.x);
+    // if(sameHalfSpace(p1,))
 }
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
     return false;

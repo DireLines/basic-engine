@@ -45,6 +45,10 @@ double Vector2::magnitude() const { return sqrt(sqrMagnitude()); }
 
 double Vector2::sqrMagnitude() const { return x * x + y * y; }
 
+double Vector2::dot(Vector2 a, Vector2 b) {
+    return a.x * b.x + a.y * b.y;
+}
+
 double Vector2::distance(Vector2 a, Vector2 b) {
     return (b - a).magnitude();
 }
@@ -53,6 +57,7 @@ double Vector2::calculateRotation(Vector2 origin, Vector2 p) {
     double x = p.x - origin.x;
     return atan2(y, x);
 }
+
 
 Vector2 Vector2::normalized() {
     double m = this->magnitude();

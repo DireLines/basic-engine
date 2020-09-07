@@ -18,6 +18,7 @@ public:
     void print() const;
     double magnitude() const;
     double sqrMagnitude() const;
+    static double dot(Vector2 a, Vector2 b);
     static double distance(Vector2 a, Vector2 b);
     static double calculateRotation(Vector2 origin, Vector2 p);
     Vector2 operator *(double s);
