@@ -19,19 +19,27 @@ bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
 }
 void CollisionSystem::addObject(GameObject* obj) {
-    Collider* c = obj->getComponent<Collider>();
     Transform* t = obj->getComponent<Transform>();
 
-    ColliderTransform* ct = new ColliderTransform();
-    ct->collider = c;
-    ct->transform = t;
-    objects.push_back(ct);
+    for (Collider* c : obj->getComponents<Collider>()) {
+        ColliderTransform* ct = new ColliderTransform();
+        ct->collider = c;
+        ct->transform = t;
+        objects.push_back(ct);
+    }
+
+}
+bool gameObjectMatches(ColliderTransform* ct, GameObject* obj) {
+    return ct->transform->gameObject == obj;
 }
 void CollisionSystem::removeObject(GameObject* obj) {
-    for (ColliderTransform* ct : objects) {
-        if (ct->transform->gameObject == obj) {
-            VECTOR_ERASE(objects, ct);
-            return;
+    vector<ColliderTransform*>::iterator it = objects.begin();
+    while (it != objects.end()) {
+        if ((*it)->transform->gameObject == obj) {
+            delete *it;
+            it = objects.erase(it);
+        } else {
+            it++;
         }
     }
 }

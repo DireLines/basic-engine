@@ -3,6 +3,7 @@
       code: Vector2(0.3, 0.3)
 - Rigidbody
 - CircleCollider
+- BoxCollider
 - Wiggle:
     strength: 2
 - Sprite:
