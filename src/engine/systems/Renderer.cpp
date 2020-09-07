@@ -78,7 +78,7 @@ void Renderer::draw(SpriteTransform* obj, Matrix3& cam_t) {
             int w = (int)round(Vector2::distance(topLeft, topRight));
             int h = (int)round(Vector2::distance(topRight, bottomRight));
 
-            double displayAngle = Vector2::calculateRotation(topLeft, topRight);
+            double displayAngle = MathUtils::rad2deg(Vector2::calculateRotation(topLeft, topRight));
             SDL_Point origin = topLeft.toPixel();
             SDL_Point corner = {0, 0};
 

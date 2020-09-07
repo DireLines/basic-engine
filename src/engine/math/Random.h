@@ -1,6 +1,8 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
+#include "MathUtils.h"
+
 class Random {
 public:
     static double range(double lowerLimit, double upperLimit) {

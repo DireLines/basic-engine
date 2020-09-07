@@ -15,6 +15,16 @@ int main(int argc, char ** argv) {
 
 //game-specific initialization code
 void Game::initialize() {
+    Matrix3 a_mat = Transform::Rotate(3.1415 / 4);
+    BoxCollider* a_col = new BoxCollider();
+    a_col->width = 100;
+    a_col->height = 1;
+    // Matrix3 b_mat;
+    Matrix3 b_mat = Transform::Translate(5, 5) * Transform::Rotate(3.1415 / 4);
+    CircleCollider* b_col = new CircleCollider();
+    MinkowskiDifferenceSupport s(a_mat, a_col, b_mat, b_col);
+    Vector2 dir(1, 1);
+    s(dir).print();
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
     int resolution = 10;
     int spacing = 950 / resolution;

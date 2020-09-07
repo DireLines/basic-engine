@@ -27,25 +27,30 @@ struct IntervalEndpoint {
 class MinkowskiDifferenceSupport {
 public:
     MinkowskiDifferenceSupport(TransformCollider* A, TransformCollider* B) {
-        A_transform = A->transform;
+        A_transform = A->transform->Apply();
         A_collider = A->collider;
-        B_transform = B->transform;
+        B_transform = B->transform->Apply();
         B_collider = B->collider;
+    }
+    MinkowskiDifferenceSupport(Matrix3 a_mat, Collider* a_col, Matrix3 b_mat, Collider* b_col) {
+        A_transform = a_mat;
+        A_collider = a_col;
+        B_transform = b_mat;
+        B_collider = b_col;
     }
     Vector2 operator()(Vector2 direction) {
         return transformedSupport(direction, A_transform, A_collider) - transformedSupport(direction, B_transform, B_collider);
     }
-private:
-    Transform* A_transform;
-    Collider* A_collider;
-    Transform* B_transform;
-    Collider* B_collider;
-    Vector2 transformedSupport(Vector2 direction, Transform* transform, Collider* collider) {
-        Matrix3 t = transform->Apply();
-        double rotation = Vector2::calculateRotation(Vector2(0, 0), t * Vector2(1, 0));
+    Vector2 transformedSupport(Vector2 direction, Matrix3& t, Collider* collider) {
+        double rotation = Vector2::calculateRotation(Vector2(0, 0), t * Vector2(1, 0) - t * Vector2(0, 0));
         Vector2 orig_support = collider->support(Transform::Rotate(-rotation) * direction);
         return t * orig_support;
     }
+private:
+    Matrix3 A_transform;
+    Collider* A_collider;
+    Matrix3 B_transform;
+    Collider* B_collider;
 };
 
 class CollisionSystem : public System {
