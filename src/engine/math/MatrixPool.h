@@ -1,5 +1,5 @@
-#ifndef OBJECTPOOL_H
-#define OBJECTPOOL_H
+#ifndef MATRIXPOOL_H
+#define MATRIXPOOL_H
 using namespace std;
 #include <vector>
 #include "Matrix3.h"
