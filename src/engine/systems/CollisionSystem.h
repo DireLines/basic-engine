@@ -32,7 +32,7 @@ public:
         B_transform = B->transform->Apply();
         B_collider = B->collider;
     }
-    MinkowskiDifferenceSupport(Matrix3 a_mat, Collider* a_col, Matrix3 b_mat, Collider* b_col) {
+    MinkowskiDifferenceSupport(Matrix3& a_mat, Collider* a_col, Matrix3& b_mat, Collider* b_col) {
         A_transform = a_mat;
         A_collider = a_col;
         B_transform = b_mat;
@@ -41,7 +41,10 @@ public:
     Vector2 operator()(Vector2 direction) {
         return transformedSupport(direction, A_transform, A_collider) - transformedSupport(direction, B_transform, B_collider);
     }
-    Vector2 transformedSupport(Vector2 direction, Matrix3& t, Collider* collider) {
+    Vector2 sum(Vector2 direction) {
+        return transformedSupport(direction, A_transform, A_collider) + transformedSupport(direction, B_transform, B_collider);
+    }
+    static Vector2 transformedSupport(Vector2 direction, Matrix3& t, Collider* collider) {
         double rotation = Vector2::calculateRotation(Vector2(0, 0), t * Vector2(1, 0) - t * Vector2(0, 0));
         Vector2 orig_support = collider->support(Transform::Rotate(-rotation) * direction);
         return t * orig_support;

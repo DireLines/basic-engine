@@ -1,0 +1,5 @@
+- Transform:
+    scale:
+      code: Vector2(0.05, 0.05)
+- Sprite:
+    file: square.png
