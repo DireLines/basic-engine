@@ -13,20 +13,20 @@
 
 using namespace std;
 
-struct TransformCollider {
-    Transform* transform;
+struct ColliderTransform {
     Collider* collider;
+    Transform* transform;
 };
 
 struct IntervalEndpoint {
     double pos;
     bool begin;
-    TransformCollider* tc;
+    ColliderTransform* ct;
 };
 
 class MinkowskiDifferenceSupport {
 public:
-    MinkowskiDifferenceSupport(TransformCollider* A, TransformCollider* B) {
+    MinkowskiDifferenceSupport(ColliderTransform* A, ColliderTransform* B) {
         A_transform = A->transform->Apply();
         A_collider = A->collider;
         B_transform = B->transform->Apply();
@@ -41,6 +41,7 @@ public:
     Vector2 operator()(Vector2 direction) {
         return transformedSupport(direction, A_transform, A_collider) - transformedSupport(direction, B_transform, B_collider);
     }
+    //actually do the minkowski sum, because it's easier to check correctness
     Vector2 sum(Vector2 direction) {
         return transformedSupport(direction, A_transform, A_collider) + transformedSupport(direction, B_transform, B_collider);
     }
@@ -65,8 +66,9 @@ public:
     void removeObject(GameObject* obj);
 private:
     vector<IntervalEndpoint*> endpoints;
+    vector<ColliderTransform*> objects;
     void addObject(GameObject* obj);
-    bool GJK_collide(Collider* a, Collider* b);
+    bool GJK_collide(ColliderTransform* a, ColliderTransform* b);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
     void sort_endpoints();

@@ -25,7 +25,7 @@ void PhysicsSystem::addObject(GameObject* obj) {
 
 void PhysicsSystem::removeObject(GameObject* obj) {
     for (RigidbodyTransform* rbt : objects) {
-        if (rbt->rigidbody->gameObject == obj) {
+        if (rbt->transform->gameObject == obj) {
             VECTOR_ERASE(objects, rbt);
             return;
         }

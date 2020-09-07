@@ -53,7 +53,7 @@ void Renderer::addObject(GameObject* obj) {
 }
 void Renderer::removeObject(GameObject* obj) {
     for (SpriteTransform* st : objects) {
-        if (st->sprite->gameObject == obj) {
+        if (st->transform->gameObject == obj) {
             VECTOR_ERASE(objects, st);
             return;
         }
