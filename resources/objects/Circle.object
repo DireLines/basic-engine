@@ -1,9 +1,10 @@
-- Transform
+- Transform:
+    scale:
+      code: Vector2(1, 2)
 - Rigidbody
 - CircleCollider:
     radius: 15
-- Wiggle:
-    strength: 3
+- Scatter
 - Sprite:
     file: circle.png
 - PrintCollisions

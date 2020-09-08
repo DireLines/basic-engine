@@ -16,18 +16,12 @@ int main(int argc, char ** argv) {
 //game-specific initialization code
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
-    // Square* o1 = new Square();
-    // Circle* o2 = new Circle();
-    // instantiate(o1);
-    // instantiate(o2);
-    // o1->getComponent<Transform>()->position = Vector2(-100, 0);
-    // o2->getComponent<Transform>()->position = Vector2(-90, 0);
 
     int resolution = 8;
     int spacing = 950 / resolution;
     for (int i = 0; i < resolution; ++i) {
         for (int j = 0; j < resolution; ++j) {
-            Square* s = new Square();
+            Circle* s = new Circle();
             instantiate(s);
             s->getComponent<Transform>()->position =
                 Vector2(
