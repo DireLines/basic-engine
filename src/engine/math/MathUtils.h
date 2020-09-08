@@ -47,7 +47,7 @@ public:
     }
     //a vector perpendicular to the line ab in the direction of the origin
     //very useful for collision detection algorithm
-    static Vector2 perpendicularTowardOrigin(Vector2 a, Vector b) {
+    static Vector2 perpendicularTowardOrigin(Vector2 a, Vector2 b) {
         Vector2 perp = perpendicular(a, b);
         if (sameHalfSpace(perp, a)) {
             perp = -perp;
