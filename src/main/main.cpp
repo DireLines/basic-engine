@@ -21,9 +21,16 @@ void Game::initialize() {
     int spacing = 950 / resolution;
     for (int i = 0; i < resolution; ++i) {
         for (int j = 0; j < resolution; ++j) {
-            Circle* s = new Circle();
+            Square* s = new Square();
             instantiate(s);
             s->getComponent<Transform>()->position =
+                Vector2(
+                    (i - (resolution / 2)) * spacing,
+                    (j - (resolution / 2)) * spacing
+                );
+            Circle* c = new Circle();
+            instantiate(c);
+            c->getComponent<Transform>()->position =
                 Vector2(
                     (i - (resolution / 2)) * spacing,
                     (j - (resolution / 2)) * spacing

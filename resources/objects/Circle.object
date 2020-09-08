@@ -1,6 +1,6 @@
 - Transform:
-    scale:
-      code: Vector2(1, 2)
+    scale: 
+      code: Vector2(1.5, 1.5)
 - Rigidbody
 - CircleCollider:
     radius: 15

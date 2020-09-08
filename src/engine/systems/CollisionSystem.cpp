@@ -7,15 +7,20 @@ CollisionSystem::CollisionSystem() {
 
 //TODO: complete broad phase to reduce to O(n log n)
 void CollisionSystem::update() {
+    //update endpoint positions
     sort_endpoints();
     vector<Matrix3> matrices(objects.size());
     for (int i = 0; i < objects.size(); ++i) {
         matrices[i] = objects[i]->transform->Apply();
     }
+
+    /*debug*/
     bool collide[objects.size()];
     for (int i = 0; i < objects.size(); ++i) {
         collide[i] = false;
     }
+    /*debug*/
+
     for (int i = 0; i < objects.size(); ++i) {
         ColliderTransform* A = objects[i];
         // Matrix3& a_mat = matrices[i];
@@ -24,12 +29,18 @@ void CollisionSystem::update() {
             ColliderTransform* B = objects[j];
             // Matrix3& b_mat = matrices[j];
             // Collider* b_col = B->collider;
+
+            /*debug*/
             if (GJK_collide(objects[i], objects[j])) {
                 collide[i] = true;
                 collide[j] = true;
             }
+            /*debug*/
+
         }
     }
+
+    /*debug*/
     for (int i = 0; i < objects.size(); ++i) {
         SDL_Color color = {255, 255, 255};
         if (collide[i]) {
@@ -37,6 +48,7 @@ void CollisionSystem::update() {
         }
         objects[i]->transform->gameObject->getComponent<Sprite>()->color = color;
     }
+    /*debug*/
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
