@@ -8,29 +8,35 @@ CollisionSystem::CollisionSystem() {
 //TODO: complete broad phase to reduce to O(n log n)
 void CollisionSystem::update() {
     sort_endpoints();
-    SDL_Color color = {255, 255, 255};
-    if (GJK_collide(objects[0], objects[1])) {
-        color = {0, 255, 0};
+    vector<Matrix3> matrices(objects.size());
+    for (int i = 0; i < objects.size(); ++i) {
+        matrices[i] = objects[i]->transform->Apply();
     }
-    objects[0]->transform->gameObject->getComponent<Sprite>()->color = color;
-    objects[1]->transform->gameObject->getComponent<Sprite>()->color = color;
-    // vector<Matrix3> matrices(objects.size());
-    // for (int i = 0; i < objects.size(); ++i) {
-    //     matrices[i] = objects[i]->transform->Apply();
-    // }
-    // for (int i = 0; i < objects.size(); ++i) {
-    //     ColliderTransform* A = objects[i];
-    //     Matrix3& a_mat = matrices[i];
-    //     Collider* a_col = A->collider;
-    //     for (int j = i + 1; j < objects.size(); ++j) {
-    //         ColliderTransform* B = objects[j];
-    //         Matrix3& b_mat = matrices[j];
-    //         Collider* b_col = B->collider;
-    //         MinkowskiDifferenceSupport s(a_mat, a_col, b_mat, b_col);
-    //         Vector2 dir(1, 0);
-    //         s(dir);
-    //     }
-    // }
+    bool collide[objects.size()];
+    for (int i = 0; i < objects.size(); ++i) {
+        collide[i] = false;
+    }
+    for (int i = 0; i < objects.size(); ++i) {
+        ColliderTransform* A = objects[i];
+        // Matrix3& a_mat = matrices[i];
+        // Collider* a_col = A->collider;
+        for (int j = i + 1; j < objects.size(); ++j) {
+            ColliderTransform* B = objects[j];
+            // Matrix3& b_mat = matrices[j];
+            // Collider* b_col = B->collider;
+            if (GJK_collide(objects[i], objects[j])) {
+                collide[i] = true;
+                collide[j] = true;
+            }
+        }
+    }
+    for (int i = 0; i < objects.size(); ++i) {
+        SDL_Color color = {255, 255, 255};
+        if (collide[i]) {
+            color = {0, 200, 0};
+        }
+        objects[i]->transform->gameObject->getComponent<Sprite>()->color = color;
+    }
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();

@@ -3,8 +3,7 @@
 - BoxCollider:
     width: 30
     height: 30
-- Scatter:
-    maxSpeed: 20
+- Scatter
 - Sprite:
     file: square.png
 - PrintCollisions
