@@ -45,6 +45,15 @@ public:
         Vector2 diff = b - a;
         return Vector2(-diff.y, diff.x);
     }
+    //a vector perpendicular to the line ab in the direction of the origin
+    //very useful for collision detection algorithm
+    static Vector2 perpendicularTowardOrigin(Vector2 a, Vector b) {
+        Vector2 perp = perpendicular(a, b);
+        if (sameHalfSpace(perp, a)) {
+            perp = -perp;
+        }
+        return perp;
+    }
 private:
     //stolen from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
     static double determinant(Vector2 p1, Vector2 p2, Vector2 p3) {
