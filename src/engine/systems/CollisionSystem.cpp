@@ -70,17 +70,30 @@ void CollisionSystem::removeObject(GameObject* obj) {
 bool sameHalfSpace(Vector2 a, Vector2 b) {
     return Vector2::dot(a, b) > 0;
 }
+bool acute(Vector2 a, Vector2 b, Vector2 c) {
+    return Vector2::dot(a - b, c - b) > 0;
+}
 bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
-    return false;
-    // MinkowskiDifferenceSupport s(a, b);
-    // Vector2 p1 = s(Random::unitVector());
-    // Vector2 p2 = s(-p1);
-    // if (sameHalfSpace(p1, p2)) {
-    //     return false;
-    // }
-    // Vector2 diff = p2 - p1;
-    // Vector2 perp(-diff.y, diff.x);
-    // if(sameHalfSpace(p1,))
+    MinkowskiDifferenceSupport s(a, b);
+    Vector2 origin(0, 0);
+    Vector2 p1 = s(Random::unitVector());
+    Vector2 p2 = s(-p1);
+    Vector2 p3;
+    while (true) {
+        if (sameHalfSpace(p1, p2)) {
+            return false;
+        }
+        Vector2 diff = p2 - p1;
+        Vector2 perp(-diff.y, diff.x);
+        if (sameHalfSpace(perp, p2)) {
+            perp = -perp;
+        }
+        p3 = s(perp);
+        if (MathUtils::PointInTriangle(origin, p1, p2, p3)) {
+            return true;
+        }
+        //swap points
+    }
 }
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
     return false;

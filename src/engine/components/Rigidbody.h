@@ -21,6 +21,10 @@ public:
     void addForce(Vector2 f) {
         force += f;
     }
+    void addForce(double x, double y) {
+        addForce(Vector2(x, y));
+    }
+
     void addForceAtPoint(Vector2 f, Vector2 p);//adds force at a particular point p, computing the torque/force components
     void addTorque(double t) {
         torque += t;

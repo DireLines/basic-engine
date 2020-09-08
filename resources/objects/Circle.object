@@ -2,7 +2,8 @@
 - Rigidbody
 - CircleCollider:
     radius: 15
-- Scatter
+- Scatter:
+    maxSpeed: 10
 - Sprite:
     file: circle.png
 - PrintCollisions
