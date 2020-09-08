@@ -109,8 +109,9 @@ bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
         bool edge_p3p1 = inEdgeRegionAB(origin, p3, p1, p2);
         bool edge_p3p2 = inEdgeRegionAB(origin, p3, p2, p1);
         //swap points to converge triangle on origin
+        //by the end, p1 and p2 should be the vertices of the closest edge to the origin
         Vector2 tmp = p2;
-        p2 = p3;
+        p2 = p3; //definitely include p3, the most recent point
         if (edge_p3p2) {//origin was in region of edge p3p2, so give p1 p2's former value
             p1 = tmp;
         } else if (!edge_p3p1) {//origin was in region of vertex p3
@@ -120,7 +121,7 @@ bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
                 return false;
             }
         }
-        //else, values are what they should be
+        //else, origin was in region of edge p3p1, and values already are what they should be
     }
 }
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {

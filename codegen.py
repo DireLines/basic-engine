@@ -1,7 +1,7 @@
 # codegen.py
 # searches for .object files, which are yaml specifications of GameObject instances,
 # and turns them into C++ implementations in a file called GameObjects.h
-import subprocess
+from pathlib import Path
 import os
 try:
     import yaml
@@ -28,6 +28,12 @@ def variable_name(var_type):
 # filename('/path/to/cool-file.txt') = 'cool-file'
 def filename(filepath):
     return os.path.splitext(os.path.basename(obj_filename))[0]
+
+def all_files_of_types(filetypes):
+    result = []
+    for filetype in filetypes:
+        result.extend(Path().rglob('*.'+filetype))
+    return result
 
 # if adding a new public variable to GameObject.h,
 # also add it to this list, or .object file parser
@@ -120,7 +126,7 @@ constructor_include = """#include "GameObjects.h"
 """ 
 classes = ""
 constructors = ""
-obj_filenames = subprocess.run('find . -name *.object -or -name *.scene'.split(), capture_output=True).stdout.decode('ascii').rstrip().split('\n')
+obj_filenames = all_files_of_types(['object','scene'])
 for obj_filename in sorted(obj_filenames):
     with open(obj_filename, 'r') as obj_file:
         class_name = filename(obj_filename)
