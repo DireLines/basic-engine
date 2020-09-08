@@ -5,14 +5,6 @@ CollisionSystem::CollisionSystem() {
     name = "CollisionSystem";
 }
 
-void CollisionSystem::start() {
-    for (int i = 0; i < 361; ++i) {
-        Point* p = new Point();
-        plotpoints.push_back(p);
-        Game::instance->instantiate(p);
-    }
-}
-
 //TODO: complete broad phase to reduce to O(n log n)
 void CollisionSystem::update() {
     sort_endpoints();
@@ -20,13 +12,6 @@ void CollisionSystem::update() {
     for (int i = 0; i < objects.size(); ++i) {
         matrices[i] = objects[i]->transform->Apply();
     }
-    MinkowskiDifferenceSupport s(objects[0], objects[1]);
-    for (int i = 0; i < 360; ++i) {
-        Vector2 dir = Transform::Rotate(MathUtils::deg2rad(i)) * Vector2(1, 0);
-        Vector2 v = s(dir);
-        plotpoints[i]->getComponent<Transform>()->position = v;
-    }
-    plotpoints[360]->getComponent<Transform>()->position = Vector2(0, 0);
     for (int i = 0; i < objects.size(); ++i) {
         ColliderTransform* A = objects[i];
         Matrix3& a_mat = matrices[i];
@@ -53,7 +38,6 @@ void CollisionSystem::addObject(GameObject* obj) {
         ct->transform = t;
         objects.push_back(ct);
     }
-
 }
 void CollisionSystem::removeObject(GameObject* obj) {
     vector<ColliderTransform*>::iterator it = objects.begin();
@@ -67,12 +51,6 @@ void CollisionSystem::removeObject(GameObject* obj) {
     }
 }
 
-bool sameHalfSpace(Vector2 a, Vector2 b) {
-    return Vector2::dot(a, b) > 0;
-}
-bool acute(Vector2 a, Vector2 b, Vector2 c) {
-    return Vector2::dot(a - b, c - b) > 0;
-}
 bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
     MinkowskiDifferenceSupport s(a, b);
     Vector2 origin(0, 0);
@@ -80,12 +58,11 @@ bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
     Vector2 p2 = s(-p1);
     Vector2 p3;
     while (true) {
-        if (sameHalfSpace(p1, p2)) {
+        if (MathUtils::sameHalfSpace(p1, p2)) {
             return false;
         }
-        Vector2 diff = p2 - p1;
-        Vector2 perp(-diff.y, diff.x);
-        if (sameHalfSpace(perp, p2)) {
+        Vector2 perp = MathUtils::perpendicular(p1, p2);
+        if (MathUtils::sameHalfSpace(perp, p2)) {
             perp = -perp;
         }
         p3 = s(perp);

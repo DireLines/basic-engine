@@ -23,6 +23,28 @@ public:
         has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
         return !(has_neg && has_pos);
     }
+
+    //are a and b on the same side of the origin?
+    static bool sameHalfSpace(Vector2 a, Vector2 b) {
+        return Vector2::dot(a, b) > 0;
+    }
+
+    //is abc an acute angle?
+    static bool acute(Vector2 a, Vector2 b, Vector2 c) {
+        return Vector2::dot(a - b, c - b) > 0;
+    }
+
+    //are p1 and p2 on the same side of the line AB?
+    static bool sameSideOfLine(Vector2 p1, Vector2 p2, Vector2 A, Vector2 B) {
+        Vector2 perp = perpendicular(A, B);
+        return sameHalfSpace(perp, p1) == sameHalfSpace(perp, p2);
+    }
+
+    //a vector perpendicular to the line ab
+    static Vector2 perpendicular(Vector2 a, Vector2 b) {
+        Vector2 diff = b - a;
+        return Vector2(-diff.y, diff.x);
+    }
 private:
     //stolen from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
     static double determinant(Vector2 p1, Vector2 p2, Vector2 p3) {
