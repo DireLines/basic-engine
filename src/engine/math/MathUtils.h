@@ -3,7 +3,7 @@
 
 #include "Vector2.h"
 
-#define PI 3.14159265358979
+const double PI = 3.14159265358979;
 class MathUtils {
 public:
     static double rad2deg(double rads) {
@@ -37,7 +37,7 @@ public:
     //are p1 and p2 on the same side of the line AB?
     static bool sameSideOfLine(Vector2 p1, Vector2 p2, Vector2 A, Vector2 B) {
         Vector2 perp = perpendicular(A, B);
-        return sameHalfSpace(perp, p1) == sameHalfSpace(perp, p2);
+        return (sameHalfSpace(perp, A - p1) == sameHalfSpace(perp, A - p2));
     }
 
     //a vector perpendicular to the line ab

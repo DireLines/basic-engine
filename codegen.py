@@ -29,10 +29,10 @@ def variable_name(var_type):
 def filename(filepath):
     return os.path.splitext(os.path.basename(obj_filename))[0]
 
-def all_files_of_types(filetypes):
+def all_files_of_types(filetypes, path=''):
     result = []
     for filetype in filetypes:
-        result.extend(Path().rglob('*.'+filetype))
+        result.extend(Path(path).rglob('*.'+filetype))
     return result
 
 # if adding a new public variable to GameObject.h,
