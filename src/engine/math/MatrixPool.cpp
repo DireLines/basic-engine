@@ -13,6 +13,7 @@ double** MatrixPool::create() {
     }
     pool.push_back(new_mat);
     inUse.push_back(true);
+    // cout << "matrix pool is now " << pool.size() << " long" << endl;
     return new_mat;
 }
 void MatrixPool::release(double** ptr) {

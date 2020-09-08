@@ -9,10 +9,6 @@ CollisionSystem::CollisionSystem() {
 void CollisionSystem::update() {
     //update endpoint positions
     sort_endpoints();
-    vector<Matrix3> matrices(objects.size());
-    for (int i = 0; i < objects.size(); ++i) {
-        matrices[i] = objects[i]->transform->Apply();
-    }
 
     /*debug*/
     bool collide[objects.size()];
@@ -91,7 +87,7 @@ bool inEdgeRegionAB(Vector2 p, Vector2 A, Vector2 B, Vector2 C) {
 bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
     MinkowskiDifferenceSupport s(a, b);
     Vector2 origin(0, 0);
-    Vector2 p1 = s(Random::unitVector());
+    Vector2 p1 = s(Vector2(1, 0));
     Vector2 p2 = s(-p1);
     if (MathUtils::sameHalfSpace(p1, p2)) {
         return false;
@@ -124,6 +120,7 @@ bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
         //else, origin was in region of edge p3p1, and values already are what they should be
     }
 }
+
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
     return false;
 }
