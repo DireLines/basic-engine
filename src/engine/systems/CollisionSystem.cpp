@@ -1,47 +1,36 @@
 #include "CollisionSystem.h"
-#include "Game.h"
+#include "Sprite.h"
 
 CollisionSystem::CollisionSystem() {
     name = "CollisionSystem";
 }
 
-void CollisionSystem::start() {
-    for (int i = 0; i < 361; ++i) {
-        Point* p = new Point();
-        plotpoints.push_back(p);
-        Game::instance->instantiate(p);
-    }
-}
-
 //TODO: complete broad phase to reduce to O(n log n)
 void CollisionSystem::update() {
     sort_endpoints();
-    vector<Matrix3> matrices(objects.size());
-    for (int i = 0; i < objects.size(); ++i) {
-        matrices[i] = objects[i]->transform->Apply();
+    SDL_Color color = {255, 255, 255};
+    if (GJK_collide(objects[0], objects[1])) {
+        color = {0, 255, 0};
     }
-    bool coll = GJK_collide(objects[0], objects[1]);
-    cout << (coll ? "colliding" : "not colliding") << endl;
-    MinkowskiDifferenceSupport s(objects[0], objects[1]);
-    for (int i = 0; i < 360; ++i) {
-        Vector2 dir = Transform::Rotate(MathUtils::deg2rad(i)) * Vector2(1, 0);
-        Vector2 v = s(dir);
-        plotpoints[i]->getComponent<Transform>()->position = v;
-    }
-    plotpoints[360]->getComponent<Transform>()->position = Vector2(0, 0);
-    for (int i = 0; i < objects.size(); ++i) {
-        ColliderTransform* A = objects[i];
-        Matrix3& a_mat = matrices[i];
-        Collider* a_col = A->collider;
-        for (int j = i + 1; j < objects.size(); ++j) {
-            ColliderTransform* B = objects[j];
-            Matrix3& b_mat = matrices[j];
-            Collider* b_col = B->collider;
-            // MinkowskiDifferenceSupport s(a_mat, a_col, b_mat, b_col);
-            // Vector2 dir(1, 0);
-            // s(dir);
-        }
-    }
+    objects[0]->transform->gameObject->getComponent<Sprite>()->color = color;
+    objects[1]->transform->gameObject->getComponent<Sprite>()->color = color;
+    // vector<Matrix3> matrices(objects.size());
+    // for (int i = 0; i < objects.size(); ++i) {
+    //     matrices[i] = objects[i]->transform->Apply();
+    // }
+    // for (int i = 0; i < objects.size(); ++i) {
+    //     ColliderTransform* A = objects[i];
+    //     Matrix3& a_mat = matrices[i];
+    //     Collider* a_col = A->collider;
+    //     for (int j = i + 1; j < objects.size(); ++j) {
+    //         ColliderTransform* B = objects[j];
+    //         Matrix3& b_mat = matrices[j];
+    //         Collider* b_col = B->collider;
+    //         MinkowskiDifferenceSupport s(a_mat, a_col, b_mat, b_col);
+    //         Vector2 dir(1, 0);
+    //         s(dir);
+    //     }
+    // }
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
@@ -86,21 +75,16 @@ bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
     Vector2 origin(0, 0);
     Vector2 p1 = s(Random::unitVector());
     Vector2 p2 = s(-p1);
-    int iterations = 0;
     if (MathUtils::sameHalfSpace(p1, p2)) {
-        cout << "iterations: " << iterations << endl;
         return false;
     }
     while (true) {
-        iterations++;
         Vector2 perp = MathUtils::perpendicularTowardOrigin(p1, p2);
         Vector2 p3 = s(perp);
         if (!MathUtils::sameHalfSpace(perp, p3)) {
-            cout << "iterations: " << iterations << endl;
             return false;
         }
         if (MathUtils::PointInTriangle(origin, p1, p2, p3)) {
-            cout << "iterations: " << iterations << endl;
             return true;
         }
         //determine whether to keep p1's value, replace it with p2's, or recreate both p1 and p2
@@ -115,7 +99,6 @@ bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
             p1 = p3;
             p2 = s(-p1);
             if (MathUtils::sameHalfSpace(p1, p2)) {
-                cout << "iterations: " << iterations << endl;
                 return false;
             }
         }

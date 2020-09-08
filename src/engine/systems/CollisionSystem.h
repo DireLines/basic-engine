@@ -10,7 +10,6 @@
 #include "Vector2.h"
 #include <vector>
 #include "Random.h"
-#include "GameObjects.h"
 
 using namespace std;
 
@@ -44,14 +43,12 @@ class CollisionSystem : public System {
 public:
     CollisionSystem();
     ~CollisionSystem();
-    void start();
     void update();
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
     vector<IntervalEndpoint*> endpoints;
     vector<ColliderTransform*> objects;
-    vector<Point*> plotpoints;
     void addObject(GameObject* obj);
     bool GJK_collide(ColliderTransform* a, ColliderTransform* b);
     bool colliding(GameObject* a, GameObject* b);

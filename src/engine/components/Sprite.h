@@ -10,6 +10,7 @@ public:
     string file = "default.png";
     double z; //rendering order
     double alpha = 1.0;
+    SDL_Color color = {255, 255, 255};
 private:
     SDL_Surface* image = NULL;
     SDL_Texture* texture = NULL;

@@ -85,6 +85,8 @@ void Renderer::draw(SpriteTransform* obj, Matrix3& cam_t) {
 
             SDL_Rect dstrect = { origin.x, origin.y, w, h};
             SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
+            SDL_Color c = s->color;
+            SDL_SetTextureColorMod(texture, c.r, c.g, c.b);
             SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, displayAngle, &corner, SDL_FLIP_NONE);
         }
     }
