@@ -1,6 +1,4 @@
-- Transform:
-    scale:
-      code: Vector2(1, 2)
+- Transform
 - Rigidbody
 - BoxCollider:
     width: 30

@@ -5,7 +5,6 @@ CollisionSystem::CollisionSystem() {
     name = "CollisionSystem";
 }
 
-//TODO: complete broad phase to reduce to O(n log n)
 void CollisionSystem::update() {
     update_endpoint_positions();
     sort_endpoints();
@@ -26,15 +25,16 @@ void CollisionSystem::update() {
         int j = i + 1;
         while ((j < endpoints.size()) && (endpoints[j]->object != o1)) {
             ColliderTransform* o2 = endpoints[j]->object;
-            // cout << o1 << " " << o2 << endl;
             if (endpoints[j]->begin) {
                 if (!(o1->collider->enabled && o2->collider->enabled)) {
                     j++; continue;
                 }
+                //you should not be able to collide with yourself
                 if (o1->transform->gameObject == o2->transform->gameObject) {
                     j++; continue;
                 }
                 if (GJK_collide(o1, o2)) {
+                    //TODO: call collision events on scripts, resolve collisions
                     /*debug*/
                     o1->transform->gameObject->getComponent<Sprite>()->color = color;
                     o2->transform->gameObject->getComponent<Sprite>()->color = color;
@@ -44,6 +44,7 @@ void CollisionSystem::update() {
             j++;
         }
     }
+
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
@@ -69,9 +70,9 @@ void CollisionSystem::addObject(GameObject* obj) {
 }
 void CollisionSystem::removeObject(GameObject* obj) {
     //so that I reach the "end" endpoint after the "begin"
-    //TODO: try to avoid this
     update_endpoint_positions();
     sort_endpoints();
+    //TODO: try to avoid having to do this ^
     vector<IntervalEndpoint*>::iterator it = endpoints.begin();
     while (it != endpoints.end()) {
         if ((*it)->object->transform->gameObject == obj) {
@@ -84,26 +85,6 @@ void CollisionSystem::removeObject(GameObject* obj) {
         }
     }
 }
-
-// bool CollisionSystem::y_bounds_overlap(ColliderTransform* a, ColliderTransform* b) {
-//     Vector2 up(0, 1);
-//     Vector2 down(0, -1);
-//     Matrix3 a_m = a->transform->Apply();
-//     Matrix3 b_m = b->transform->Apply();
-//     double a_up = MinkowskiDifferenceSupport::transformedSupport(up,
-//                   a_m,
-//                   a->collider).y;
-//     double a_down = MinkowskiDifferenceSupport::transformedSupport(down,
-//                     a_m,
-//                     a->collider).y;
-//     double b_up = MinkowskiDifferenceSupport::transformedSupport(up,
-//                   b_m,
-//                   b->collider).y;
-//     double b_down = MinkowskiDifferenceSupport::transformedSupport(down,
-//                     b_m,
-//                     b->collider).y;
-
-// }
 
 //is p in the "tube" perpendicular to the line segment between A and B?
 bool inTube(Vector2 p, Vector2 A, Vector2 B) {
