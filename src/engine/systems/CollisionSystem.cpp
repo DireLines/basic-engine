@@ -39,8 +39,6 @@ void CollisionSystem::update() {
             j++;
         }
     }
-
-
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
