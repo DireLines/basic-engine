@@ -25,6 +25,9 @@ void CollisionSystem::update() {
     /*debug*/
 
     for (int i = 0; i < endpoints.size(); ++i) {
+        if (!endpoints[i]->begin) {
+            continue;
+        }
         ColliderTransform* o1 = endpoints[i]->object;
         int j = i + 1;
         while ((j < endpoints.size()) && (endpoints[j]->object != o1)) {
