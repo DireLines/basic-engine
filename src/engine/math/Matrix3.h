@@ -11,6 +11,7 @@ public:
     Matrix3 operator*(Matrix3 const &other) const;
     Vector2 operator*(Vector2 const &other) const;
     Matrix3& operator=(const Matrix3& other);
+    double rotation();
     void print() const;
 private:
     double** identity();

@@ -35,8 +35,11 @@ public:
 private:
     Matrix3 A_transform;
     Collider* A_collider;
+    Matrix3 A_rotation;
     Matrix3 B_transform;
     Collider* B_collider;
+    Matrix3 B_rotation;
+    static Vector2 transformedSupport(Vector2 direction, Matrix3& t, Collider* collider, Matrix3& rotation);
 };
 
 class CollisionSystem : public System {

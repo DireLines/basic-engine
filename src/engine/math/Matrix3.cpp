@@ -60,6 +60,10 @@ Matrix3& Matrix3::operator=(const Matrix3& other) {
     return *this;
 }
 
+double Matrix3::rotation() {
+    return Vector2::calculateRotation(Vector2(0, 0), (*this) * Vector2(1, 0) - (*this) * Vector2(0, 0));
+}
+
 void Matrix3::print() const {
     printf("[\n");
     printf("\t%4.2f %4.2f %4.2f\n", m[0][0], m[0][1], m[0][2]);
