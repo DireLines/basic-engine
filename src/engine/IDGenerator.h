@@ -1,6 +1,5 @@
 #ifndef IDGENERATOR_H
 #define IDGENERATOR_H
-using namespace std;
 
 class IDGenerator {
 public:
