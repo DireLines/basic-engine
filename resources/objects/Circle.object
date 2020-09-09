@@ -1,4 +1,6 @@
-- Transform
+- Transform:
+    scale:
+      code: Vector2(Random::range(0.5,1), Random::range(0.5,1))
 - Rigidbody
 - CircleCollider:
     radius: 15

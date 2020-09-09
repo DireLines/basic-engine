@@ -27,7 +27,7 @@ public:
         return Transform::Rotate(range(0, 360)) * Vector2(1, 0);
     }
     static Vector2 insideUnitCircle() {
-        return unitVector() * range(0, 1);
+        return unitVector() * sqrt(range(0, 1));
     }
 };
 

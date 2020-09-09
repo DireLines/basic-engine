@@ -17,17 +17,9 @@ int main(int argc, char ** argv) {
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
 
-    int resolution = 25;
-    int spacing = 950 / resolution;
-    for (int i = 0; i < resolution; ++i) {
-        for (int j = 0; j < resolution; ++j) {
-            Square* s1 = new Square();
-            instantiate(s1);
-            s1->getComponent<Transform>()->position =
-                Vector2(
-                    (i - (resolution / 2)) * spacing,
-                    (j - (resolution / 2)) * spacing
-                );
-        }
+    int num_objects = 1000;
+    for (int i = 0; i < num_objects; ++i) {
+        Square* s1 = new Square();
+        instantiate(s1);
     }
 }
