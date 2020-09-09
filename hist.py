@@ -7,9 +7,7 @@ def ascii_histogram(seq) -> None:
     counted = Counter(seq)
     max_counted = max(counted.values())
     max_line_length = 200
-    relative_display = False
-    if(max_counted>max_line_length):
-        relative_display = True
+    relative_display = max_counted>max_line_length
     for k in sorted(counted):
         display_num = counted[k]
         if(relative_display):

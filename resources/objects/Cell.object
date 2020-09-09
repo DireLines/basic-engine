@@ -7,6 +7,7 @@
 - BoxCollider
 - Wiggle:
     strength: 2
+- Scatter
 - Sprite:
     file: Coin.png
     z:

@@ -19,7 +19,7 @@ void Game::initialize() {
 
     int num_objects = 1000;
     for (int i = 0; i < num_objects; ++i) {
-        Square* s1 = new Square();
+        Cell* s1 = new Cell();
         instantiate(s1);
     }
 }

@@ -54,6 +54,16 @@ public:
         }
         return perp;
     }
+    //does the interval a1 to a2 overlap with the interval b1 to b2?
+    static bool intervalOverlap(double a1, double a2, double b1, double b2) {
+        if (a1 > a2) {
+            std::swap(a1, a2);
+        }
+        if (b1 > b2) {
+            std::swap(b1, b2);
+        }
+        return a1 <= b2 && b1 <= a2;
+    }
 private:
     //stolen from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
     static double determinant(Vector2 p1, Vector2 p2, Vector2 p3) {
