@@ -5,8 +5,8 @@
 void Reproduce::update() {
     if (rand() % 600 == 0) {
         Cell* s = new Cell();
-        s->getComponent<Transform>()->position = gameObject->getComponent<Transform>()->position;
         Game::instance->instantiate(s);
+        s->getComponent<Transform>()->position = gameObject->getComponent<Transform>()->position;
     }
     if (rand() % 1000 == 0) {
         Game::instance->destroy(gameObject);
