@@ -11,20 +11,11 @@ void CollisionSystem::update() {
     sort_endpoints();
 
     /*debug*/
-    int num_objects = endpoints.size() / 2;
-    cout << "number of objects: " << num_objects << endl;
     SDL_Color color = {255, 255, 255};
     for (int i = 0; i < endpoints.size(); ++i) {
-        string begin_or_end = " end ";
-        if (endpoints[i]->begin) {
-            begin_or_end = "begin";
-        }
-        // cout << begin_or_end << " ";
         endpoints[i]->object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
-    // cout << endl;
     color = {0, 200, 0};
-    int total_collision_checks = 0;
     /*debug*/
 
     for (int i = 0; i < endpoints.size(); ++i) {
@@ -43,22 +34,16 @@ void CollisionSystem::update() {
                 if (o1->transform->gameObject == o2->transform->gameObject) {
                     j++; continue;
                 }
-                /*debug*/
-                total_collision_checks++;
                 if (GJK_collide(o1, o2)) {
+                    /*debug*/
                     o1->transform->gameObject->getComponent<Sprite>()->color = color;
                     o2->transform->gameObject->getComponent<Sprite>()->color = color;
+                    /*debug*/
                 }
-                /*debug*/
             }
             j++;
         }
     }
-
-    /*debug*/
-    cout << "total collision checks (new): " << total_collision_checks << endl;
-    cout << "total collision checks (old): " << num_objects * (num_objects + 1) / 2 << endl;
-    /*debug*/
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();

@@ -17,17 +17,10 @@ int main(int argc, char ** argv) {
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
 
-    int resolution = 10;
+    int resolution = 16;
     int spacing = 950 / resolution;
     for (int i = 0; i < resolution; ++i) {
         for (int j = 0; j < resolution; ++j) {
-            Square* s = new Square();
-            instantiate(s);
-            s->getComponent<Transform>()->position =
-                Vector2(
-                    (i - (resolution / 2)) * spacing,
-                    (j - (resolution / 2)) * spacing
-                );
             Cell* c = new Cell();
             instantiate(c);
             c->getComponent<Transform>()->position =
