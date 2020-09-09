@@ -7,44 +7,40 @@ CollisionSystem::CollisionSystem() {
 
 //TODO: complete broad phase to reduce to O(n log n)
 void CollisionSystem::update() {
-    //update endpoint positions
+    update_endpoint_positions();
     sort_endpoints();
 
     /*debug*/
-    bool collide[objects.size()];
-    for (int i = 0; i < objects.size(); ++i) {
-        collide[i] = false;
+    SDL_Color color = {255, 255, 255};
+    for (int i = 0; i < endpoints.size(); ++i) {
+        string begin_or_end = " end ";
+        if (endpoints[i]->begin) {
+            begin_or_end = "begin";
+        }
+        // cout << begin_or_end << " ";
+        endpoints[i]->object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
+    // cout << endl;
+    color = {0, 200, 0};
     /*debug*/
 
-    for (int i = 0; i < objects.size(); ++i) {
-        ColliderTransform* A = objects[i];
-        // Matrix3& a_mat = matrices[i];
-        // Collider* a_col = A->collider;
-        for (int j = i + 1; j < objects.size(); ++j) {
-            ColliderTransform* B = objects[j];
-            // Matrix3& b_mat = matrices[j];
-            // Collider* b_col = B->collider;
-
-            /*debug*/
-            if (GJK_collide(objects[i], objects[j])) {
-                collide[i] = true;
-                collide[j] = true;
+    for (int i = 0; i < endpoints.size(); ++i) {
+        ColliderTransform* o1 = endpoints[i]->object;
+        int j = i + 1;
+        while ((j < endpoints.size()) && (endpoints[j]->object != o1)) {
+            ColliderTransform* o2 = endpoints[j]->object;
+            // cout << o1 << " " << o2 << endl;
+            if (endpoints[j]->begin) {
+                /*debug*/
+                if (GJK_collide(o1, o2)) {
+                    o1->transform->gameObject->getComponent<Sprite>()->color = color;
+                    o2->transform->gameObject->getComponent<Sprite>()->color = color;
+                }
+                /*debug*/
             }
-            /*debug*/
-
+            j++;
         }
     }
-
-    /*debug*/
-    for (int i = 0; i < objects.size(); ++i) {
-        SDL_Color color = {255, 255, 255};
-        if (collide[i]) {
-            color = {0, 200, 0};
-        }
-        objects[i]->transform->gameObject->getComponent<Sprite>()->color = color;
-    }
-    /*debug*/
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
@@ -56,7 +52,16 @@ void CollisionSystem::addObject(GameObject* obj) {
         ColliderTransform* ct = new ColliderTransform();
         ct->collider = c;
         ct->transform = t;
-        objects.push_back(ct);
+        IntervalEndpoint* begin = new IntervalEndpoint();
+        begin->begin = true;
+        begin->pos = 0;//will be overwritten
+        begin->object = ct;
+        endpoints.push_back(begin);
+        IntervalEndpoint* end = new IntervalEndpoint();
+        end->begin = false;
+        end->pos = 0;//will be overwritten
+        end->object = ct;
+        endpoints.push_back(end);
     }
 }
 void CollisionSystem::removeObject(GameObject* obj) {
@@ -130,6 +135,19 @@ void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
 
 bool pos(IntervalEndpoint* a, IntervalEndpoint* b) {
     return a->pos < b->pos;
+}
+
+void CollisionSystem::update_endpoint_positions() {
+    for (IntervalEndpoint* endpoint : endpoints) {
+        Vector2 dir(1, 0);
+        if (endpoint->begin) {
+            dir = Vector2(-1, 0);
+        }
+        Matrix3 m = endpoint->object->transform->Apply();
+        endpoint->pos = MinkowskiDifferenceSupport::transformedSupport(dir,
+                        m,
+                        endpoint->object->collider).x;
+    }
 }
 
 void CollisionSystem::sort_endpoints() {

@@ -21,7 +21,7 @@ struct ColliderTransform {
 struct IntervalEndpoint {
     double pos;
     bool begin;
-    ColliderTransform* ct;
+    ColliderTransform* object;
 };
 
 class MinkowskiDifferenceSupport {
@@ -53,6 +53,7 @@ private:
     bool GJK_collide(ColliderTransform* a, ColliderTransform* b);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
+    void update_endpoint_positions();
     void sort_endpoints();
 };
 
