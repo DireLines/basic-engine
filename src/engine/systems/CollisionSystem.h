@@ -18,9 +18,9 @@ struct ColliderTransform {
     Transform* transform;
 };
 
-struct IntervalEndpoint {
-    double pos;
-    bool begin;
+struct Interval {
+    double begin;//position of interval's beginning
+    double end;//position of interval's end
     ColliderTransform* object;
 };
 
@@ -47,14 +47,14 @@ public:
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
 private:
-    vector<IntervalEndpoint*> endpoints;
+    vector<Interval*> intervals;
     vector<ColliderTransform*> objects;
     void addObject(GameObject* obj);
     bool GJK_collide(ColliderTransform* a, ColliderTransform* b);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
     void update_endpoint_positions();
-    void sort_endpoints();
+    void sort_intervals();
 };
 
 #endif

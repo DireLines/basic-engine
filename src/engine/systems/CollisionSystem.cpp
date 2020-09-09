@@ -7,43 +7,39 @@ CollisionSystem::CollisionSystem() {
 
 void CollisionSystem::update() {
     update_endpoint_positions();
-    sort_endpoints();
+    sort_intervals();
 
     /*debug*/
     SDL_Color color = {255, 255, 255};
-    for (int i = 0; i < endpoints.size(); ++i) {
-        endpoints[i]->object->transform->gameObject->getComponent<Sprite>()->color = color;
+    for (int i = 0; i < intervals.size(); ++i) {
+        intervals[i]->object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
     color = {0, 200, 0};
     /*debug*/
 
-    for (int i = 0; i < endpoints.size(); ++i) {
-        if (!endpoints[i]->begin) {
-            continue;
-        }
-        ColliderTransform* o1 = endpoints[i]->object;
+    for (int i = 0; i < intervals.size(); ++i) {
+        ColliderTransform* o1 = intervals[i]->object;
         int j = i + 1;
-        while ((j < endpoints.size()) && (endpoints[j]->object != o1)) {
-            ColliderTransform* o2 = endpoints[j]->object;
-            if (endpoints[j]->begin) {
-                if (!(o1->collider->enabled && o2->collider->enabled)) {
-                    j++; continue;
-                }
-                //you should not be able to collide with yourself
-                if (o1->transform->gameObject == o2->transform->gameObject) {
-                    j++; continue;
-                }
-                if (GJK_collide(o1, o2)) {
-                    //TODO: call collision events on scripts, resolve collisions
-                    /*debug*/
-                    o1->transform->gameObject->getComponent<Sprite>()->color = color;
-                    o2->transform->gameObject->getComponent<Sprite>()->color = color;
-                    /*debug*/
-                }
+        while ((j < intervals.size()) && (intervals[j]->begin <= intervals[i]->end)) {
+            ColliderTransform* o2 = intervals[j]->object;
+            if (!(o1->collider->enabled && o2->collider->enabled)) {
+                j++; continue;
+            }
+            //you should not be able to collide with yourself
+            if (o1->transform->gameObject == o2->transform->gameObject) {
+                j++; continue;
+            }
+            if (GJK_collide(o1, o2)) {
+                //TODO: call collision events on scripts, resolve collisions
+                /*debug*/
+                o1->transform->gameObject->getComponent<Sprite>()->color = color;
+                o2->transform->gameObject->getComponent<Sprite>()->color = color;
+                /*debug*/
             }
             j++;
         }
     }
+
 
 }
 bool CollisionSystem::needObject(GameObject* obj) {
@@ -56,30 +52,20 @@ void CollisionSystem::addObject(GameObject* obj) {
         ColliderTransform* ct = new ColliderTransform();
         ct->collider = c;
         ct->transform = t;
-        IntervalEndpoint* begin = new IntervalEndpoint();
-        begin->begin = true;
-        begin->pos = 0;//will be overwritten
-        begin->object = ct;
-        endpoints.push_back(begin);
-        IntervalEndpoint* end = new IntervalEndpoint();
-        end->begin = false;
-        end->pos = 0;//will be overwritten
-        end->object = ct;
-        endpoints.push_back(end);
+        Interval* interval = new Interval();
+        interval->begin = 0;//will be overwritten
+        interval->end = 0;////will be overwritten
+        interval->object = ct;
+        intervals.push_back(interval);
     }
 }
 void CollisionSystem::removeObject(GameObject* obj) {
-    //so that I reach the "end" endpoint after the "begin"
-    update_endpoint_positions();
-    sort_endpoints();
-    //TODO: try to avoid having to do this ^
-    vector<IntervalEndpoint*>::iterator it = endpoints.begin();
-    while (it != endpoints.end()) {
+    vector<Interval*>::iterator it = intervals.begin();
+    while (it != intervals.end()) {
         if ((*it)->object->transform->gameObject == obj) {
-            if (!(*it)->begin)
-                delete (*it)->object;
+            delete (*it)->object;
             delete *it;
-            it = endpoints.erase(it);
+            it = intervals.erase(it);
         } else {
             it++;
         }
@@ -143,23 +129,20 @@ bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
 void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
 }
 
-bool pos(IntervalEndpoint* a, IntervalEndpoint* b) {
-    return a->pos < b->pos;
+bool beginning_pos(Interval* a, Interval* b) {
+    return a->begin < b->begin;
 }
 
 void CollisionSystem::update_endpoint_positions() {
-    for (IntervalEndpoint* endpoint : endpoints) {
-        Vector2 dir(1, 0);
-        if (endpoint->begin) {
-            dir = Vector2(-1, 0);
-        }
-        Matrix3 m = endpoint->object->transform->Apply();
-        endpoint->pos = MinkowskiDifferenceSupport::transformedSupport(dir,
-                        m,
-                        endpoint->object->collider).x;
+    for (Interval* interval : intervals) {
+        Matrix3 m = interval->object->transform->Apply();
+        interval->begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
+                          m, interval->object->collider).x;
+        interval->end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
+                        m, interval->object->collider).x;
     }
 }
 
-void CollisionSystem::sort_endpoints() {
-    std::sort(endpoints.begin(), endpoints.end(), pos);
+void CollisionSystem::sort_intervals() {
+    std::sort(intervals.begin(), intervals.end(), beginning_pos);
 }
