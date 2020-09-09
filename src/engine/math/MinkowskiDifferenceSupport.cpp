@@ -22,8 +22,8 @@ Vector2 MinkowskiDifferenceSupport::operator()(Vector2 direction) {
     return transformedSupport(direction, A_transform, A_collider, A_rotation) - transformedSupport(-direction, B_transform, B_collider, B_rotation);
 }
 Vector2 MinkowskiDifferenceSupport::transformedSupport(Vector2 direction, Matrix3& t, Collider* collider) {
-    double rotation = t.rotation();
-    return t * collider->support(Transform::Rotate(-rotation) * direction);
+    Matrix3 m = Transform::Rotate(-t.rotation());
+    return transformedSupport(direction, t, collider, m);
 }
 Vector2 MinkowskiDifferenceSupport::transformedSupport(Vector2 direction, Matrix3& t, Collider* collider, Matrix3& rotation) {
     return t * collider->support(rotation * direction);
