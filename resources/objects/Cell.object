@@ -2,7 +2,8 @@
     scale:
       code: Vector2(0.3, 0.3)
 - Rigidbody
-- CircleCollider
+- CircleCollider:
+    radius: 15
 - BoxCollider
 - Wiggle:
     strength: 2

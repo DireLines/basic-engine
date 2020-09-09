@@ -17,7 +17,7 @@ int main(int argc, char ** argv) {
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
 
-    int resolution = 15;
+    int resolution = 10;
     int spacing = 950 / resolution;
     for (int i = 0; i < resolution; ++i) {
         for (int j = 0; j < resolution; ++j) {
@@ -28,7 +28,7 @@ void Game::initialize() {
                     (i - (resolution / 2)) * spacing,
                     (j - (resolution / 2)) * spacing
                 );
-            Circle* c = new Circle();
+            Cell* c = new Cell();
             instantiate(c);
             c->getComponent<Transform>()->position =
                 Vector2(

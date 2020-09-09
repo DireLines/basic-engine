@@ -50,6 +50,9 @@ private:
     vector<IntervalEndpoint*> endpoints;
     vector<ColliderTransform*> objects;
     void addObject(GameObject* obj);
+    //cheap check which can determine if two object definitely aren't colliding
+    // bool y_bounds_overlap(ColliderTransform* a, ColliderTransform* b);
+    //expensive, authoritative collision check
     bool GJK_collide(ColliderTransform* a, ColliderTransform* b);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);

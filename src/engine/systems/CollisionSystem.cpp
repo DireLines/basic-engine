@@ -11,6 +11,8 @@ void CollisionSystem::update() {
     sort_endpoints();
 
     /*debug*/
+    int num_objects = endpoints.size() / 2;
+    cout << "number of objects: " << num_objects << endl;
     SDL_Color color = {255, 255, 255};
     for (int i = 0; i < endpoints.size(); ++i) {
         string begin_or_end = " end ";
@@ -22,6 +24,7 @@ void CollisionSystem::update() {
     }
     // cout << endl;
     color = {0, 200, 0};
+    int total_collision_checks = 0;
     /*debug*/
 
     for (int i = 0; i < endpoints.size(); ++i) {
@@ -34,7 +37,14 @@ void CollisionSystem::update() {
             ColliderTransform* o2 = endpoints[j]->object;
             // cout << o1 << " " << o2 << endl;
             if (endpoints[j]->begin) {
+                if (!(o1->collider->enabled && o2->collider->enabled)) {
+                    j++; continue;
+                }
+                if (o1->transform->gameObject == o2->transform->gameObject) {
+                    j++; continue;
+                }
                 /*debug*/
+                total_collision_checks++;
                 if (GJK_collide(o1, o2)) {
                     o1->transform->gameObject->getComponent<Sprite>()->color = color;
                     o2->transform->gameObject->getComponent<Sprite>()->color = color;
@@ -44,6 +54,11 @@ void CollisionSystem::update() {
             j++;
         }
     }
+
+    /*debug*/
+    cout << "total collision checks (new): " << total_collision_checks << endl;
+    cout << "total collision checks (old): " << num_objects * (num_objects + 1) / 2 << endl;
+    /*debug*/
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
@@ -68,16 +83,42 @@ void CollisionSystem::addObject(GameObject* obj) {
     }
 }
 void CollisionSystem::removeObject(GameObject* obj) {
-    vector<ColliderTransform*>::iterator it = objects.begin();
-    while (it != objects.end()) {
-        if ((*it)->transform->gameObject == obj) {
+    //so that I reach the "end" endpoint after the "begin"
+    //TODO: try to avoid this
+    update_endpoint_positions();
+    sort_endpoints();
+    vector<IntervalEndpoint*>::iterator it = endpoints.begin();
+    while (it != endpoints.end()) {
+        if ((*it)->object->transform->gameObject == obj) {
+            if (!(*it)->begin)
+                delete (*it)->object;
             delete *it;
-            it = objects.erase(it);
+            it = endpoints.erase(it);
         } else {
             it++;
         }
     }
 }
+
+// bool CollisionSystem::y_bounds_overlap(ColliderTransform* a, ColliderTransform* b) {
+//     Vector2 up(0, 1);
+//     Vector2 down(0, -1);
+//     Matrix3 a_m = a->transform->Apply();
+//     Matrix3 b_m = b->transform->Apply();
+//     double a_up = MinkowskiDifferenceSupport::transformedSupport(up,
+//                   a_m,
+//                   a->collider).y;
+//     double a_down = MinkowskiDifferenceSupport::transformedSupport(down,
+//                     a_m,
+//                     a->collider).y;
+//     double b_up = MinkowskiDifferenceSupport::transformedSupport(up,
+//                   b_m,
+//                   b->collider).y;
+//     double b_down = MinkowskiDifferenceSupport::transformedSupport(down,
+//                     b_m,
+//                     b->collider).y;
+
+// }
 
 //is p in the "tube" perpendicular to the line segment between A and B?
 bool inTube(Vector2 p, Vector2 A, Vector2 B) {
