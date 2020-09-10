@@ -66,22 +66,68 @@ void Game::initSDL() {
     Game::renderer = renderer;
 }
 
+#ifdef _WIN32
+#include <Windows.h>
+double get_wall_time() {
+    LARGE_INTEGER time, freq;
+    if (!QueryPerformanceFrequency(&freq)) {
+        //  Handle error
+        return 0;
+    }
+    if (!QueryPerformanceCounter(&time)) {
+        //  Handle error
+        return 0;
+    }
+    return (double)time.QuadPart / freq.QuadPart;
+}
+double get_cpu_time() {
+    FILETIME a, b, c, d;
+    if (GetProcessTimes(GetCurrentProcess(), &a, &b, &c, &d) != 0) {
+        //  Returns total user time.
+        //  Can be tweaked to include kernel times as well.
+        return
+            (double)(d.dwLowDateTime |
+                     ((unsigned long long)d.dwHighDateTime << 32)) * 0.0000001;
+    } else {
+        //  Handle error
+        return 0;
+    }
+}
+
+//  Posix/Linux
+#else
+#include <time.h>
+#include <sys/time.h>
+double get_wall_time() {
+    struct timeval time;
+    if (gettimeofday(&time, NULL)) {
+        //  Handle error
+        return 0;
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
+double get_cpu_time() {
+    return (double)clock() / CLOCKS_PER_SEC;
+}
+#endif
+
 void Game::start() {
     for (System* system : systems) {
         // cout << system->getName() << " start" << endl;
         system->start();
     }
     initialize();
-    int ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
-    std::clock_t start = std::clock();
+    double ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
+    auto start = get_wall_time();
     GameTimer::time = 0;
 
     bool quit = false;
     SDL_Event event;
 
     while (!quit) {
-        std::clock_t end = std::clock();
-        double duration = (( end - start ) / (double) CLOCKS_PER_SEC) * 1000;
+        auto end = get_wall_time();
+        // double duration = ((end - start).count() / (double) CLOCKS_PER_SEC) * 1000;
+        double duration = (end - start) * 1000;
         if (duration > ms_per_frame) {
             averageFrameLength += duration;
             start = end;
