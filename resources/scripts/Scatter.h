@@ -4,7 +4,7 @@
 #include "Script.h"
 class Scatter: public Script {
 public:
-    double range = 10;
+    double range = 1000;
     double rotationRange = 180;
     double maxSpeed = 200;
     void start() {

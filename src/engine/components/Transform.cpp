@@ -15,8 +15,8 @@ Matrix3 Transform::Unpivot() {
 }
 Matrix3 Transform::Translate(double x, double y) {
     Matrix3 result;
-    result.m[0][2] = x;
-    result.m[1][2] = y;
+    result[0][2] = x;
+    result[1][2] = y;
     return result;
 }
 Matrix3 Transform::Translate(Vector2 v) {
@@ -24,16 +24,16 @@ Matrix3 Transform::Translate(Vector2 v) {
 }
 Matrix3 Transform::Rotate(double r) {
     Matrix3 result;
-    result.m[0][0] = cos(r);
-    result.m[0][1] = -sin(r);
-    result.m[1][0] = sin(r);
-    result.m[1][1] = cos(r);
+    result[0][0] = cos(r);
+    result[0][1] = -sin(r);
+    result[1][0] = sin(r);
+    result[1][1] = cos(r);
     return result;
 }
 Matrix3 Transform::Scale(double x, double y) {
     Matrix3 result;
-    result.m[0][0] = x;
-    result.m[1][1] = y;
+    result[0][0] = x;
+    result[1][1] = y;
     return result;
 }
 Matrix3 Transform::Scale(Vector2 v) {
