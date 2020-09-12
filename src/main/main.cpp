@@ -17,7 +17,7 @@ int main(int argc, char ** argv) {
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
 
-    int num_objects = 1000;
+    int num_objects = 2000;
     for (int i = 0; i < num_objects; ++i) {
         Cell* s1 = new Cell();
         instantiate(s1);

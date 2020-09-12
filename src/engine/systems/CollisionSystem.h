@@ -53,12 +53,15 @@ public:
 private:
     vector<Interval*> intervals;
     vector<ColliderTransform*> objects;
+    vector<thread> workers;
     void addObject(GameObject* obj);
     bool GJK_collide(ColliderTransform* a, ColliderTransform* b);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
     void update_endpoint_positions();
     void sort_intervals();
+    void detect_collisions(int thread_id);
+    void nothing(int thread_id);
 };
 
 #endif

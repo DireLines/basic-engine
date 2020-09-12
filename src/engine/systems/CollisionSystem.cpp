@@ -1,10 +1,18 @@
 #include "CollisionSystem.h"
-#include "Sprite.h"
+#include "Sprite.h" //debug
+
+const auto processor_count = std::thread::hardware_concurrency();
 
 CollisionSystem::CollisionSystem() {
     name = "CollisionSystem";
 }
+
 void CollisionSystem::start() {
+    //TODO: spawn some threads and put them in a pool
+}
+
+void CollisionSystem::nothing(int thread_id) {
+
 }
 
 void CollisionSystem::update() {
@@ -16,33 +24,16 @@ void CollisionSystem::update() {
     for (int i = 0; i < intervals.size(); ++i) {
         intervals[i]->object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
-    color = {0, 200, 0};
     /*debug*/
 
-    for (int i = 0; i < intervals.size(); ++i) {
-        ColliderTransform* o1 = intervals[i]->object;
-        int j = i + 1;
-        while ((j < intervals.size()) && (intervals[j]->begin <= intervals[i]->end)) {
-            ColliderTransform* o2 = intervals[j]->object;
-            if (!(o1->collider->enabled && o2->collider->enabled)) {
-                j++; continue;
-            }
-            //you should not be able to collide with yourself
-            if (o1->transform->gameObject == o2->transform->gameObject) {
-                j++; continue;
-            }
-            if (GJK_collide(o1, o2)) {
-                //TODO: call collision events on scripts, resolve collisions
-                /*debug*/
-                o1->transform->gameObject->getComponent<Sprite>()->color = color;
-                o2->transform->gameObject->getComponent<Sprite>()->color = color;
-                /*debug*/
-            }
-            j++;
-        }
+    vector<thread> threads;
+
+    for (int i = 0; i < processor_count; ++i) {
+        threads.push_back(thread(&CollisionSystem::detect_collisions, this, i));
     }
-
-
+    for (int i = 0; i < processor_count; ++i) {
+        threads[i].join();
+    }
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
@@ -131,10 +122,6 @@ bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
 void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
 }
 
-bool beginning_pos(Interval* a, Interval* b) {
-    return a->begin < b->begin;
-}
-
 void CollisionSystem::update_endpoint_positions() {
     for (Interval* interval : intervals) {
         Matrix3 m = interval->object->transform->Apply();
@@ -145,6 +132,39 @@ void CollisionSystem::update_endpoint_positions() {
     }
 }
 
+bool beginning_pos(Interval* a, Interval* b) {
+    return a->begin < b->begin;
+}
+
+
 void CollisionSystem::sort_intervals() {
     std::sort(intervals.begin(), intervals.end(), beginning_pos);
+}
+
+void CollisionSystem::detect_collisions(int thread_id) {
+    SDL_Color color = {0, 200, 0};
+    int start = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id, processor_count);
+    int stop = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id + 1, processor_count);
+    for (int i = start; i < stop && i < intervals.size(); ++i) {
+        ColliderTransform* o1 = intervals[i]->object;
+        int j = i + 1;
+        while ((j < intervals.size()) && (intervals[j]->begin <= intervals[i]->end)) {
+            ColliderTransform* o2 = intervals[j]->object;
+            if (!(o1->collider->enabled && o2->collider->enabled)) {
+                j++; continue;
+            }
+            //you should not be able to collide with yourself
+            if (o1->transform->gameObject == o2->transform->gameObject) {
+                j++; continue;
+            }
+            if (GJK_collide(o1, o2)) {
+                //TODO: call collision events on scripts, resolve collisions
+                /*debug*/
+                o1->transform->gameObject->getComponent<Sprite>()->color = color;
+                o2->transform->gameObject->getComponent<Sprite>()->color = color;
+                /*debug*/
+            }
+            j++;
+        }
+    }
 }

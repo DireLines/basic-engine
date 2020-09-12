@@ -64,6 +64,11 @@ public:
         }
         return a1 <= b2 && b1 <= a2;
     }
+
+    //helper function for threads to compute their portion of an array given thread id
+    static int getThreadStartIndex(int start, int stop, int threadnum, int num_threads) {
+        return (int)((stop - start) * ((float)threadnum / num_threads) + start);
+    }
 private:
     //stolen from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
     static double determinant(Vector2 p1, Vector2 p2, Vector2 p3) {
