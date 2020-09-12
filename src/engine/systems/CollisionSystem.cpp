@@ -12,9 +12,9 @@ void CollisionSystem::start() {
 }
 
 void CollisionSystem::update() {
+    precalculate_matrices();
     update_endpoint_positions();
     sort_intervals();
-    precalculate_matrices();
 
 
     /*debug*/
@@ -47,6 +47,7 @@ void CollisionSystem::addObject(GameObject* obj) {
         interval->begin = 0;//will be overwritten
         interval->end = 0;////will be overwritten
         interval->object = ct;
+        interval->precalculated.collider = c;
         intervals.push_back(interval);
     }
 }
@@ -126,11 +127,11 @@ void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
 
 void CollisionSystem::update_endpoint_positions() {
     for (Interval* interval : intervals) {
-        Matrix3 m = interval->object->transform->Apply();
+        Matrix3 t = interval->precalculated.applied_transform;
         interval->begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
-                          m, interval->object->collider).x;
+                          t, interval->object->collider).x;
         interval->end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
-                        m, interval->object->collider).x;
+                        t, interval->object->collider).x;
     }
 }
 
@@ -166,7 +167,7 @@ void CollisionSystem::detect_collisions(int thread_id) {
                 j++; continue;
             }
             if (GJK_collide(o1, o2)) {
-                //TODO: call collision events on scripts, resolve collisions
+                //TODO: call collision events on scripts, record collisions
                 /*debug*/
                 o1.collider->gameObject->getComponent<Sprite>()->color = color;
                 o2.collider->gameObject->getComponent<Sprite>()->color = color;
