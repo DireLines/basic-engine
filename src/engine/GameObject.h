@@ -60,6 +60,11 @@ public:
     set<GameObject*> getChildren() {
         return getComponents<GameObject>();
     }
+    string Type() {
+        return type;
+    }
+protected:
+    string type = "GameObject";
 private:
     int id;
     set<Component*> components;

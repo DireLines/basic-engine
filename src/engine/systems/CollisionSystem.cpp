@@ -4,6 +4,8 @@
 CollisionSystem::CollisionSystem() {
     name = "CollisionSystem";
 }
+void CollisionSystem::start() {
+}
 
 void CollisionSystem::update() {
     update_endpoint_positions();

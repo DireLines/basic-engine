@@ -10,6 +10,4 @@
 - Scatter
 - Sprite:
     file: Coin.png
-    z:
-      code: rand() / RAND_MAX
 - Reproduce

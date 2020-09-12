@@ -38,7 +38,10 @@ def all_files_of_types(filetypes, path=''):
 # if adding a new public variable to GameObject.h,
 # also add it to this list, or .object file parser
 # will assume it's the name of some component
-game_object_fields = ["enabled", "name", "gameObject"]
+game_object_fields = ["enabled", "name"]
+
+# these are set automatically, so ignore scripts attempting to change them
+ignore_changes = ["type","gameObject"]
 
 components_needed = set()
 classes_declared = set()
@@ -73,6 +76,8 @@ def component_code(component, owner_name, modify_comps=True):
     component_type = component
     if(type(component) == dict):
         component_type = list(component.keys())[0]
+    if component_type in ignore_changes:
+        return result
     if component_type in game_object_fields:
         result += spaces + assign(owner_name, component_type, component[component_type])
         return result
@@ -141,6 +146,7 @@ public:
         constructor_code = constructor_body(yaml.safe_load(obj_file.read()), 'this', child=False)
         constructor_code = """
 Example::Example(){
+    type = "Example";
 //initialization
 }
         """.replace("Example",class_name).replace("//initialization",constructor_code.rstrip())

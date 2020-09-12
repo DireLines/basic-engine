@@ -6,7 +6,7 @@ class Scatter: public Script {
 public:
     double range = 1000;
     double rotationRange = 180;
-    double maxSpeed = 200;
+    double maxSpeed = 125;
     void start() {
         Transform* t = gameObject->getComponent<Transform>();
         t->rotation = Random::range(-rotationRange, rotationRange);

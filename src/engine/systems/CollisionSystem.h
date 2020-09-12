@@ -9,7 +9,7 @@
 #include "Collider.h"
 #include "Vector2.h"
 #include <vector>
-#include "Random.h"
+#include <thread>
 
 using namespace std;
 
@@ -46,6 +46,7 @@ class CollisionSystem : public System {
 public:
     CollisionSystem();
     ~CollisionSystem();
+    void start();
     void update();
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
