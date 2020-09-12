@@ -7,13 +7,13 @@ MinkowskiDifferenceSupport::MinkowskiDifferenceSupport(ColliderTransform* A, Col
     B_collider = B->collider;
     B_rotation = Transform::Rotate(-B_transform.rotation());
 }
-MinkowskiDifferenceSupport::MinkowskiDifferenceSupport(Matrix3& a_mat, Collider* a_col, Matrix3& b_mat, Collider* b_col) {
-    A_transform = a_mat;
-    A_collider = a_col;
-    A_rotation = Transform::Rotate(-A_transform.rotation());
-    B_transform = b_mat;
-    B_collider = b_col;
-    B_rotation = Transform::Rotate(-B_transform.rotation());
+MinkowskiDifferenceSupport::MinkowskiDifferenceSupport(ColliderMatrices& A, ColliderMatrices& B) {
+    A_transform = A.applied_transform;
+    A_collider = A.collider;
+    A_rotation = A.undo_rotation;
+    B_transform = B.applied_transform;
+    B_collider = B.collider;
+    B_rotation = B.undo_rotation;
 }
 MinkowskiDifferenceSupport::~MinkowskiDifferenceSupport() {
 }
