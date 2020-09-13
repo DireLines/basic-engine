@@ -151,7 +151,9 @@ void CollisionSystem::precalculate_matrices() {
     }
 }
 void CollisionSystem::detect_collisions(int thread_id) {
+    /*debug*/
     SDL_Color color = {0, 200, 0};
+    /*debug*/
     int start = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id, processor_count);
     int stop = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id + 1, processor_count);
     for (int i = start; i < stop && i < intervals.size(); ++i) {
