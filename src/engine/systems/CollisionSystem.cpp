@@ -16,7 +16,6 @@ void CollisionSystem::update() {
     update_endpoint_positions();
     sort_intervals();
 
-
     /*debug*/
     SDL_Color color = {255, 255, 255};
     for (Interval* interval : intervals) {
@@ -77,7 +76,7 @@ bool inEdgeRegionAB(Vector2 p, Vector2 A, Vector2 B, Vector2 C) {
     return false;
 }
 
-bool CollisionSystem::GJK_collide(ColliderMatrices& a, ColliderMatrices& b) {
+bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
     MinkowskiDifferenceSupport s(a, b);
     Vector2 origin(0, 0);
     Vector2 p1 = s(Vector2(0, 1));
@@ -115,7 +114,7 @@ bool CollisionSystem::GJK_collide(ColliderMatrices& a, ColliderMatrices& b) {
 }
 
 // bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
-// return GJK_collide(a->transform->Apply(), a->collider, b->transform->Apply(), b->collider);
+//     return GJK_collide(a->transform->Apply(), a->collider, b->transform->Apply(), b->collider);
 // }
 
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
