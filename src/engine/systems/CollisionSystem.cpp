@@ -127,10 +127,11 @@ void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
 void CollisionSystem::update_endpoint_positions() {
     for (Interval* interval : intervals) {
         Matrix3 t = interval->precalculated.applied_transform;
+        Matrix3 r = interval->precalculated.undo_rotation;
         interval->begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
-                          t, interval->object->collider).x;
+                          t, interval->object->collider, r).x;
         interval->end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
-                        t, interval->object->collider).x;
+                        t, interval->object->collider, r).x;
     }
 }
 
