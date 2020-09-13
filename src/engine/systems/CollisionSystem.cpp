@@ -11,18 +11,15 @@ void CollisionSystem::start() {
     //TODO: spawn some threads and put them in a pool
 }
 
-void CollisionSystem::nothing(int thread_id) {
-
-}
-
 void CollisionSystem::update() {
+    precalculate_matrices();
     update_endpoint_positions();
     sort_intervals();
 
     /*debug*/
     SDL_Color color = {255, 255, 255};
-    for (int i = 0; i < intervals.size(); ++i) {
-        intervals[i]->object->transform->gameObject->getComponent<Sprite>()->color = color;
+    for (Interval* interval : intervals) {
+        interval->object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
     /*debug*/
 
@@ -49,6 +46,7 @@ void CollisionSystem::addObject(GameObject* obj) {
         interval->begin = 0;//will be overwritten
         interval->end = 0;////will be overwritten
         interval->object = ct;
+        interval->precalculated.collider = c;
         intervals.push_back(interval);
     }
 }
@@ -78,10 +76,10 @@ bool inEdgeRegionAB(Vector2 p, Vector2 A, Vector2 B, Vector2 C) {
     return false;
 }
 
-bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
+bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
     MinkowskiDifferenceSupport s(a, b);
     Vector2 origin(0, 0);
-    Vector2 p1 = s(Vector2(1, 0));
+    Vector2 p1 = s(Vector2(0, 1));
     Vector2 p2 = s(-p1);
     if (MathUtils::sameHalfSpace(p1, p2)) {
         return false;
@@ -115,6 +113,10 @@ bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
     }
 }
 
+// bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
+//     return GJK_collide(a->transform->Apply(), a->collider, b->transform->Apply(), b->collider);
+// }
+
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
     return false;
 }
@@ -124,11 +126,11 @@ void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
 
 void CollisionSystem::update_endpoint_positions() {
     for (Interval* interval : intervals) {
-        Matrix3 m = interval->object->transform->Apply();
+        Matrix3 t = interval->precalculated.applied_transform;
         interval->begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
-                          m, interval->object->collider).x;
+                          t, interval->object->collider).x;
         interval->end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
-                        m, interval->object->collider).x;
+                        t, interval->object->collider).x;
     }
 }
 
@@ -141,27 +143,35 @@ void CollisionSystem::sort_intervals() {
     std::sort(intervals.begin(), intervals.end(), beginning_pos);
 }
 
+void CollisionSystem::precalculate_matrices() {
+    for (Interval* interval : intervals) {
+        interval->precalculated.applied_transform = interval->object->transform->Apply();
+        interval->precalculated.undo_rotation = Transform::Rotate(-interval->precalculated.applied_transform.rotation());
+    }
+}
 void CollisionSystem::detect_collisions(int thread_id) {
+    /*debug*/
     SDL_Color color = {0, 200, 0};
+    /*debug*/
     int start = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id, processor_count);
     int stop = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id + 1, processor_count);
     for (int i = start; i < stop && i < intervals.size(); ++i) {
-        ColliderTransform* o1 = intervals[i]->object;
+        ColliderMatrices o1 = intervals[i]->precalculated;
         int j = i + 1;
         while ((j < intervals.size()) && (intervals[j]->begin <= intervals[i]->end)) {
-            ColliderTransform* o2 = intervals[j]->object;
-            if (!(o1->collider->enabled && o2->collider->enabled)) {
+            ColliderMatrices o2 = intervals[j]->precalculated;
+            if (!(o1.collider->enabled && o2.collider->enabled)) {
                 j++; continue;
             }
             //you should not be able to collide with yourself
-            if (o1->transform->gameObject == o2->transform->gameObject) {
+            if (o1.collider->gameObject == o2.collider->gameObject) {
                 j++; continue;
             }
             if (GJK_collide(o1, o2)) {
-                //TODO: call collision events on scripts, resolve collisions
+                //TODO: call collision events on scripts, record collisions
                 /*debug*/
-                o1->transform->gameObject->getComponent<Sprite>()->color = color;
-                o2->transform->gameObject->getComponent<Sprite>()->color = color;
+                o1.collider->gameObject->getComponent<Sprite>()->color = color;
+                o2.collider->gameObject->getComponent<Sprite>()->color = color;
                 /*debug*/
             }
             j++;
