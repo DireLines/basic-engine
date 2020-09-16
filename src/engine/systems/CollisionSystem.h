@@ -10,7 +10,6 @@
 #include "Vector2.h"
 #include <vector>
 #include <thread>
-
 using namespace std;
 
 struct ColliderMatrices {
@@ -61,7 +60,6 @@ private:
     vector<Interval*> intervals;
     void addObject(GameObject* obj);
     bool GJK_collide(ColliderMatrices a, ColliderMatrices b);
-    // bool GJK_collide(ColliderTransform* a, ColliderTransform* b);
     bool colliding(GameObject* a, GameObject* b);
     void resolveCollision(GameObject* a, GameObject* b);
     void update_endpoint_positions();

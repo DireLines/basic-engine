@@ -8,7 +8,7 @@ CollisionSystem::CollisionSystem() {
 }
 
 void CollisionSystem::start() {
-    //TODO: spawn some threads and put them in a pool
+    //TODO: spawn some threads and put them in a pool to avoid creating new threads evey frame
 }
 
 void CollisionSystem::update() {
@@ -31,6 +31,8 @@ void CollisionSystem::update() {
     for (int i = 0; i < processor_count; ++i) {
         threads[i].join();
     }
+
+    //TODO: call collision events
 }
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
@@ -93,11 +95,10 @@ bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
         if (MathUtils::PointInTriangle(origin, p1, p2, p3)) {
             return true;
         }
-        //determine whether to keep p1's value, replace it with p2's, or recreate both p1 and p2
-        bool edge_p3p1 = inEdgeRegionAB(origin, p3, p1, p2);
-        bool edge_p3p2 = inEdgeRegionAB(origin, p3, p2, p1);
         //swap points to converge triangle on origin
         //by the end, p1 and p2 should be the vertices of the closest edge to the origin
+        bool edge_p3p1 = inEdgeRegionAB(origin, p3, p1, p2);
+        bool edge_p3p2 = inEdgeRegionAB(origin, p3, p2, p1);
         Vector2 tmp = p2;
         p2 = p3; //definitely include p3, the most recent point
         if (edge_p3p2) {//origin was in region of edge p3p2, so give p1 p2's former value
@@ -112,10 +113,6 @@ bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
         //else, origin was in region of edge p3p1, and values already are what they should be
     }
 }
-
-// bool CollisionSystem::GJK_collide(ColliderTransform* a, ColliderTransform* b) {
-//     return GJK_collide(a->transform->Apply(), a->collider, b->transform->Apply(), b->collider);
-// }
 
 bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
     return false;

@@ -4,7 +4,6 @@ PhysicsSystem::PhysicsSystem() {
     name = "PhysicsSystem";
 }
 void PhysicsSystem::update() {
-    //TODO: do this in parallel as much as possible
     double dt = GameTimer::DeltaTime();
     for (RigidbodyTransform* obj : objects) {
         move(obj, dt);

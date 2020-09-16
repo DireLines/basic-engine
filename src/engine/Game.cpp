@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Game.h"
 #include <string>
-#include <ctime>
+#include "WallTime.h"
 
 using namespace std;
 
@@ -15,8 +15,6 @@ Game::Game(int windowWidth, int windowHeight) {
     GameTimer::instance = new GameTimer();
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
-
-    //eventual goal:
 
     //run scripts
     systems.push_back(new ScriptRunner());
@@ -66,51 +64,6 @@ void Game::initSDL() {
     Game::renderer = renderer;
 }
 
-#ifdef _WIN32
-#include <Windows.h>
-double get_wall_time() {
-    LARGE_INTEGER time, freq;
-    if (!QueryPerformanceFrequency(&freq)) {
-        //  Handle error
-        return 0;
-    }
-    if (!QueryPerformanceCounter(&time)) {
-        //  Handle error
-        return 0;
-    }
-    return (double)time.QuadPart / freq.QuadPart;
-}
-double get_cpu_time() {
-    FILETIME a, b, c, d;
-    if (GetProcessTimes(GetCurrentProcess(), &a, &b, &c, &d) != 0) {
-        //  Returns total user time.
-        //  Can be tweaked to include kernel times as well.
-        return
-            (double)(d.dwLowDateTime |
-                     ((unsigned long long)d.dwHighDateTime << 32)) * 0.0000001;
-    } else {
-        //  Handle error
-        return 0;
-    }
-}
-
-//  Posix/Linux
-#else
-#include <time.h>
-#include <sys/time.h>
-double get_wall_time() {
-    struct timeval time;
-    if (gettimeofday(&time, NULL)) {
-        //  Handle error
-        return 0;
-    }
-    return (double)time.tv_sec + (double)time.tv_usec * .000001;
-}
-double get_cpu_time() {
-    return (double)clock() / CLOCKS_PER_SEC;
-}
-#endif
-
 void Game::start() {
     for (System* system : systems) {
         // cout << system->getName() << " start" << endl;
@@ -126,7 +79,6 @@ void Game::start() {
 
     while (!quit) {
         auto end = get_wall_time();
-        // double duration = ((end - start).count() / (double) CLOCKS_PER_SEC) * 1000;
         double duration = (end - start) * 1000;
         if (duration > ms_per_frame) {
             averageFrameLength += duration;

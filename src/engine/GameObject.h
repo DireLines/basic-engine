@@ -13,9 +13,11 @@ public:
 
     int ID();
 
-    //if adding a new public variable to GameObject,
-    //also add it to the list game_object_fields in codegen.py
-    //or .object file parser will assume it's the name of some component
+    //If adding a new public field to GameObject,
+    //also add the field's name to the list game_object_fields in codegen.py
+    //or .object file parser will assume it's the name of some component.
+    //If the field is not intended to be customizable by a .object file,
+    //instead add the name to the list ignore_changes
     string name;
 
     set<Component*> getComponents();
