@@ -19,7 +19,6 @@ void Game::initialize() {
 
     int num_objects = 3000;
     for (int i = 0; i < num_objects; ++i) {
-        Circle* s1 = new Circle();
-        instantiate(s1);
+        instantiate(new Square());
     }
 }
