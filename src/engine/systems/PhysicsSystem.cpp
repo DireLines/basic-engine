@@ -36,10 +36,8 @@ void PhysicsSystem::move(RigidbodyTransform* obj, double dt) {
     Transform* t = obj->transform;
 
     Vector2 acceleration = Vector2(rb->force.x / rb->mass, rb->force.y / rb->mass);
-    rb->velocity.x += acceleration.x * dt;
-    rb->velocity.y += acceleration.y * dt;
-    t->position.x += rb->velocity.x * dt;
-    t->position.y += rb->velocity.y * dt;
+    rb->velocity += acceleration * dt;
+    t->position += rb->velocity * dt;
 
     double angular_accel = rb->torque / rb->momentOfInertia;
     rb->angularVelocity += angular_accel * dt;

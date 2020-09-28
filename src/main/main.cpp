@@ -17,8 +17,12 @@ int main(int argc, char ** argv) {
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
 
-    int num_objects = 3000;
+    int num_objects = 2;
     for (int i = 0; i < num_objects; ++i) {
-        instantiate(new Square());
+        Point* p = new Point();
+        instantiate(p);
+        Seeker* s = new Seeker();
+        instantiate(s);
+        s->getComponent<Seek>()->target = p->getComponent<Transform>();
     }
 }

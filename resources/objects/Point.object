@@ -1,5 +1,7 @@
 - Transform:
     scale:
-      code: Vector2(0.05, 0.05)
+      code: Vector2(0.1, 0.1)
 - Sprite:
     file: circle.png
+- Rigidbody
+- Scatter

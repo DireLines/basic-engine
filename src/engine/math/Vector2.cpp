@@ -63,6 +63,13 @@ Vector2 Vector2::normalized() {
     double m = this->magnitude();
     return Vector2(x / m, y / m);
 }
+
+Vector2 Vector2::clamp(double amount) {
+    if (magnitude() > amount) {
+        return normalized() * amount;
+    }
+    return *this;
+}
 SDL_Point Vector2::toPixel() {
     return {(int)round(x), (int)round(y)};
 }

@@ -24,6 +24,7 @@ public:
     Vector2 operator *(double s);
     Vector2 operator-();
     Vector2 normalized();
+    Vector2 clamp(double amount);
 };
 
 #endif

@@ -1,0 +1,9 @@
+- Transform:
+    scale:
+      code: Vector2(0.3, 0.3)
+- Sprite:
+    file: coin.png
+- Rigidbody
+- Scatter:
+    maxSpeed: 500
+- Seek
