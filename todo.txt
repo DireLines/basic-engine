@@ -1,0 +1,15 @@
+-figure out how namespaces work
+-put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
+-collision resolution
+    -learn sequential impulses
+    -implement sequential impulses
+    -will probably need to optimize here
+-input
+-child transforms / constraints
+-script execution order
+    -sort scripts by execution order on start / update
+    -figure out when to call collision events
+-enforce some hygiene on object/scene files
+    -objects cannot contain scenes
+    -scenes can only contain objects
+    -how to specify transform constraints in object files
