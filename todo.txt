@@ -1,10 +1,19 @@
--figure out how namespaces work
--put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
 -collision resolution
     -learn sequential impulses
     -implement sequential impulses
     -will probably need to optimize here
+    -keep track of collision information efficiently
+
+-figure out how namespaces work
+-put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
 -input
+    -keyboard
+    -mouse
+    -controller
+-art
+    -support spritesheets
+    -support animations
+    -sound
 -child transforms / constraints
 -script execution order
     -sort scripts by execution order on start / update
@@ -13,3 +22,4 @@
     -objects cannot contain scenes
     -scenes can only contain objects
     -how to specify transform constraints in object files
+-state machines, tweening, other useful shit
