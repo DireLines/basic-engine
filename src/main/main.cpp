@@ -17,7 +17,7 @@ int main(int argc, char ** argv) {
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
 
-    int num_objects = 2;
+    int num_objects = 500;
     for (int i = 0; i < num_objects; ++i) {
         Point* p = new Point();
         instantiate(p);

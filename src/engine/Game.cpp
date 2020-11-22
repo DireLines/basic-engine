@@ -71,14 +71,14 @@ void Game::start() {
     }
     initialize();
     double ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
-    auto start = get_wall_time();
+    auto start = get_cpu_time();
     GameTimer::time = 0;
 
     bool quit = false;
     SDL_Event event;
 
     while (!quit) {
-        auto end = get_wall_time();
+        auto end = get_cpu_time();
         double duration = (end - start) * 1000;
         if (duration > ms_per_frame) {
             averageFrameLength += duration;
