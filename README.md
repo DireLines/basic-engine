@@ -1,6 +1,8 @@
 # basic-engine
 a minimal game engine for making simple games
 
+Run with:
+`make -j8 && ./bin/Game`
 
 Dependencies:
 
@@ -14,3 +16,5 @@ python 3 with pyyaml for parsing object description files
 https://www.python.org/downloads/
 
 https://pypi.org/project/PyYAML/
+
+
