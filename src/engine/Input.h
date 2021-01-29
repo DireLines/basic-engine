@@ -19,6 +19,8 @@ public:
     }
 private:
     static set<SDL_Scancode> pressedKeys;
+    static set<char> pressedButtons;
+    static set<char> clicks;
     friend class Game;
 };
 #endif

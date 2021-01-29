@@ -1,6 +1,6 @@
 - Transform:
     scale:
-      code: Vector2(3.0, 3.0)
+      code: Vector2(2.0, 2.0)
 - Rigidbody
 - BoxCollider
 - Sprite:
