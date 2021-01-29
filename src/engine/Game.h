@@ -40,7 +40,6 @@ public:
 
     virtual void update();
 
-
     void instantiate(GameObject* obj);
     // TODO: instantiate overloads for position & rotation and all that
     // void instantiate(GameObject* obj, Vector2 pos, double rotation);
