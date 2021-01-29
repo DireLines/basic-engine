@@ -22,4 +22,5 @@ void Game::initialize() {
         Square* s = new Square();
         instantiate(s);
     }
+    instantiate(new Player());
 }

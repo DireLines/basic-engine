@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "Rigidbody.h"
 #include "GameTimer.h"
+#include "Input.h"
 #include "Random.h"
 
 using namespace std;

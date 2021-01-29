@@ -1,0 +1,8 @@
+- Transform:
+    scale:
+      code: Vector2(3.0, 3.0)
+- Rigidbody
+- BoxCollider
+- Sprite:
+    file: Coin.png
+- WASDMovement
