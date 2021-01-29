@@ -155,15 +155,14 @@ void CollisionSystem::detect_collisions(int thread_id) {
     int stop = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id + 1, processor_count);
     for (int i = start; i < stop && i < intervals.size(); ++i) {
         ColliderMatrices o1 = intervals[i]->precalculated;
-        int j = i + 1;
-        while ((j < intervals.size()) && (intervals[j]->begin <= intervals[i]->end)) {
+        for (int j = i + 1; j < intervals.size() && intervals[j]->begin <= intervals[i]->end; j++) {
             ColliderMatrices o2 = intervals[j]->precalculated;
             if (!(o1.collider->enabled && o2.collider->enabled)) {
-                j++; continue;
+                continue;
             }
             //you should not be able to collide with yourself
             if (o1.collider->gameObject == o2.collider->gameObject) {
-                j++; continue;
+                continue;
             }
             if (GJK_collide(o1, o2)) {
                 //TODO: call collision events on scripts, record collisions
@@ -172,7 +171,6 @@ void CollisionSystem::detect_collisions(int thread_id) {
                 o2.collider->gameObject->getComponent<Sprite>()->color = color;
                 /*debug*/
             }
-            j++;
         }
     }
 }

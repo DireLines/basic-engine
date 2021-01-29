@@ -19,10 +19,7 @@ void Game::initialize() {
 
     int num_objects = 500;
     for (int i = 0; i < num_objects; ++i) {
-        Point* p = new Point();
-        instantiate(p);
-        Seeker* s = new Seeker();
+        Square* s = new Square();
         instantiate(s);
-        s->getComponent<Seek>()->target = p->getComponent<Transform>();
     }
 }

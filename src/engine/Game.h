@@ -13,6 +13,7 @@
 #include "PhysicsSystem.h"
 #include "CollisionSystem.h"
 #include "GameTimer.h"
+#include "Input.h"
 
 using namespace std;
 
@@ -55,7 +56,6 @@ private:
 
     void initSDL();
     void quitSDL();
-    set<SDL_Scancode> pressedKeys;
 
     set<GameObject*> objects;
 

@@ -13,6 +13,7 @@ Game::Game(int windowWidth, int windowHeight) {
     Game::instance = this;
     IDGenerator::instance = new IDGenerator();
     GameTimer::instance = new GameTimer();
+    Input::instance = new Input();
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
@@ -94,10 +95,10 @@ void Game::start() {
             quit = true;
             break;
         case SDL_KEYDOWN:
-            pressedKeys.insert(event.key.keysym.scancode);
+            Input::pressedKeys.insert(event.key.keysym.scancode);
             break;
         case SDL_KEYUP:
-            pressedKeys.erase(event.key.keysym.scancode);
+            Input::pressedKeys.erase(event.key.keysym.scancode);
             break;
         }
 
