@@ -11,49 +11,70 @@ Input::Input() {
     Input::instance = this;
     // controller = NULL;
     // SDL_Init(SDL_INIT_JOYSTICK);
-    // if ( SDL_NumJoysticks() < 1 ) {
-    //     cout << "No joysticks connected" << endl;
-    // } else {
+    // if ( SDL_NumJoysticks() > 0 ) {
     //     cout << SDL_NumJoysticks() << " joysticks connected" << endl;
     //     controller = SDL_JoystickOpen(0);//first joystick
     // }
     // leftStick = Vector2(0, 0);
 }
 
-// void Input::update(set<char> clicks) {
-//     int x;
-//     int y;
-//     SDL_GetMouseState(&x, &y);
-//     cursorPosition = {x, y};
-//     bool leftButtonThisFrame = false;
-//     leftButtonDown = false;
-//     bool rightButtonThisFrame = false;
-//     rightButtonDown = false;
-//     for (char click : clicks) {
-//         switch (click) {
-//         case SDL_BUTTON_LEFT:
-//             leftButtonThisFrame = true;
-//             if (!leftButtonHeld) {
-//                 leftButtonHeld = true;
-//                 leftButtonDown = true;
-//                 lastClickedPosition = cursorPosition;
-//             }
-//             break;
-//         case SDL_BUTTON_RIGHT:
-//             rightButtonThisFrame = true;
-//             if (!rightButtonHeld) {
-//                 rightButtonHeld = true;
-//                 rightButtonDown = true;
-//             }
-//             break;
-//         default:
-//             break;
-//         }
-//     }
-//     if (!leftButtonThisFrame) {
-//         leftButtonHeld = false;
-//     }
-//     if (!rightButtonThisFrame) {
-//         rightButtonHeld = false;
-//     }
-// }
+void Input::poll(SDL_Event event) {
+    switch (event.type) {
+    case SDL_KEYDOWN:
+        Input::pressedKeys.insert(event.key.keysym.scancode);
+        break;
+    case SDL_KEYUP:
+        Input::pressedKeys.erase(event.key.keysym.scancode);
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        Input::clicks.insert(event.button.button);
+        break;
+    case SDL_MOUSEBUTTONUP:
+        Input::clicks.erase(event.button.button);
+        break;
+    case SDL_JOYBUTTONDOWN:
+        Input::pressedButtons.insert(event.jbutton.button);
+        break;
+    case SDL_JOYBUTTONUP:
+        Input::pressedButtons.erase(event.jbutton.button);
+        break;
+    }
+}
+
+void Input::update() {
+    int x;
+    int y;
+    SDL_GetMouseState(&x, &y);
+    cursorPosition = {x, y};
+    bool leftButtonThisFrame = false;
+    leftButtonDown = false;
+    bool rightButtonThisFrame = false;
+    rightButtonDown = false;
+    for (char click : clicks) {
+        switch (click) {
+        case SDL_BUTTON_LEFT:
+            leftButtonThisFrame = true;
+            if (!leftButtonHeld) {
+                leftButtonHeld = true;
+                leftButtonDown = true;
+                lastClickedPosition = cursorPosition;
+            }
+            break;
+        case SDL_BUTTON_RIGHT:
+            rightButtonThisFrame = true;
+            if (!rightButtonHeld) {
+                rightButtonHeld = true;
+                rightButtonDown = true;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    if (!leftButtonThisFrame) {
+        leftButtonHeld = false;
+    }
+    if (!rightButtonThisFrame) {
+        rightButtonHeld = false;
+    }
+}

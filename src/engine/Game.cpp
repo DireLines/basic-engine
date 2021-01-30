@@ -86,6 +86,7 @@ void Game::start() {
             start = end;
             GameTimer::deltaTime = duration / 1000;
             GameTimer::time += GameTimer::deltaTime;
+            Input::update();
             update();
         }
 
@@ -94,26 +95,10 @@ void Game::start() {
         case SDL_QUIT:
             quit = true;
             break;
-        case SDL_KEYDOWN:
-            Input::pressedKeys.insert(event.key.keysym.scancode);
-            break;
-        case SDL_KEYUP:
-            Input::pressedKeys.erase(event.key.keysym.scancode);
-            break;
-        case SDL_MOUSEBUTTONDOWN:
-            Input::clicks.insert(event.button.button);
-            break;
-        case SDL_MOUSEBUTTONUP:
-            Input::clicks.erase(event.button.button);
-            break;
-        case SDL_JOYBUTTONDOWN:
-            Input::pressedButtons.insert(event.jbutton.button);
-            break;
-        case SDL_JOYBUTTONUP:
-            Input::pressedButtons.erase(event.jbutton.button);
+        default:
+            Input::poll(event);
             break;
         }
-
     }
 }
 

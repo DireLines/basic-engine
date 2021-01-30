@@ -42,8 +42,8 @@ public:
         return rightButtonDown;
     }
 private:
-    // static void poll(SDL_Event event);
-    // static void update();
+    static void poll(SDL_Event event);
+    static void update();
     static set<SDL_Scancode> pressedKeys;
     static set<char> pressedButtons;
     static set<char> clicks;
