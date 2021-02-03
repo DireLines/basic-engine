@@ -6,3 +6,4 @@
 - Sprite:
     file: Coin.png
 - WASDMovement
+- InputTest

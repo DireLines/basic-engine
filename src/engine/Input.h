@@ -4,6 +4,7 @@
 #include <set>
 #include <tuple>
 #include <SDL2/SDL.h>
+#include <iostream>
 
 using namespace std;
 
@@ -15,8 +16,24 @@ public:
     Input();
     ~Input();
 
-    static bool getKey(SDL_Scancode key) {
-        return pressedKeys.find(key) != pressedKeys.end();
+    static bool keyPressed(SDL_Scancode key) {
+        return keyHeld(key) && !keyHeldLastFrame(key);
+    }
+    static bool keyHeld(SDL_Scancode key) {
+        return keys.find(key) != keys.end();
+    }
+    static bool keyReleased(SDL_Scancode key) {
+        return !keyHeld(key) && keyHeldLastFrame(key);
+    }
+
+    static bool buttonPressed(char button) {
+        return buttonHeld(button) && !buttonHeldLastFrame(button);
+    }
+    static bool buttonHeld(char button) {
+        return buttons.find(button) != buttons.end();
+    }
+    static bool buttonReleased(char button) {
+        return !buttonHeld(button) && buttonHeldLastFrame(button);
     }
 
     static tuple<SDL_Point, SDL_Point> selectionCorners() {
@@ -42,11 +59,21 @@ public:
         return rightButtonDown;
     }
 private:
+    static bool keyHeldLastFrame(SDL_Scancode key) {
+        return prevKeys.find(key) != prevKeys.end();
+    }
+    static bool buttonHeldLastFrame(char button) {
+        return prevButtons.find(button) != prevButtons.end();
+    }
     static void poll(SDL_Event event);
     static void update();
+    static void postUpdate();
     static set<SDL_Scancode> keys;
     static set<char> buttons;
     static set<char> clicks;
+    static set<SDL_Scancode> prevKeys;
+    static set<char> prevButtons;
+    static set<char> prevClicks;
     static SDL_Point cursorPosition;
     static SDL_Point lastClickedPosition;
     static bool leftButtonHeld, rightButtonHeld, leftButtonDown, rightButtonDown;

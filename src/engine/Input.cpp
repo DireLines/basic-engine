@@ -3,6 +3,9 @@ Input* Input::instance;
 set<SDL_Scancode> Input::keys;
 set<char> Input::buttons;
 set<char> Input::clicks;
+set<SDL_Scancode> Input::prevKeys;
+set<char> Input::prevButtons;
+set<char> Input::prevClicks;
 SDL_Point Input::cursorPosition = {0, 0};
 SDL_Point Input::lastClickedPosition = {0, 0};
 bool Input::leftButtonHeld, Input::rightButtonHeld, Input::leftButtonDown, Input::rightButtonDown = false;
@@ -21,22 +24,22 @@ Input::Input() {
 void Input::poll(SDL_Event event) {
     switch (event.type) {
     case SDL_KEYDOWN:
-        Input::keys.insert(event.key.keysym.scancode);
+        keys.insert(event.key.keysym.scancode);
         break;
     case SDL_KEYUP:
-        Input::keys.erase(event.key.keysym.scancode);
+        keys.erase(event.key.keysym.scancode);
         break;
     case SDL_MOUSEBUTTONDOWN:
-        Input::clicks.insert(event.button.button);
+        clicks.insert(event.button.button);
         break;
     case SDL_MOUSEBUTTONUP:
-        Input::clicks.erase(event.button.button);
+        clicks.erase(event.button.button);
         break;
     case SDL_JOYBUTTONDOWN:
-        Input::buttons.insert(event.jbutton.button);
+        buttons.insert(event.jbutton.button);
         break;
     case SDL_JOYBUTTONUP:
-        Input::buttons.erase(event.jbutton.button);
+        buttons.erase(event.jbutton.button);
         break;
     }
 }
@@ -77,4 +80,9 @@ void Input::update() {
     if (!rightButtonThisFrame) {
         rightButtonHeld = false;
     }
+}
+void Input::postUpdate() {
+    prevKeys = set<SDL_Scancode>(keys);
+    prevButtons = set<char>(buttons);
+    prevClicks = set<char>(clicks);
 }

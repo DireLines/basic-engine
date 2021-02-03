@@ -12,16 +12,16 @@ public:
     void update() {
         Vector2 vel(0, 0);
         double dt = GameTimer::DeltaTime();
-        if (Input::getKey(SDL_SCANCODE_W)) {
+        if (Input::keyHeld(SDL_SCANCODE_W)) {
             vel.y -= speed * dt;
         }
-        if (Input::getKey(SDL_SCANCODE_S)) {
+        if (Input::keyHeld(SDL_SCANCODE_S)) {
             vel.y += speed * dt;
         }
-        if (Input::getKey(SDL_SCANCODE_A)) {
+        if (Input::keyHeld(SDL_SCANCODE_A)) {
             vel.x -= speed * dt;
         }
-        if (Input::getKey(SDL_SCANCODE_D)) {
+        if (Input::keyHeld(SDL_SCANCODE_D)) {
             vel.x += speed * dt;
         }
         if (vel.magnitude() > speed * dt) {

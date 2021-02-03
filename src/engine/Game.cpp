@@ -88,6 +88,7 @@ void Game::start() {
             GameTimer::time += GameTimer::deltaTime;
             Input::update();
             update();
+            Input::postUpdate();
         }
 
         SDL_PollEvent(&event);
