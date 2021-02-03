@@ -7,7 +7,7 @@
 -figure out how namespaces work
 -put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
 -input
-    -keyboard
+    +keyboard
     -mouse
     -controller
 -art

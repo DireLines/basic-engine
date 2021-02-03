@@ -1,7 +1,7 @@
 #include "Input.h"
 Input* Input::instance;
-set<SDL_Scancode> Input::pressedKeys;
-set<char> Input::pressedButtons;
+set<SDL_Scancode> Input::keys;
+set<char> Input::buttons;
 set<char> Input::clicks;
 SDL_Point Input::cursorPosition = {0, 0};
 SDL_Point Input::lastClickedPosition = {0, 0};
@@ -21,10 +21,10 @@ Input::Input() {
 void Input::poll(SDL_Event event) {
     switch (event.type) {
     case SDL_KEYDOWN:
-        Input::pressedKeys.insert(event.key.keysym.scancode);
+        Input::keys.insert(event.key.keysym.scancode);
         break;
     case SDL_KEYUP:
-        Input::pressedKeys.erase(event.key.keysym.scancode);
+        Input::keys.erase(event.key.keysym.scancode);
         break;
     case SDL_MOUSEBUTTONDOWN:
         Input::clicks.insert(event.button.button);
@@ -33,10 +33,10 @@ void Input::poll(SDL_Event event) {
         Input::clicks.erase(event.button.button);
         break;
     case SDL_JOYBUTTONDOWN:
-        Input::pressedButtons.insert(event.jbutton.button);
+        Input::buttons.insert(event.jbutton.button);
         break;
     case SDL_JOYBUTTONUP:
-        Input::pressedButtons.erase(event.jbutton.button);
+        Input::buttons.erase(event.jbutton.button);
         break;
     }
 }

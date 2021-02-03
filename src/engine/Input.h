@@ -44,8 +44,8 @@ public:
 private:
     static void poll(SDL_Event event);
     static void update();
-    static set<SDL_Scancode> pressedKeys;
-    static set<char> pressedButtons;
+    static set<SDL_Scancode> keys;
+    static set<char> buttons;
     static set<char> clicks;
     static SDL_Point cursorPosition;
     static SDL_Point lastClickedPosition;
