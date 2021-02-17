@@ -21,6 +21,12 @@ Input::Input() {
     // leftStick = Vector2(0, 0);
 }
 
+Input::~Input() {
+    // SDL_JoystickClose( controller );
+    // controller = NULL;
+}
+
+
 void Input::poll(SDL_Event event) {
     switch (event.type) {
     case SDL_KEYDOWN:
@@ -45,6 +51,16 @@ void Input::poll(SDL_Event event) {
 }
 
 void Input::update() {
+    // leftStick = Vector2(0, 0);
+    // Vector2 leftStickRaw = Vector2(0, 0);
+    // short raw_left_x = SDL_JoystickGetAxis(controller, 0);
+    // short raw_left_y = SDL_JoystickGetAxis(controller, 1);
+    // leftStickRaw.x = (float)(raw_left_x) / SHRT_MAX;
+    // leftStickRaw.y = (float)(raw_left_y) / SHRT_MAX;
+    // if (leftStickRaw.magnitude() > deadZone) {
+    //     leftStick = Vector2(leftStickRaw.x, leftStickRaw.y);
+    // }
+
     int x;
     int y;
     SDL_GetMouseState(&x, &y);

@@ -29,9 +29,6 @@ public:
         }
         rb->velocity = vel;
     }
-    bool parallelizable() {
-        return true;
-    }
 };
 
 #endif

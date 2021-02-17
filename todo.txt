@@ -8,7 +8,7 @@
 -put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
 -input
     +keyboard
-    -mouse
+    +mouse
     -controller
 -art
     -support spritesheets

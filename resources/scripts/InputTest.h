@@ -18,9 +18,6 @@ public:
             Vector2(Input::getCursorPosition()).print();
         }
     }
-    bool parallelizable() {
-        return true;
-    }
 };
 
 #endif
