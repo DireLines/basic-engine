@@ -1,8 +1,21 @@
 -collision resolution
-    -learn sequential impulses
-    -implement sequential impulses
+    -modify GJK to return penetration depth using EPA
+        -return as vector normal to the collision with magnitude = pen. depth
+    -non-penetration constraint
+        -takes two transforms and the normal vector from a collision
+    -new physics/collision steps
+        -compute all external forces (done during ScriptRunner update)
+        -apply the forces and determine the tentative resulting velocities, using basic kinematics (done in PhysicsSystem update, but not done tentatively yet)
+        -detect collisions, store information somewhere
+        -find actual velocities using sequential impulses
+            -formulas to apply to each collision are in the blog post
+            -formula accumulates impulse each iteration
+        -Apply the actual velocities and simulate the resulting motion.
     -will probably need to optimize here
+        -sleeping rigidbodies
+        -warm start
     -keep track of collision information efficiently
+    -figure out when to execute collision events
 
 -figure out how namespaces work
 -put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
