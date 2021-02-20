@@ -38,7 +38,7 @@ public:
     void start();
     void initialize(); //game-specific initialization of objects
 
-    virtual void update();
+    virtual bool update();
 
     void instantiate(GameObject* obj);
     // TODO: instantiate overloads for position & rotation and all that

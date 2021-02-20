@@ -76,7 +76,6 @@ void Game::start() {
     GameTimer::time = 0;
 
     bool quit = false;
-    SDL_Event event;
 
     while (!quit) {
         auto end = get_wall_time();
@@ -87,30 +86,31 @@ void Game::start() {
             GameTimer::deltaTime = duration / 1000;
             GameTimer::time += GameTimer::deltaTime;
             Input::update();
-            update();
+            quit = update();
             Input::postUpdate();
         }
+    }
+}
 
+bool Game::update() {
+    SDL_Event event;
+    for (System* system : systems) {
+        // cout << system->getName() << " update" << endl;
+        system->update();
         SDL_PollEvent(&event);
         switch (event.type) {
         case SDL_QUIT:
-            quit = true;
+            return true;
             break;
         default:
             Input::poll(event);
             break;
         }
     }
-}
-
-void Game::update() {
-    for (System* system : systems) {
-        // cout << system->getName() << " update" << endl;
-        system->update();
-    }
     std::for_each(objectsToDelete.begin(), objectsToDelete.end(), [](GameObject * obj) { delete obj; });
     objectsToDelete.clear();
     frameCounter++;
+    return false;
 }
 
 void Game::instantiate(GameObject* obj) {
