@@ -16,13 +16,13 @@
         -warm start
     -keep track of collision information efficiently
     -figure out when to execute collision events
--figure out how namespaces work
--put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
 -input
     +keyboard
     +mouse
     -controller
     -at low frame rates, the polling rate should still be high (approx 120 hz is fine). currently, polling only happens once per frame when frame takes time comparable to target. so, put polling on separate thread which writes data, update thread only reads data
+-figure out how namespaces work
+-put stuff in namespaces so that the developer doesn't have to worry about name clashes for game object types
 -art
     -support spritesheets
     -support animations
