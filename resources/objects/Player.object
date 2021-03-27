@@ -1,9 +1,9 @@
 - Transform:
     scale:
-      code: Vector2(2.0, 2.0)
+      code: Vector2(0.4, 0.4)
 - Rigidbody
 - BoxCollider
 - Sprite:
-    file: Coin.png
+    file: Player.png
 - WASDMovement
 - InputTest
