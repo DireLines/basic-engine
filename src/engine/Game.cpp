@@ -17,9 +17,6 @@ Game::Game(int windowWidth, int windowHeight) {
     this->windowWidth = windowWidth;
     this->windowHeight = windowHeight;
 
-    //run scripts
-    systems.push_back(new ScriptRunner());
-
     //apply forces
     //update position/velocity
     systems.push_back(new PhysicsSystem());
@@ -27,6 +24,10 @@ Game::Game(int windowWidth, int windowHeight) {
     //detect collisions
     //resolve collisions
     systems.push_back(new CollisionSystem());
+    //call collision events
+
+    //run scripts
+    systems.push_back(new ScriptRunner());
 
     //draw results
     systems.push_back(new Renderer());

@@ -2,7 +2,9 @@
     scale:
       code: Vector2(0.4, 0.4)
 - Rigidbody
-- BoxCollider
+- BoxCollider:
+    width: 30
+    height: 30
 - Sprite:
     file: Player.png
 - WASDMovement
