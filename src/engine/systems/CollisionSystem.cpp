@@ -18,8 +18,8 @@ void CollisionSystem::update() {
 
     /*debug*/
     SDL_Color color = {255, 255, 255};
-    for (Interval* interval : intervals) {
-        interval->object->transform->gameObject->getComponent<Sprite>()->color = color;
+    for (Interval interval : intervals) {
+        interval.object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
     /*debug*/
 
@@ -32,6 +32,7 @@ void CollisionSystem::update() {
         threads[i].join();
     }
 
+    //TODO: resolve collisions
     //TODO: call collision events
 }
 bool CollisionSystem::needObject(GameObject* obj) {
@@ -44,20 +45,14 @@ void CollisionSystem::addObject(GameObject* obj) {
         ColliderTransform* ct = new ColliderTransform();
         ct->collider = c;
         ct->transform = t;
-        Interval* interval = new Interval();
-        interval->begin = 0;//will be overwritten
-        interval->end = 0;////will be overwritten
-        interval->object = ct;
-        interval->precalculated.collider = c;
-        intervals.push_back(interval);
+        intervals.push_back(Interval{.begin = 0,.end = 0,.object = ct, .precalculated.collider = c});
     }
 }
 void CollisionSystem::removeObject(GameObject* obj) {
-    vector<Interval*>::iterator it = intervals.begin();
+    vector<Interval>::iterator it = intervals.begin();
     while (it != intervals.end()) {
-        if ((*it)->object->transform->gameObject == obj) {
-            delete (*it)->object;
-            delete *it;
+        if ((*it).object->transform->gameObject == obj) {
+            delete (*it).object;
             it = intervals.erase(it);
         } else {
             it++;
@@ -121,42 +116,44 @@ bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
 void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
 }
 
-void CollisionSystem::update_endpoint_positions() {
-    for (Interval* interval : intervals) {
-        Matrix3 t = interval->precalculated.applied_transform;
-        Matrix3 r = interval->precalculated.undo_rotation;
-        interval->begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
-                          t, interval->object->collider, r).x;
-        interval->end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
-                        t, interval->object->collider, r).x;
+void CollisionSystem::precalculate_matrices() {
+    for (Interval &interval : intervals) {
+        interval.precalculated.applied_transform = interval.object->transform->Apply();
+        interval.precalculated.undo_rotation = Transform::Rotate(-interval.precalculated.applied_transform.rotation());
     }
 }
 
-bool beginning_pos(Interval* a, Interval* b) {
-    return a->begin < b->begin;
+void CollisionSystem::update_endpoint_positions() {
+    for (Interval &interval : intervals) {
+        Matrix3 t = interval.precalculated.applied_transform;
+        Matrix3 r = interval.precalculated.undo_rotation;
+        interval.begin =MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
+                        t, interval.object->collider, r).x;
+        interval.end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
+                       t, interval.object->collider, r).x;
+    }
 }
 
+bool beginning_pos(Interval a, Interval b) {
+    return a.begin < b.begin;
+}
 
 void CollisionSystem::sort_intervals() {
     std::sort(intervals.begin(), intervals.end(), beginning_pos);
 }
 
-void CollisionSystem::precalculate_matrices() {
-    for (Interval* interval : intervals) {
-        interval->precalculated.applied_transform = interval->object->transform->Apply();
-        interval->precalculated.undo_rotation = Transform::Rotate(-interval->precalculated.applied_transform.rotation());
-    }
-}
-void CollisionSystem::detect_collisions(int thread_id) {
+vector<Collision> CollisionSystem::detect_collisions(int thread_id) {
     /*debug*/
     SDL_Color color = {0, 200, 0};
     /*debug*/
+    vector<Collision> collisions;
     int start = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id, processor_count);
     int stop = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id + 1, processor_count);
     for (int i = start; i < stop && i < intervals.size(); ++i) {
-        ColliderMatrices o1 = intervals[i]->precalculated;
-        for (int j = i + 1; j < intervals.size() && intervals[j]->begin <= intervals[i]->end; j++) {
-            ColliderMatrices o2 = intervals[j]->precalculated;
+        ColliderMatrices o1 = intervals[i].precalculated;
+        for (int j = i + 1; j < intervals.size() && intervals[j].begin <= intervals[i].end; j++) {
+            ColliderMatrices o2 = intervals[j].precalculated;
+            // cout << intervals[i].begin << " " << intervals[i].end << " " << intervals[j].begin << " " << intervals[j].end << endl;
             if (!(o1.collider->enabled && o2.collider->enabled)) {
                 continue;
             }
@@ -165,7 +162,8 @@ void CollisionSystem::detect_collisions(int thread_id) {
                 continue;
             }
             if (GJK_collide(o1, o2)) {
-                //TODO: call collision events on scripts, record collisions
+                //TODO: record collisions
+                collisions.push_back(Collision {o1.collider, o2.collider});
                 /*debug*/
                 o1.collider->gameObject->getComponent<Sprite>()->color = color;
                 o2.collider->gameObject->getComponent<Sprite>()->color = color;
@@ -173,4 +171,6 @@ void CollisionSystem::detect_collisions(int thread_id) {
             }
         }
     }
+    // cout << collisions.size() << endl;
+    return collisions;
 }

@@ -145,7 +145,7 @@ public:
         classes += class_decl.rstrip() + '\n'
         constructor_code = constructor_body(yaml.safe_load(obj_file.read()), 'this', child=False)
         constructor_code = """
-Example::Example(){
+Example::Example() {
     type = "Example";
 //initialization
 }
