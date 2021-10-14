@@ -83,6 +83,7 @@ void Game::start() {
         double duration = (end - start) * 1000;
         if (duration > ms_per_frame) {
             averageFrameLength += duration;
+            // cout << "frame " << frameCounter << " took " << duration << " ms" << endl;
             start = end;
             GameTimer::deltaTime = duration / 1000;
             GameTimer::time += GameTimer::deltaTime;
@@ -108,7 +109,9 @@ bool Game::update() {
             break;
         }
     }
-    std::for_each(objectsToDelete.begin(), objectsToDelete.end(), [](GameObject * obj) { delete obj; });
+    std::for_each(objectsToDelete.begin(), objectsToDelete.end(), [](GameObject * obj) {
+        delete obj;
+    });
     objectsToDelete.clear();
     frameCounter++;
     return false;

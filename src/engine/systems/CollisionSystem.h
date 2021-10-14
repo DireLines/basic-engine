@@ -10,6 +10,7 @@
 #include "Vector2.h"
 #include <vector>
 #include <thread>
+#include <future>
 using namespace std;
 
 struct ColliderMatrices {
@@ -69,7 +70,7 @@ private:
     void update_endpoint_positions();
     void sort_intervals();
     void precalculate_matrices();
-    vector<Collision> detect_collisions(int thread_id);
+    void detect_collisions(int thread_id, vector<Collision>& output);
 };
 
 #endif

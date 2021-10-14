@@ -36,14 +36,20 @@ Vector2 Vector2::operator*(double s) {
     return Vector2(x * s, y * s);
 }
 Vector2 Vector2::operator-() {
-    return Vector2(x, y) * -1;
+    return Vector2(-x, -y);
 }
 
-void Vector2::print() const { cout << "(" << x << ", " << y << ")" << endl; }
+void Vector2::print() const {
+    cout << "(" << x << ", " << y << ")" << endl;
+}
 
-double Vector2::magnitude() const { return sqrt(sqrMagnitude()); }
+double Vector2::magnitude() const {
+    return sqrt(sqrMagnitude());
+}
 
-double Vector2::sqrMagnitude() const { return x * x + y * y; }
+double Vector2::sqrMagnitude() const {
+    return x * x + y * y;
+}
 
 double Vector2::dot(Vector2 a, Vector2 b) {
     return a.x * b.x + a.y * b.y;

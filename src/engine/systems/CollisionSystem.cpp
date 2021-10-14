@@ -18,21 +18,34 @@ void CollisionSystem::update() {
 
     /*debug*/
     SDL_Color color = {255, 255, 255};
-    for (Interval interval : intervals) {
+    for (Interval &interval : intervals) {
         interval.object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
     /*debug*/
 
+    vector<vector<Collision>*> threadOutputs;
     vector<thread> threads;
-
     for (int i = 0; i < processor_count; ++i) {
-        threads.push_back(thread(&CollisionSystem::detect_collisions, this, i));
+        threadOutputs.push_back(new vector<Collision>());
+        threads.push_back(thread(&CollisionSystem::detect_collisions, this, i, std::ref(*threadOutputs[i])));
     }
     for (int i = 0; i < processor_count; ++i) {
         threads[i].join();
     }
+    vector<Collision> collisions;
+    for (vector<Collision> *colls : threadOutputs) {
+        for (Collision c : *colls) {
+            collisions.push_back(c);
+        }
+    }
+    cout << collisions.size() << endl;
 
     //TODO: resolve collisions
+    for (Collision collision : collisions) {
+        if(!(collision.a->isTrigger || collision.b->isTrigger)) {
+            resolveCollision(collision.a->gameObject,collision.b->gameObject);
+        }
+    }
     //TODO: call collision events
 }
 bool CollisionSystem::needObject(GameObject* obj) {
@@ -114,6 +127,7 @@ bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
 }
 
 void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
+    cout << a->name << " collides with " << b->name << endl;
 }
 
 void CollisionSystem::precalculate_matrices() {
@@ -127,8 +141,8 @@ void CollisionSystem::update_endpoint_positions() {
     for (Interval &interval : intervals) {
         Matrix3 t = interval.precalculated.applied_transform;
         Matrix3 r = interval.precalculated.undo_rotation;
-        interval.begin =MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
-                        t, interval.object->collider, r).x;
+        interval.begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
+                         t, interval.object->collider, r).x;
         interval.end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
                        t, interval.object->collider, r).x;
     }
@@ -142,18 +156,16 @@ void CollisionSystem::sort_intervals() {
     std::sort(intervals.begin(), intervals.end(), beginning_pos);
 }
 
-vector<Collision> CollisionSystem::detect_collisions(int thread_id) {
+void CollisionSystem::detect_collisions(int thread_id, vector<Collision>& output) {
     /*debug*/
     SDL_Color color = {0, 200, 0};
     /*debug*/
-    vector<Collision> collisions;
     int start = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id, processor_count);
     int stop = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id + 1, processor_count);
     for (int i = start; i < stop && i < intervals.size(); ++i) {
-        ColliderMatrices o1 = intervals[i].precalculated;
+        ColliderMatrices& o1 = intervals[i].precalculated;
         for (int j = i + 1; j < intervals.size() && intervals[j].begin <= intervals[i].end; j++) {
-            ColliderMatrices o2 = intervals[j].precalculated;
-            // cout << intervals[i].begin << " " << intervals[i].end << " " << intervals[j].begin << " " << intervals[j].end << endl;
+            ColliderMatrices& o2 = intervals[j].precalculated;
             if (!(o1.collider->enabled && o2.collider->enabled)) {
                 continue;
             }
@@ -162,8 +174,7 @@ vector<Collision> CollisionSystem::detect_collisions(int thread_id) {
                 continue;
             }
             if (GJK_collide(o1, o2)) {
-                //TODO: record collisions
-                collisions.push_back(Collision {o1.collider, o2.collider});
+                output.push_back(Collision {o1.collider, o2.collider});
                 /*debug*/
                 o1.collider->gameObject->getComponent<Sprite>()->color = color;
                 o2.collider->gameObject->getComponent<Sprite>()->color = color;
@@ -171,6 +182,4 @@ vector<Collision> CollisionSystem::detect_collisions(int thread_id) {
             }
         }
     }
-    // cout << collisions.size() << endl;
-    return collisions;
 }
