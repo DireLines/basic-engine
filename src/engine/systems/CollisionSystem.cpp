@@ -1,5 +1,6 @@
 #include "CollisionSystem.h"
 #include "Sprite.h" //debug
+#include "Game.h"
 
 const auto processor_count = std::thread::hardware_concurrency();
 
@@ -15,39 +16,25 @@ void CollisionSystem::update() {
     precalculate_matrices();
     update_endpoint_positions();
     sort_intervals();
+    vector<Collision> collisions = detectCollisions();
+    resolveCollisions(collisions);
 
+    //TODO: call collision events
     /*debug*/
     SDL_Color color = {255, 255, 255};
     for (Interval &interval : intervals) {
         interval.object->transform->gameObject->getComponent<Sprite>()->color = color;
     }
+    color = {0, 200, 0};
     /*debug*/
-
-    vector<vector<Collision>*> threadOutputs;
-    vector<thread> threads;
-    for (int i = 0; i < processor_count; ++i) {
-        threadOutputs.push_back(new vector<Collision>());
-        threads.push_back(thread(&CollisionSystem::detect_collisions, this, i, std::ref(*threadOutputs[i])));
-    }
-    for (int i = 0; i < processor_count; ++i) {
-        threads[i].join();
-    }
-    vector<Collision> collisions;
-    for (vector<Collision> *colls : threadOutputs) {
-        for (Collision c : *colls) {
-            collisions.push_back(c);
-        }
-    }
-    cout << collisions.size() << endl;
-
-    //TODO: resolve collisions
     for (Collision collision : collisions) {
-        if(!(collision.a->isTrigger || collision.b->isTrigger)) {
-            resolveCollision(collision.a->gameObject,collision.b->gameObject);
-        }
+        /*debug*/
+        collision.a->gameObject->getComponent<Sprite>()->color = color;
+        collision.b->gameObject->getComponent<Sprite>()->color = color;
+        /*debug*/
     }
-    //TODO: call collision events
 }
+#pragma region addremove
 bool CollisionSystem::needObject(GameObject* obj) {
     return obj->hasComponent<Collider>() && obj->hasComponent<Transform>();
 }
@@ -72,7 +59,36 @@ void CollisionSystem::removeObject(GameObject* obj) {
         }
     }
 }
+#pragma endregion
+#pragma region setup
 
+void CollisionSystem::precalculate_matrices() {
+    for (Interval &interval : intervals) {
+        interval.precalculated.applied_transform = interval.object->transform->Apply();
+        interval.precalculated.undo_rotation = Transform::Rotate(-interval.precalculated.applied_transform.rotation());
+    }
+}
+
+void CollisionSystem::update_endpoint_positions() {
+    for (Interval &interval : intervals) {
+        Matrix3 t = interval.precalculated.applied_transform;
+        Matrix3 r = interval.precalculated.undo_rotation;
+        interval.begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
+                         t, interval.object->collider, r).x;
+        interval.end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
+                       t, interval.object->collider, r).x;
+    }
+}
+
+bool beginning_pos(Interval a, Interval b) {
+    return a.begin < b.begin;
+}
+
+void CollisionSystem::sort_intervals() {
+    std::sort(intervals.begin(), intervals.end(), beginning_pos);
+}
+#pragma endregion
+#pragma region detection
 //is p in the "tube" perpendicular to the line segment between A and B?
 bool inTube(Vector2 p, Vector2 A, Vector2 B) {
     return MathUtils::acute(A, B, p) && MathUtils::acute(B, A, p);
@@ -126,40 +142,7 @@ bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
     return false;
 }
 
-void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
-    cout << a->name << " collides with " << b->name << endl;
-}
-
-void CollisionSystem::precalculate_matrices() {
-    for (Interval &interval : intervals) {
-        interval.precalculated.applied_transform = interval.object->transform->Apply();
-        interval.precalculated.undo_rotation = Transform::Rotate(-interval.precalculated.applied_transform.rotation());
-    }
-}
-
-void CollisionSystem::update_endpoint_positions() {
-    for (Interval &interval : intervals) {
-        Matrix3 t = interval.precalculated.applied_transform;
-        Matrix3 r = interval.precalculated.undo_rotation;
-        interval.begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
-                         t, interval.object->collider, r).x;
-        interval.end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
-                       t, interval.object->collider, r).x;
-    }
-}
-
-bool beginning_pos(Interval a, Interval b) {
-    return a.begin < b.begin;
-}
-
-void CollisionSystem::sort_intervals() {
-    std::sort(intervals.begin(), intervals.end(), beginning_pos);
-}
-
-void CollisionSystem::detect_collisions(int thread_id, vector<Collision>& output) {
-    /*debug*/
-    SDL_Color color = {0, 200, 0};
-    /*debug*/
+void CollisionSystem::detect_collisions_thread(int thread_id, vector<Collision>& output) {
     int start = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id, processor_count);
     int stop = MathUtils::getThreadStartIndex(0, intervals.size(), thread_id + 1, processor_count);
     for (int i = start; i < stop && i < intervals.size(); ++i) {
@@ -175,11 +158,55 @@ void CollisionSystem::detect_collisions(int thread_id, vector<Collision>& output
             }
             if (GJK_collide(o1, o2)) {
                 output.push_back(Collision {o1.collider, o2.collider});
-                /*debug*/
-                o1.collider->gameObject->getComponent<Sprite>()->color = color;
-                o2.collider->gameObject->getComponent<Sprite>()->color = color;
-                /*debug*/
             }
         }
     }
 }
+
+vector<Collision> CollisionSystem::detectCollisions() {
+    vector<vector<Collision>*> threadOutputs;
+    vector<thread> threads;
+    for (int i = 0; i < processor_count; ++i) {
+        threadOutputs.push_back(new vector<Collision>());
+        threads.push_back(thread(&CollisionSystem::detect_collisions_thread, this, i, std::ref(*threadOutputs[i])));
+    }
+    for (int i = 0; i < processor_count; ++i) {
+        threads[i].join();
+    }
+    vector<Collision> collisions;
+    for (vector<Collision> *colls : threadOutputs) {
+        for (Collision c : *colls) {
+            collisions.push_back(c);
+        }
+    }
+    cout << collisions.size() << " collisions" << endl;
+    return collisions;
+}
+#pragma endregion
+#pragma region resolution
+void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
+    // cout << a->name << " collides with " << b->name << endl;
+    Transform* transform_A = a->getComponent<Transform>();
+    Transform* transform_B = b->getComponent<Transform>();
+    Rigidbody* rb_A = a->getComponent<Rigidbody>();
+    Rigidbody* rb_B = b->getComponent<Rigidbody>();
+    if(!(rb_A || rb_B)) {
+        //both objects are kinematic - neither can move
+        return;
+    }
+    if(rb_A) {
+        // cout << "a has rigidbody" << endl;
+    }
+    if(rb_B) {
+        // cout << "b has rigidbody" << endl;
+    }
+}
+
+void CollisionSystem::resolveCollisions(vector<Collision> &collisions) {
+    for (Collision collision : collisions) {
+        if(!(collision.a->isTrigger || collision.b->isTrigger)) {
+            resolveCollision(collision.a->gameObject,collision.b->gameObject);
+        }
+    }
+}
+#pragma endregion

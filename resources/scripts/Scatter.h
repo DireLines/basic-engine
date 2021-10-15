@@ -12,8 +12,10 @@ public:
         t->rotation = Random::range(-rotationRange, rotationRange);
         t->position = Random::insideUnitCircle() * range;
         Rigidbody* rb = gameObject->getComponent<Rigidbody>();
-        rb->velocity = Random::insideUnitCircle() * maxSpeed;
-        rb->angularVelocity = Random::range(-maxSpeed, maxSpeed);
+        if(rb) {
+            rb->velocity = Random::insideUnitCircle() * maxSpeed;
+            rb->angularVelocity = Random::range(-maxSpeed, maxSpeed);
+        }
     }
     bool parallelizable() {
         return true;

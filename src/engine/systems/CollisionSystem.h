@@ -70,7 +70,9 @@ private:
     void update_endpoint_positions();
     void sort_intervals();
     void precalculate_matrices();
-    void detect_collisions(int thread_id, vector<Collision>& output);
+    vector<Collision> detectCollisions();
+    void detect_collisions_thread(int thread_id, vector<Collision>& output);
+    void resolveCollisions(vector<Collision> &collisions);
 };
 
 #endif
