@@ -23,14 +23,14 @@ void CollisionSystem::update() {
     /*debug*/
     SDL_Color color = {255, 255, 255};
     for (Interval &interval : intervals) {
-        interval.object->transform->gameObject->getComponent<Sprite>()->color = color;
+        interval.object.transform->gameObject->getComponent<Sprite>()->color = color;
     }
     color = {0, 200, 0};
     /*debug*/
     for (Collision collision : collisions) {
         /*debug*/
-        collision.a->gameObject->getComponent<Sprite>()->color = color;
-        collision.b->gameObject->getComponent<Sprite>()->color = color;
+        collision.a.collider->gameObject->getComponent<Sprite>()->color = color;
+        collision.b.collider->gameObject->getComponent<Sprite>()->color = color;
         /*debug*/
     }
 }
@@ -42,17 +42,17 @@ void CollisionSystem::addObject(GameObject* obj) {
     Transform* t = obj->getComponent<Transform>();
 
     for (Collider* c : obj->getComponents<Collider>()) {
-        ColliderTransform* ct = new ColliderTransform();
-        ct->collider = c;
-        ct->transform = t;
-        intervals.push_back(Interval{.begin = 0,.end = 0,.object = ct, .precalculated.collider = c});
+        ColliderTransform ct = ColliderTransform{
+            .collider = c,
+            .transform = t
+        };
+        intervals.push_back(Interval{.begin = 0,.end = 0,.object = ct, .precalculated = precalculate(ct)});
     }
 }
 void CollisionSystem::removeObject(GameObject* obj) {
     vector<Interval>::iterator it = intervals.begin();
     while (it != intervals.end()) {
-        if ((*it).object->transform->gameObject == obj) {
-            delete (*it).object;
+        if ((*it).object.transform->gameObject == obj) {
             it = intervals.erase(it);
         } else {
             it++;
@@ -62,10 +62,17 @@ void CollisionSystem::removeObject(GameObject* obj) {
 #pragma endregion
 #pragma region setup
 
+ColliderMatrices CollisionSystem::precalculate(ColliderTransform ct) {
+    Matrix3 t = ct.transform->Apply();
+    return ColliderMatrices {
+        .collider = ct.collider,
+        .applied_transform = t,
+        .undo_rotation = Transform::Rotate(-t.rotation())
+    };
+}
 void CollisionSystem::precalculate_matrices() {
     for (Interval &interval : intervals) {
-        interval.precalculated.applied_transform = interval.object->transform->Apply();
-        interval.precalculated.undo_rotation = Transform::Rotate(-interval.precalculated.applied_transform.rotation());
+        interval.precalculated = precalculate(interval.object);
     }
 }
 
@@ -74,9 +81,9 @@ void CollisionSystem::update_endpoint_positions() {
         Matrix3 t = interval.precalculated.applied_transform;
         Matrix3 r = interval.precalculated.undo_rotation;
         interval.begin = MinkowskiDifferenceSupport::transformedSupport(Vector2(-1, 0),
-                         t, interval.object->collider, r).x;
+                         t, interval.object.collider, r).x;
         interval.end = MinkowskiDifferenceSupport::transformedSupport(Vector2(1, 0),
-                       t, interval.object->collider, r).x;
+                       t, interval.object.collider, r).x;
     }
 }
 
@@ -138,8 +145,14 @@ bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
     }
 }
 
-bool CollisionSystem::colliding(GameObject* a, GameObject* b) {
-    return false;
+// struct ColliderMatrices {
+//     Matrix3 applied_transform;
+//     Matrix3 undo_rotation;
+//     Collider* collider;
+// };
+
+bool CollisionSystem::colliding(ColliderTransform& a, ColliderTransform& b) {
+    return GJK_collide(precalculate(a), precalculate(b));
 }
 
 void CollisionSystem::detect_collisions_thread(int thread_id, vector<Collision>& output) {
@@ -157,7 +170,10 @@ void CollisionSystem::detect_collisions_thread(int thread_id, vector<Collision>&
                 continue;
             }
             if (GJK_collide(o1, o2)) {
-                output.push_back(Collision {o1.collider, o2.collider});
+                output.push_back(Collision {
+                    ColliderTransform{o1.collider,intervals[i].object.transform},
+                    ColliderTransform{o2.collider,intervals[j].object.transform}
+                });
             }
         }
     }
@@ -184,28 +200,68 @@ vector<Collision> CollisionSystem::detectCollisions() {
 }
 #pragma endregion
 #pragma region resolution
-void CollisionSystem::resolveCollision(GameObject* a, GameObject* b) {
-    // cout << a->name << " collides with " << b->name << endl;
-    Transform* transform_A = a->getComponent<Transform>();
-    Transform* transform_B = b->getComponent<Transform>();
-    Rigidbody* rb_A = a->getComponent<Rigidbody>();
-    Rigidbody* rb_B = b->getComponent<Rigidbody>();
+void CollisionSystem::resolveCollision(ColliderTransform& a, ColliderTransform& b) {
+    Transform& transform_A = *a.transform;
+    Transform& transform_B = *b.transform;
+    Rigidbody* rb_A = a.transform->gameObject->getComponent<Rigidbody>();
+    Rigidbody* rb_B = b.transform->gameObject->getComponent<Rigidbody>();
     if(!(rb_A || rb_B)) {
         //both objects are kinematic - neither can move
         return;
     }
+    bool move_A = rb_A != NULL;
+    bool move_B = rb_B != NULL;
+    Vector2 posCurrent_A = transform_A.position;
+    Vector2 posCurrent_B = transform_B.position;
+    double rotCurrent_A = transform_A.rotation;
+    double rotCurrent_B = transform_B.rotation;
+    Vector2 posDelta_A = Vector2(0, 0);
+    Vector2 posDelta_B = Vector2(0, 0);
+    double rotDelta_A = 0;
+    double rotDelta_B = 0;
     if(rb_A) {
-        // cout << "a has rigidbody" << endl;
+        posDelta_A = -rb_A->velocity;
+        rotDelta_A = -rb_A->angularVelocity;
     }
     if(rb_B) {
-        // cout << "b has rigidbody" << endl;
+        posDelta_B = -rb_B->velocity;
+        rotDelta_B = -rb_B->angularVelocity;
+    }
+    double lowerBound = 0;
+    double upperBound = 1;
+    for(int iter = 0; iter < 10; iter++) {
+        //invariant: colliding at lowerBound, not colliding at upperBound
+        double midpoint = (lowerBound + upperBound) * 0.5;
+        //move objects to the right position
+        transform_A.position = posCurrent_A + posDelta_A * midpoint;
+        transform_B.position = posCurrent_B + posDelta_B * midpoint;
+        transform_A.rotation = rotCurrent_A + rotDelta_A * midpoint;
+        transform_B.rotation = rotCurrent_B + rotDelta_B * midpoint;
+        if(colliding(a,b)) {
+            lowerBound = midpoint;
+        }
+        else {
+            upperBound = midpoint;
+        }
+    }
+    transform_A.position = posCurrent_A + posDelta_A * upperBound;
+    transform_B.position = posCurrent_B + posDelta_B * upperBound;
+    transform_A.rotation = rotCurrent_A + rotDelta_A * upperBound;
+    transform_B.rotation = rotCurrent_B + rotDelta_B * upperBound;
+    if(rb_A) {
+        rb_A->velocity = Vector2(0,0);
+        rb_A->angularVelocity = 0;
+    }
+    if(rb_B) {
+        rb_B->velocity = Vector2(0,0);
+        rb_B->angularVelocity = 0;
     }
 }
 
 void CollisionSystem::resolveCollisions(vector<Collision> &collisions) {
     for (Collision collision : collisions) {
-        if(!(collision.a->isTrigger || collision.b->isTrigger)) {
-            resolveCollision(collision.a->gameObject,collision.b->gameObject);
+        if(!(collision.a.collider->isTrigger || collision.b.collider->isTrigger)) {
+            resolveCollision(collision.a, collision.b);
         }
     }
 }

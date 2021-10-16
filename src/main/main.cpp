@@ -17,11 +17,10 @@ int main(int argc, char ** argv) {
 void Game::initialize() {
     SDL_SetRenderDrawColor(renderer, 39, 40, 34, 255);
 
-    int num_objects = 2000;
-    for (int i = 0; i < num_objects; ++i) {
-        Square* s = new Square();
-        instantiate(s);
-    }
+    // for (int i = 0; i < 200; ++i) {
+    //     Square* s = new Square();
+    //     instantiate(s);
+    // }
     instantiate(new Player());
     for (int i = 0; i < 20; ++i) {
         instantiate(new SquareKinematic());

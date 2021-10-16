@@ -3,8 +3,8 @@
       code: Vector2(0.4, 0.4)
 - Rigidbody
 - BoxCollider:
-    width: 30
-    height: 30
+    width: 60
+    height: 60
 - Sprite:
     file: Player.png
 - WASDMovement

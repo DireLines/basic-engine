@@ -25,13 +25,13 @@ struct ColliderTransform {
 };
 
 struct Collision {
-    Collider* a;
-    Collider* b;
+    ColliderTransform a;
+    ColliderTransform b;
 };
 struct Interval {
     double begin;//position of interval's beginning
     double end;//position of interval's end
-    ColliderTransform* object;
+    ColliderTransform object;
     ColliderMatrices precalculated;
 };
 
@@ -65,14 +65,15 @@ private:
     vector<Interval> intervals;
     void addObject(GameObject* obj);
     bool GJK_collide(ColliderMatrices a, ColliderMatrices b);
-    bool colliding(GameObject* a, GameObject* b);
-    void resolveCollision(GameObject* a, GameObject* b);
+    bool colliding(ColliderTransform& a, ColliderTransform& b);
+    void resolveCollision(ColliderTransform& a, ColliderTransform& b);
     void update_endpoint_positions();
     void sort_intervals();
     void precalculate_matrices();
     vector<Collision> detectCollisions();
     void detect_collisions_thread(int thread_id, vector<Collision>& output);
     void resolveCollisions(vector<Collision> &collisions);
+    ColliderMatrices precalculate(ColliderTransform ct);
 };
 
 #endif
