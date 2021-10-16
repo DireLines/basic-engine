@@ -22,7 +22,7 @@ void Game::initialize() {
     //     instantiate(s);
     // }
     instantiate(new Player());
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 2; ++i) {
         instantiate(new SquareKinematic());
     }
 }

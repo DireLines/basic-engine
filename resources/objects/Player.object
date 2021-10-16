@@ -1,11 +1,9 @@
-- Transform:
-    scale:
-      code: Vector2(0.4, 0.4)
+- Transform
 - Rigidbody
-- BoxCollider:
-    width: 60
-    height: 60
 - Sprite:
-    file: Player.png
+    file: square.png
+- BoxCollider:
+    width: 30
+    height: 30
 - WASDMovement
 - InputTest

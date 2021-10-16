@@ -1,10 +1,11 @@
 - Transform:
     scale:
-      code: Vector2(Random::range(0.5,1), Random::range(0.5,1))
+      code: Vector2(Random::range(5,10), Random::range(5,10))
 - BoxCollider:
     width: 30
     height: 30
-- Scatter
+- Scatter:
+    range: 500
 - Sprite:
     file: square.png
     color:

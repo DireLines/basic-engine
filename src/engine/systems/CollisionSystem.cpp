@@ -195,67 +195,107 @@ vector<Collision> CollisionSystem::detectCollisions() {
             collisions.push_back(c);
         }
     }
-    cout << collisions.size() << " collisions" << endl;
     return collisions;
 }
 #pragma endregion
 #pragma region resolution
+#define SET_TRANSFORMS(parameter) {\
+    transform_A.position = posInitial_A + posDelta_A * (parameter);\
+    transform_B.position = posInitial_B + posDelta_B * (parameter);\
+    transform_A.rotation = rotInitial_A + rotDelta_A * (parameter);\
+    transform_B.rotation = rotInitial_B + rotDelta_B * (parameter);\
+}
+#define BINARY_SEARCH(output) {\
+    /* invariant: colliding at lowerBound, not colliding at upperBound */\
+    double lowerBound = 0;\
+    double upperBound = 1;\
+    const int binarySearchIters = 10;\
+    for(int iter = 0; iter < binarySearchIters; iter++) {\
+        double midpoint = (lowerBound + upperBound) * 0.5;\
+        cout << "A: ";\
+        transform_A.position.print();\
+        cout << "B: ";\
+        transform_B.position.print();\
+        SET_TRANSFORMS(midpoint);\
+        if(colliding(a,b)) {\
+            lowerBound = midpoint;\
+        }\
+        else {\
+            upperBound = midpoint;\
+        }\
+    }\
+    (output) = upperBound;\
+}
 void CollisionSystem::resolveCollision(ColliderTransform& a, ColliderTransform& b) {
-    Transform& transform_A = *a.transform;
-    Transform& transform_B = *b.transform;
     Rigidbody* rb_A = a.transform->gameObject->getComponent<Rigidbody>();
     Rigidbody* rb_B = b.transform->gameObject->getComponent<Rigidbody>();
     if(!(rb_A || rb_B)) {
         //both objects are kinematic - neither can move
         return;
     }
+    Transform& transform_A = *a.transform;
+    Transform& transform_B = *b.transform;
+    double dt = GameTimer::DeltaTime();
     bool move_A = rb_A != NULL;
     bool move_B = rb_B != NULL;
-    Vector2 posCurrent_A = transform_A.position;
-    Vector2 posCurrent_B = transform_B.position;
-    double rotCurrent_A = transform_A.rotation;
-    double rotCurrent_B = transform_B.rotation;
-    Vector2 posDelta_A = Vector2(0, 0);
-    Vector2 posDelta_B = Vector2(0, 0);
+    Vector2 posInitial_A = transform_A.position;
+    Vector2 posInitial_B = transform_B.position;
+    Vector2 posDelta_A = Vector2();
+    Vector2 posDelta_B = Vector2();
+    double rotInitial_A = transform_A.rotation;
+    double rotInitial_B = transform_B.rotation;
     double rotDelta_A = 0;
     double rotDelta_B = 0;
-    if(rb_A) {
-        posDelta_A = -rb_A->velocity;
-        rotDelta_A = -rb_A->angularVelocity;
+    Vector2 velocity_A = Vector2();
+    Vector2 velocity_B = Vector2();
+    double angularVelocity_A = 0;
+    double angularVelocity_B = 0;
+    if(move_A) {
+        velocity_A  = -rb_A->velocity*dt;
+        rotDelta_A  = -rb_A->angularVelocity*dt;
     }
-    if(rb_B) {
-        posDelta_B = -rb_B->velocity;
-        rotDelta_B = -rb_B->angularVelocity;
+    if(move_B) {
+        velocity_B = -rb_B->velocity*dt;
+        rotDelta_B = -rb_B->angularVelocity*dt;
     }
-    double lowerBound = 0;
-    double upperBound = 1;
-    for(int iter = 0; iter < 10; iter++) {
-        //invariant: colliding at lowerBound, not colliding at upperBound
-        double midpoint = (lowerBound + upperBound) * 0.5;
-        //move objects to the right position
-        transform_A.position = posCurrent_A + posDelta_A * midpoint;
-        transform_B.position = posCurrent_B + posDelta_B * midpoint;
-        transform_A.rotation = rotCurrent_A + rotDelta_A * midpoint;
-        transform_B.rotation = rotCurrent_B + rotDelta_B * midpoint;
-        if(colliding(a,b)) {
-            lowerBound = midpoint;
-        }
-        else {
-            upperBound = midpoint;
-        }
+    // determine which axes to do binary search on
+    bool searchX, searchY = false;
+    rotDelta_A = 0;
+    rotDelta_B = 0;
+    posDelta_A = Vector2(velocity_A.x, 0);
+    posDelta_B = Vector2(velocity_B.x, 0);
+    SET_TRANSFORMS(1);
+    searchX = !colliding(a,b);
+    posDelta_A = Vector2(0, velocity_A.y);
+    posDelta_B = Vector2(0, velocity_B.y);
+    SET_TRANSFORMS(1);
+    searchY = !colliding(a,b);
+    if(!(searchX || searchY)) {
+        searchX = true;
+        searchY = true;
     }
-    transform_A.position = posCurrent_A + posDelta_A * upperBound;
-    transform_B.position = posCurrent_B + posDelta_B * upperBound;
-    transform_A.rotation = rotCurrent_A + rotDelta_A * upperBound;
-    transform_B.rotation = rotCurrent_B + rotDelta_B * upperBound;
-    if(rb_A) {
-        rb_A->velocity = Vector2(0,0);
-        rb_A->angularVelocity = 0;
+    //TODO: rotation is another axis
+    // do binary search on each axis
+    double binarySearchResult = 0;
+    if(searchY) {
+        cout << "y" << endl;
+        posDelta_A = Vector2(0, velocity_A.y);
+        posDelta_B = Vector2(0, velocity_B.y);
+        BINARY_SEARCH(binarySearchResult);
+        SET_TRANSFORMS(binarySearchResult);
+        posInitial_A.y += posDelta_A.y * binarySearchResult;
+        posInitial_B.y += posDelta_B.y * binarySearchResult;
     }
-    if(rb_B) {
-        rb_B->velocity = Vector2(0,0);
-        rb_B->angularVelocity = 0;
+    if(searchX) {
+        cout << "x" << endl;
+        posDelta_A = Vector2(velocity_A.x, 0);
+        posDelta_B = Vector2(velocity_B.x, 0);
+        BINARY_SEARCH(binarySearchResult);
+        SET_TRANSFORMS(binarySearchResult);
+        posInitial_A.x += posDelta_A.x * binarySearchResult;
+        posInitial_B.x += posDelta_B.x * binarySearchResult;
     }
+    //TODO: handle velocity
 }
 
 void CollisionSystem::resolveCollisions(vector<Collision> &collisions) {
