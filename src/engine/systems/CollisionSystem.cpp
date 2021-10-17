@@ -267,8 +267,6 @@ void CollisionSystem::resolveCollision(ColliderTransform& a, ColliderTransform& 
         SET_TRANSFORMS(binarySearchResult);
         posInitial_A.y += posDelta_A.y * binarySearchResult;
         posInitial_B.y += posDelta_B.y * binarySearchResult;
-        posDelta_A.y = 0;
-        posDelta_B.y = 0;
     }
     if(searchX) {
         posDelta_A = Vector2(velocity_A.x, 0);
