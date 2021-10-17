@@ -1,7 +1,11 @@
-- Transform
+- Transform:
+    scale:
+      code: Vector2(2, 2)
 - Rigidbody
 - Sprite:
     file: square.png
+    color:
+      code: '{64, 128, 0}'
 - BoxCollider:
     width: 30
     height: 30

@@ -20,19 +20,6 @@ void CollisionSystem::update() {
     resolveCollisions(collisions);
 
     //TODO: call collision events
-    /*debug*/
-    SDL_Color color = {255, 255, 255};
-    for (Interval &interval : intervals) {
-        interval.object.transform->gameObject->getComponent<Sprite>()->color = color;
-    }
-    color = {0, 200, 0};
-    /*debug*/
-    for (Collision collision : collisions) {
-        /*debug*/
-        collision.a.collider->gameObject->getComponent<Sprite>()->color = color;
-        collision.b.collider->gameObject->getComponent<Sprite>()->color = color;
-        /*debug*/
-    }
 }
 #pragma region addremove
 bool CollisionSystem::needObject(GameObject* obj) {

@@ -8,4 +8,6 @@
 - Scatter
 - Sprite:
     file: square.png
+    color:
+      code: '{180,180,180}'
 - PrintCollisions

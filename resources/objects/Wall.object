@@ -1,6 +1,6 @@
 - Transform:
     scale:
-      code: Vector2(Random::range(5,10), Random::range(5,10))
+      code: Vector2(Random::range(1,2), Random::range(5,15))
 - BoxCollider:
     width: 30
     height: 30
@@ -9,5 +9,5 @@
 - Sprite:
     file: square.png
     color:
-      code: '{0, 0, 255}'
+      code: '{64, 128, 255}'
 - PrintCollisions

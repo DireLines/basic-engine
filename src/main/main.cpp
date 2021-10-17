@@ -23,6 +23,6 @@ void Game::initialize() {
     // }
     instantiate(new Player());
     for (int i = 0; i < 2; ++i) {
-        instantiate(new SquareKinematic());
+        instantiate(new Wall());
     }
 }
