@@ -5,7 +5,7 @@ PhysicsSystem::PhysicsSystem() {
 }
 void PhysicsSystem::update() {
     double dt = GameTimer::DeltaTime();
-    for (RigidbodyTransform* obj : objects) {
+    for (RigidbodyTransform obj : objects) {
         move(obj, dt);
     }
 }
@@ -14,26 +14,25 @@ bool PhysicsSystem::needObject(GameObject* obj) {
 }
 
 void PhysicsSystem::addObject(GameObject* obj) {
-    Rigidbody* rb = obj->getComponent<Rigidbody>();
-    Transform* t = obj->getComponent<Transform>();
-    RigidbodyTransform* rbt = new RigidbodyTransform();
-    rbt->rigidbody = rb;
-    rbt->transform = t;
-    objects.push_back(rbt);
+    objects.push_back(RigidbodyTransform{
+        .rigidbody = obj->getComponent<Rigidbody>(),
+        .transform = obj->getComponent<Transform>()
+    });
 }
 
 void PhysicsSystem::removeObject(GameObject* obj) {
-    for (RigidbodyTransform* rbt : objects) {
-        if (rbt->transform->gameObject == obj) {
-            delete rbt;
-            VECTOR_ERASE(objects, rbt);
-            return;
+    vector<RigidbodyTransform>::iterator it = objects.begin();
+    while (it != objects.end()) {
+        if ((*it).transform->gameObject == obj) {
+            it = objects.erase(it);
+        } else {
+            it++;
         }
     }
 }
-void PhysicsSystem::move(RigidbodyTransform* obj, double dt) {
-    Rigidbody* rb = obj->rigidbody;
-    Transform* t = obj->transform;
+void PhysicsSystem::move(RigidbodyTransform obj, double dt) {
+    Rigidbody* rb = obj.rigidbody;
+    Transform* t = obj.transform;
 
     Vector2 acceleration = Vector2(rb->force.x / rb->mass, rb->force.y / rb->mass);
     rb->velocity += acceleration * dt;

@@ -24,8 +24,8 @@ public:
     void removeObject(GameObject* obj);
 private:
     void addObject(GameObject* obj);
-    vector<RigidbodyTransform*> objects;
-    void move(RigidbodyTransform* obj, double dt);
+    vector<RigidbodyTransform> objects;
+    void move(RigidbodyTransform obj, double dt);
 };
 
 #endif
