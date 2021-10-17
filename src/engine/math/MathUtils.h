@@ -75,6 +75,11 @@ public:
         return Vector2(v.y, v.x);
     }
 
+    static Vector2 closestPointToOriginOnLine(Vector2 p1, Vector2 p2) {
+        Vector2 diff = p2 - p1;
+        return  diff * (Vector2::dot(diff, -p1)/diff.sqrMagnitude()) + p1;
+    }
+
     // static tuple<double, double> quadratic_formula(double a, double b, double c) {
     //     double underRoot = b * b - 4 * a * c;
     //     if (underRoot < 0) {//no real solutions

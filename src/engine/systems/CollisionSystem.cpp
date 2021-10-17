@@ -9,6 +9,20 @@ CollisionSystem::CollisionSystem() {
 }
 
 void CollisionSystem::start() {
+    for(int i = 0; i < 360; i++) {
+        Point* p = new Point();
+        Game::instance->instantiate(p);
+        pointObjects.push_back(p);
+    }
+    Point* closest = new Point();
+    closest->getComponent<Sprite>()->color = {0,255,0};
+    closest->getComponent<Transform>()->scale = Vector2(0.2,0.2);
+    Game::instance->instantiate(closest);
+    pointObjects.push_back(closest);
+    Point* origin = new Point();
+    origin->getComponent<Sprite>()->color = {0,0,255};
+    origin->getComponent<Transform>()->scale = Vector2(0.2,0.2);
+    Game::instance->instantiate(origin);
     //TODO: spawn some threads and put them in a pool to avoid creating new threads evey frame
 }
 
@@ -96,6 +110,36 @@ bool inEdgeRegionAB(Vector2 p, Vector2 A, Vector2 B, Vector2 C) {
     return false;
 }
 
+//assumption: the triangle p1-p2-p3 encloses the origin and vertices lie on the support surface defined by s
+//e.g. the final triangle found by GJK
+//returns the approximate closest point on the surface to the origin
+Vector2 CollisionSystem::EPA_closestPoint(MinkowskiDifferenceSupport s, Vector2 p1, Vector2 p2, Vector2 p3) {
+    vector<Vector2> vertices {p1,p2,p3};
+    Vector2 oldGuess (DBL_MAX,DBL_MAX);
+    Vector2 newGuess (-DBL_MAX,-DBL_MAX);
+    for(int iter = 0; iter < 10; iter++) {
+        oldGuess = newGuess;
+        Vector2 newGuessDirection = MathUtils::closestPointToOriginOnLine(vertices[0],vertices[1]);
+        int newGuessIndex = 0;
+        for(int i = 1; i < vertices.size(); i++) {
+            int j = (i+1) % vertices.size();
+            Vector2 closestPoint = MathUtils::closestPointToOriginOnLine(vertices[i],vertices[j]);
+            if(closestPoint.sqrMagnitude() < newGuessDirection.sqrMagnitude()) {
+                newGuessDirection = closestPoint;
+                newGuessIndex = j;
+            }
+        }
+        Vector2 newPoint = s(newGuessDirection);
+        vertices.insert(vertices.begin() + newGuessIndex, newPoint);
+        newGuess = s(newGuessDirection);
+    }
+    for(int i = 0; i < 360; i++) {
+        pointObjects[i]->getComponent<Transform>()->position = s(Transform::Rotate(i)*Vector2(1,0));
+    }
+    pointObjects[360]->getComponent<Transform>()->position = newGuess;
+    return newGuess;
+}
+
 bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
     MinkowskiDifferenceSupport s(a, b);
     Vector2 origin(0, 0);
@@ -111,6 +155,9 @@ bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
             return false;
         }
         if (MathUtils::PointInTriangle(origin, p1, p2, p3)) {
+            //there was a collision!
+            //find penetration depth using the Expanding Polytope Algorithm
+            cout << EPA_closestPoint(s,p1,p2,p3).magnitude() << endl;
             return true;
         }
         //swap points to converge triangle on origin
@@ -131,12 +178,6 @@ bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
         //else, origin was in region of edge p3p1, and values already are what they should be
     }
 }
-
-// struct ColliderMatrices {
-//     Matrix3 applied_transform;
-//     Matrix3 undo_rotation;
-//     Collider* collider;
-// };
 
 bool CollisionSystem::colliding(ColliderTransform& a, ColliderTransform& b) {
     return GJK_collide(precalculate(a), precalculate(b));
@@ -282,7 +323,7 @@ void CollisionSystem::resolveCollision(ColliderTransform& a, ColliderTransform& 
 void CollisionSystem::resolveCollisions(vector<Collision> &collisions) {
     for (Collision collision : collisions) {
         if(!(collision.a.collider->isTrigger || collision.b.collider->isTrigger)) {
-            resolveCollision(collision.a, collision.b);
+            // resolveCollision(collision.a, collision.b);
         }
     }
 }

@@ -1,0 +1,9 @@
+- Transform:
+    scale:
+      code: Vector2(Random::range(3,10), Random::range(3,10))
+- CircleCollider:
+    radius: 15
+- Scatter
+- Sprite:
+    file: circle.png
+- PrintCollisions

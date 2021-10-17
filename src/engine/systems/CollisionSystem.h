@@ -11,6 +11,8 @@
 #include <vector>
 #include <thread>
 #include <future>
+#include <tuple>
+#include <GameObjects.h>
 using namespace std;
 
 struct ColliderMatrices {
@@ -63,7 +65,9 @@ public:
     void removeObject(GameObject* obj);
 private:
     vector<Interval> intervals;
+    vector<Point*> pointObjects;
     void addObject(GameObject* obj);
+    Vector2 EPA_closestPoint(MinkowskiDifferenceSupport s, Vector2 p1, Vector2 p2, Vector2 p3);
     bool GJK_collide(ColliderMatrices a, ColliderMatrices b);
     bool colliding(ColliderTransform& a, ColliderTransform& b);
     void resolveCollision(ColliderTransform& a, ColliderTransform& b);

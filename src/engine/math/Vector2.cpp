@@ -58,6 +58,11 @@ double Vector2::dot(Vector2 a, Vector2 b) {
 double Vector2::distance(Vector2 a, Vector2 b) {
     return (b - a).magnitude();
 }
+
+double Vector2::sqrDistance(Vector2 a, Vector2 b) {
+    return (b - a).sqrMagnitude();
+}
+
 double Vector2::calculateRotation(Vector2 origin, Vector2 p) {
     double y = p.y - origin.y;
     double x = p.x - origin.x;
