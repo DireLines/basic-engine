@@ -212,10 +212,6 @@ vector<Collision> CollisionSystem::detectCollisions() {
     const int binarySearchIters = 10;\
     for(int iter = 0; iter < binarySearchIters; iter++) {\
         double midpoint = (lowerBound + upperBound) * 0.5;\
-        cout << "A: ";\
-        transform_A.position.print();\
-        cout << "B: ";\
-        transform_B.position.print();\
         SET_TRANSFORMS(midpoint);\
         if(colliding(a,b)) {\
             lowerBound = midpoint;\
@@ -278,16 +274,16 @@ void CollisionSystem::resolveCollision(ColliderTransform& a, ColliderTransform& 
     // do binary search on each axis
     double binarySearchResult = 0;
     if(searchY) {
-        cout << "y" << endl;
         posDelta_A = Vector2(0, velocity_A.y);
         posDelta_B = Vector2(0, velocity_B.y);
         BINARY_SEARCH(binarySearchResult);
         SET_TRANSFORMS(binarySearchResult);
         posInitial_A.y += posDelta_A.y * binarySearchResult;
         posInitial_B.y += posDelta_B.y * binarySearchResult;
+        posDelta_A.y = 0;
+        posDelta_B.y = 0;
     }
     if(searchX) {
-        cout << "x" << endl;
         posDelta_A = Vector2(velocity_A.x, 0);
         posDelta_B = Vector2(velocity_B.x, 0);
         BINARY_SEARCH(binarySearchResult);
