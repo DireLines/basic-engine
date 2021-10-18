@@ -120,7 +120,7 @@ Vector2 CollisionSystem::EPA_closestPoint(MinkowskiDifferenceSupport s, Vector2 
     for(int iter = 0; iter < 10; iter++) {
         oldGuess = newGuess;
         Vector2 newGuessDirection = MathUtils::closestPointToOriginOnLine(vertices[0],vertices[1]);
-        int newGuessIndex = 0;
+        int newGuessIndex = 1;
         for(int i = 1; i < vertices.size(); i++) {
             int j = (i+1) % vertices.size();
             Vector2 closestPoint = MathUtils::closestPointToOriginOnLine(vertices[i],vertices[j]);
@@ -133,10 +133,12 @@ Vector2 CollisionSystem::EPA_closestPoint(MinkowskiDifferenceSupport s, Vector2 
         vertices.insert(vertices.begin() + newGuessIndex, newPoint);
         newGuess = s(newGuessDirection);
     }
+    /*debug*/
     for(int i = 0; i < 360; i++) {
         pointObjects[i]->getComponent<Transform>()->position = s(Transform::Rotate(i)*Vector2(1,0));
     }
     pointObjects[360]->getComponent<Transform>()->position = newGuess;
+    /*debug*/
     return newGuess;
 }
 

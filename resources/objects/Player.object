@@ -6,8 +6,7 @@
     file: square.png
     color:
       code: '{64, 128, 0}'
-- BoxCollider:
-    width: 30
-    height: 30
+- CircleCollider:
+    radius: 15
 - WASDMovement
 - InputTest
