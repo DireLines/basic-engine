@@ -9,13 +9,17 @@ SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
+#compile & link SDL
+SDL_CFLAGS := $(shell sdl2-config --cflags)
+SDL_LDFLAGS := $(shell sdl2-config --libs)
+
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -std=c++11 -g -O2 -arch x86_64
+CPPFLAGS ?= $(SDL_CFLAGS) $(INC_FLAGS) -MMD -MP -std=c++11 -g -O2 -F/Library/Frameworks
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -arch x86_64
+LDFLAGS = $(SDL_LDFLAGS) -lSDL2 -lSDL2_image -lSDL2_ttf
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
