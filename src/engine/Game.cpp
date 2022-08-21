@@ -2,6 +2,7 @@
 #include "Game.h"
 #include <string>
 #include "WallTime.h"
+#include "ElapsedTimeLogger.h"
 
 using namespace std;
 
@@ -75,7 +76,6 @@ void Game::start() {
     double ms_per_frame = (1.0 / (double)this->frames_per_sec) * 1000;
     auto start = get_wall_time();
     GameTimer::time = 0;
-
     bool quit = false;
 
     while (!quit) {
@@ -83,7 +83,6 @@ void Game::start() {
         double duration = (end - start) * 1000;
         if (duration > ms_per_frame) {
             averageFrameLength += duration;
-            // cout << "frame " << frameCounter << " took " << duration << " ms" << endl;
             start = end;
             GameTimer::deltaTime = duration / 1000;
             GameTimer::time += GameTimer::deltaTime;
@@ -96,9 +95,11 @@ void Game::start() {
 
 bool Game::update() {
     SDL_Event event;
+    ElapsedTimeLogger logElapsedTime  = ElapsedTimeLogger("update");
     for (System* system : systems) {
-        // cout << system->getName() << " update" << endl;
+        cout << system->getName() << " update" << endl;
         system->update();
+        logElapsedTime(system->getName());
         SDL_PollEvent(&event);
         switch (event.type) {
         case SDL_QUIT:

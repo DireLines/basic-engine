@@ -1,6 +1,7 @@
 #include "CollisionSystem.h"
 #include "Sprite.h" //debug
 #include "Game.h"
+#include "ElapsedTimeLogger.h"
 
 const auto processor_count = std::thread::hardware_concurrency();
 
@@ -27,11 +28,17 @@ void CollisionSystem::start() {
 }
 
 void CollisionSystem::update() {
+    ElapsedTimeLogger logElapsedTime = ElapsedTimeLogger("collision system");
     precalculate_matrices();
+    logElapsedTime("precalculate matrices");
     update_endpoint_positions();
+    logElapsedTime("update endpoint positions");
     sort_intervals();
+    logElapsedTime("sort intervals");
     vector<Collision> collisions = detectCollisions();
+    logElapsedTime("detect collisions");
     resolveCollisions(collisions);
+    logElapsedTime("resolve collisions");
 
     //TODO: call collision events
 }
@@ -159,7 +166,7 @@ bool CollisionSystem::GJK_collide(ColliderMatrices a, ColliderMatrices b) {
         if (MathUtils::PointInTriangle(origin, p1, p2, p3)) {
             //there was a collision!
             //find penetration depth using the Expanding Polytope Algorithm
-            cout << EPA_closestPoint(s,p1,p2,p3).magnitude() << endl;
+            // cout << EPA_closestPoint(s,p1,p2,p3).magnitude() << endl;
             return true;
         }
         //swap points to converge triangle on origin
