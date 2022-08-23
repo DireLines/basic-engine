@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Game.h"
 #include <algorithm>
+#include "ElapsedTimeLogger.h"
 #define UINT8(d) ((int)((d) * 255) % 256)
 
 Renderer::Renderer() {
@@ -11,8 +12,11 @@ Renderer::Renderer() {
 }
 
 void Renderer::update() {
+    ElapsedTimeLogger logElapsedTime = ElapsedTimeLogger("renderer");
     SDL_RenderClear(Game::renderer);
+    logElapsedTime("sdl clear");
     sort_objects_by_z();
+    logElapsedTime("sort objects by z");
     Matrix3 center = Transform::Translate(
                          Game::instance->windowWidth / 2,
                          Game::instance->windowHeight / 2
@@ -21,7 +25,9 @@ void Renderer::update() {
     for (SpriteTransform* obj : objects) {
         draw(obj, cam_t);
     }
+    logElapsedTime("draw objects");
     SDL_RenderPresent(Game::renderer);
+    logElapsedTime("sdl render");
 }
 
 bool z_less(SpriteTransform* a, SpriteTransform* b) {

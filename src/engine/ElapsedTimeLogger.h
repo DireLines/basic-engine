@@ -12,9 +12,11 @@ public:
         prev = get_wall_time();
     }
     void operator()(string message) {
+#ifdef LOGS
         double now = get_wall_time();
-        cout << logname << ": " << message << " took " << (now-prev)*1000000 << " micros" << endl;
+        cout << logname << ": " << message << " took " << (int)((now-prev)*1000000) << " micros" << endl;
         prev = now;
+#endif
     }
 private:
     std::string logname;

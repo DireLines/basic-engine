@@ -97,7 +97,6 @@ bool Game::update() {
     SDL_Event event;
     ElapsedTimeLogger logElapsedTime  = ElapsedTimeLogger("update");
     for (System* system : systems) {
-        cout << system->getName() << " update" << endl;
         system->update();
         logElapsedTime(system->getName());
         SDL_PollEvent(&event);

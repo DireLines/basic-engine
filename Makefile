@@ -16,7 +16,7 @@ SDL_LDFLAGS := $(shell sdl2-config --libs)
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CPPFLAGS ?= $(SDL_CFLAGS) $(INC_FLAGS) -MMD -MP -std=c++11 -g -O2 -F/Library/Frameworks
+CPPFLAGS ?= $(SDL_CFLAGS) $(INC_FLAGS) -MMD -MP -std=c++11 -g -O2 -F/Library/Frameworks -DLOGS
 
 #LINKER_FLAGS specifies the libraries we're linking against
 LDFLAGS = $(SDL_LDFLAGS) -lSDL2 -lSDL2_image -lSDL2_ttf
