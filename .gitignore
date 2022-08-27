@@ -121,7 +121,7 @@ Temporary Items
 # End of https://www.gitignore.io/api/c++,macos,emacs
 
 bin/
-
+build/
 src/generated/
 
 # david
