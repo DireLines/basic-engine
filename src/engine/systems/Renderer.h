@@ -25,8 +25,12 @@ public:
     void update();
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
-    Camera* getCamera() {return camera;}
-    void setCamera(Camera* cam) {camera = cam;}
+    Camera* getCamera() {
+        return camera;
+    }
+    void setCamera(Camera* cam) {
+        camera = cam;
+    }
 private:
     string sprites_basepath = "./resources/sprites/";
     void addObject(GameObject* obj);

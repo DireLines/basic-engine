@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <set>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "IDGenerator.h"
 #include "GameObjects.h"
 #include "ScriptRunner.h"
