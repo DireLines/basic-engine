@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7.1)
 add_definitions(-w -std=c++11)
-project(Game)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+project(Game)
 
 # TODO this does not work
 execute_process(COMMAND python3 codegen.py OUTPUT_VARIABLE BLAH)
@@ -31,4 +31,3 @@ target_link_libraries("${PROJECT_NAME}" ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES
 add_subdirectory("glfw")
 target_include_directories("${PROJECT_NAME}" PUBLIC glfw/include)
 target_link_libraries("${PROJECT_NAME}" glfw)
-SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -framework OpenGL -framework GLUT")

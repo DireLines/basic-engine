@@ -1,6 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <GLFW/glfw3.h>
 #include "GameObject.h"
 #include "System.h"
 #include "Sprite.h"
