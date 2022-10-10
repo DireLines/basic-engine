@@ -31,3 +31,4 @@ target_link_libraries("${PROJECT_NAME}" ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES
 add_subdirectory("glfw")
 target_include_directories("${PROJECT_NAME}" PUBLIC glfw/include)
 target_link_libraries("${PROJECT_NAME}" glfw)
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -framework OpenGL -framework GLUT")
