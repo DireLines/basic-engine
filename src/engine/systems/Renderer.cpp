@@ -15,6 +15,9 @@ void Renderer::update() {
     ElapsedTimeLogger logElapsedTime = ElapsedTimeLogger("renderer");
     SDL_RenderClear(Game::renderer);
     logElapsedTime("sdl clear");
+    glViewport(0, 0, Game::instance->windowWidth, Game::instance->windowHeight);
+    glClear(GL_COLOR_BUFFER_BIT);
+    logElapsedTime("gl clear");
     sort_objects_by_z();
     logElapsedTime("sort objects by z");
     Matrix3 center = Transform::Translate(
@@ -28,6 +31,11 @@ void Renderer::update() {
     logElapsedTime("draw objects");
     SDL_RenderPresent(Game::renderer);
     logElapsedTime("sdl render");
+    // glUseProgram(program);
+    // glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
+    glfwSwapBuffers(Game::instance->window);
+    logElapsedTime("glfw render");
 }
 
 bool z_less(SpriteTransform* a, SpriteTransform* b) {
@@ -72,30 +80,32 @@ bool Renderer::needObject(GameObject* obj) {
 
 void Renderer::draw(SpriteTransform* obj, Matrix3& cam_t) {
     Sprite* s = obj->sprite;
-    if (s && s->enabled) {
-        SDL_Texture* texture = s->texture;
-        SDL_Surface* image = s->image;
-        if (texture) {
-            Transform* obj_t = obj->transform;
-            Matrix3 transform = cam_t * obj_t->Apply() * obj_t->Unpivot();
-            Vector2 topLeft = transform * Vector2(0, 0);
-            Vector2 topRight = transform * Vector2(image->w, 0);
-            Vector2 bottomRight = transform * Vector2(image->w, image->h);
-
-            int w = (int)round(Vector2::distance(topLeft, topRight));
-            int h = (int)round(Vector2::distance(topRight, bottomRight));
-
-            double displayAngle = MathUtils::rad2deg(Vector2::calculateRotation(topLeft, topRight));
-            SDL_Point origin = topLeft.toPixel();
-            SDL_Point corner = {0, 0};
-
-            SDL_Rect dstrect = { origin.x, origin.y, w, h};
-            SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
-            SDL_Color c = s->color;
-            SDL_SetTextureColorMod(texture, c.r, c.g, c.b);
-            SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, displayAngle, &corner, SDL_FLIP_NONE);
-        }
+    if (!(s && s->enabled)) {
+        return;
     }
+    SDL_Texture* texture = s->texture;
+    if (!texture) {
+        return;
+    }
+    SDL_Surface* image = s->image;
+    Transform* obj_t = obj->transform;
+    Matrix3 transform = cam_t * obj_t->Apply() * obj_t->Unpivot();
+    Vector2 topLeft = transform * Vector2(0, 0);
+    Vector2 topRight = transform * Vector2(image->w, 0);
+    Vector2 bottomRight = transform * Vector2(image->w, image->h);
+
+    int w = (int)round(Vector2::distance(topLeft, topRight));
+    int h = (int)round(Vector2::distance(topRight, bottomRight));
+
+    double displayAngle = MathUtils::rad2deg(Vector2::calculateRotation(topLeft, topRight));
+    SDL_Point origin = topLeft.toPixel();
+    SDL_Point corner = {0, 0};
+
+    SDL_Rect dstrect = { origin.x, origin.y, w, h};
+    SDL_SetTextureAlphaMod(texture, UINT8(s->alpha));
+    SDL_Color c = s->color;
+    SDL_SetTextureColorMod(texture, c.r, c.g, c.b);
+    SDL_RenderCopyEx(Game::renderer, texture, NULL, &dstrect, displayAngle, &corner, SDL_FLIP_NONE);
 }
 
 SDL_Texture* Renderer::addTexture(Sprite* sprite) {

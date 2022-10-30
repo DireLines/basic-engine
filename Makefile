@@ -3,7 +3,7 @@ bogus_name := $(shell python3 codegen.py)
 TARGET_EXEC ?= Game
 
 BUILD_DIR ?= ./bin
-SRC_DIRS ?= ./src ./resources/scripts ./glfw
+SRC_DIRS ?= ./src ./resources/scripts ./glfw/include
 
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)

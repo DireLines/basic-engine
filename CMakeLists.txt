@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.7.1)
-add_definitions(-w -std=c++11)
+add_definitions(-w)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 project(Game)
 
@@ -32,3 +33,6 @@ add_subdirectory("glfw")
 target_include_directories("${PROJECT_NAME}" PUBLIC glfw/include)
 target_link_libraries("${PROJECT_NAME}" glfw)
 SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -framework OpenGL -framework GLUT")
+
+find_package(GLM REQUIRED)
+include_directories(${GLM_INCLUDE_DIRS})

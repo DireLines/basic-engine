@@ -11,6 +11,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "Camera.h"
+#include "Linmath.h"
 
 using namespace std;
 

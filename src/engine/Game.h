@@ -27,8 +27,12 @@ public:
     int frames_per_sec = 120;
     int windowWidth, windowHeight;
 
-    SDL_Window * window;
+    SDL_Window* sdl_window;
     static SDL_Renderer* renderer;
+
+    GLFWwindow* window;
+    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+    GLint mvp_location, vpos_location, vcol_location;
 
     //Global frame counter
     static unsigned int frameCounter;
@@ -54,7 +58,9 @@ public:
 private:
 
     void initSDL();
+    void initGLFW();
     void quitSDL();
+    void quitGLFW();
 
     set<GameObject*> objects;
 

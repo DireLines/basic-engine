@@ -4,6 +4,7 @@
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <GLFW/glfw3.h>
 using namespace std;
 class Sprite: public Component {
 public:
