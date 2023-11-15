@@ -4,7 +4,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 project(Game)
 
-# TODO this does not work
 execute_process(COMMAND python3 codegen.py OUTPUT_VARIABLE BLAH)
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp" "resources/scripts/*.cpp")

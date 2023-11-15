@@ -2,13 +2,22 @@
 #include "Game.h"
 #include <algorithm>
 #include "ElapsedTimeLogger.h"
+#include "stb_image.h"
 #define UINT8(d) ((int)((d) * 255) % 256)
 
+
+void setTextureProperties() {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
 Renderer::Renderer() {
     name = "Renderer";
     //TODO: set camera based on information from scene
     camera = new Camera();
     Game::instance->instantiate(camera);
+    // setTextureProperties();
 }
 
 void Renderer::update() {

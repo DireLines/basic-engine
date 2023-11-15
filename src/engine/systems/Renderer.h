@@ -12,6 +12,7 @@
 #include <SDL2/SDL_image.h>
 #include "Camera.h"
 #include "Linmath.h"
+#include <glm/glm.hpp>
 
 using namespace std;
 

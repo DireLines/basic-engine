@@ -4,7 +4,6 @@
 #include <string>
 #include "WallTime.h"
 #include "ElapsedTimeLogger.h"
-#include <glm/glm.hpp>
 
 using namespace std;
 
