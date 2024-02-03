@@ -19,7 +19,7 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 CPPFLAGS ?= $(SDL_CFLAGS) $(INC_FLAGS) -MMD -MP -std=c++11 -g -O2 -F/Library/Frameworks -DLOGS=$(LOGS)
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LDFLAGS = $(SDL_LDFLAGS) -lSDL2 -lSDL2_image -lSDL2_ttf
+LDFLAGS = $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)

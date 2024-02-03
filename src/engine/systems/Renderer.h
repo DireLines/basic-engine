@@ -8,7 +8,7 @@
 #include <vector>
 #include <unordered_map>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL2_image/SDL_image.h>
 #include "Camera.h"
 
 using namespace std;
@@ -25,8 +25,12 @@ public:
     void update();
     bool needObject(GameObject* obj);
     void removeObject(GameObject* obj);
-    Camera* getCamera() {return camera;}
-    void setCamera(Camera* cam) {camera = cam;}
+    Camera* getCamera() {
+        return camera;
+    }
+    void setCamera(Camera* cam) {
+        camera = cam;
+    }
 private:
     string sprites_basepath = "./resources/sprites/";
     void addObject(GameObject* obj);
