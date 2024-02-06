@@ -7,6 +7,8 @@ import SDL "vendor:sdl2"
 import SDL_IMG "vendor:sdl2/image"
 import SDL_TTF "vendor:sdl2/ttf"
 
+import ecs "ecs"
+
 frames_per_sec :: 120
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
 frame_counter: u64
@@ -20,12 +22,13 @@ Game :: struct {
     window_height: i32,
     input_system:  ^Input,
     systems:       [dynamic]^System,
-    objects:       [dynamic]GameObject,
+    objects:       ecs.Context,
     start_tick:    time.Tick,
 }
 new_game :: proc(window_width, window_height: i32) -> Game {
     game := Game{}
     init(&game, window_width, window_height)
+    game.objects = ecs.init_ecs()
     return game
 }
 initSDL :: proc(game: ^Game) {
@@ -70,6 +73,7 @@ quit :: proc(game: ^Game) {
     print("target fps:", frames_per_sec)
     print("actual fps:", average_fps)
     quitSDL(game)
+    ecs.deinit_ecs(&objects)
 }
 
 start :: proc(game: ^Game) {
@@ -121,7 +125,8 @@ update :: proc(game: ^Game) -> bool {
 }
 instantiate :: proc(game: ^Game, obj: ^GameObject) {
     using game
-    append(&objects, obj^)
+    using ecs
+    entity := create_entity(&objects)
     //TODO instantiate child GameObjects
     for system in systems {
         if system->needObject(game, obj) {

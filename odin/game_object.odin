@@ -1,6 +1,7 @@
 package main
+import "transform"
 
 GameObject :: struct {
-    name:            string,
-    using transform: Transform,
+    name:      string,
+    transform: transform.Transform,
 }
