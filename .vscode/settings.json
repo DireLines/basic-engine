@@ -5,5 +5,6 @@
     "thread": "cpp",
     "ostream": "cpp",
     "chrono": "cpp"
-  }
+  },
+  "cmake.sourceDirectory": "/Users/nathanielsaxe/Documents/Code/basic-engine/glfw"
 }
