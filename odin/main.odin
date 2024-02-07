@@ -78,6 +78,11 @@ main :: proc() {
             destroy_entity(world, Entity(e))
         }
     }
+    destroy_entity(world, Entity(20))
+    create_entity(world)
+    add_component(world, 20, "hello")
+    add_component(world, 20, u64(20))
+    add_component(world, 20, false)
     timer->time("create and destroy 35 more entities")
     comps := get_relevant_components(world, {string, u64, bool})
     total_comps := 0

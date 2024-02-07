@@ -108,9 +108,12 @@ register_component :: proc(ctx: ^Context, $T: typeid) -> ECS_Error {
 
 add_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> (^T, ECS_Error) {
     register_component(ctx, T)
+    print("attempt add", typeid_of(T), "to", entity)
     if has_component(ctx, entity, T) {
+        print(typeid_of(T), "already on", entity)
         return nil, .ENTITY_ALREADY_HAS_THIS_COMPONENT
     }
+    print("add", typeid_of(T), "to", entity)
 
     array := cast(^[dynamic]T)ctx.components[T]
     comp_map := &ctx.component_indices[T]
@@ -126,9 +129,11 @@ add_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> (^T, ECS_
     //relevant entity tracking
     for k, &v in ctx.relevant_entities {
         if entity in v.entity_indices {
+            print("already tracking", entity)
             continue
         }
         if has_all_components(ctx, entity, v.components[:]) {
+            print("track", entity)
             relevant_components := make(map[typeid]uint)
             for component in v.components {
                 relevant_components[component] = ctx.component_indices[component][entity]
@@ -147,17 +152,19 @@ has_component :: proc(ctx: ^Context, entity: Entity, T: typeid) -> bool {
 @(private)
 remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typeid) -> ECS_Error {
     using ctx.entities
+    print("attempt remove", type_id, "from", entity)
 
     if !has_component(ctx, entity, type_id) {
+        print(type_id, "not on", entity)
         return .ENTITY_DOES_NOT_HAVE_THIS_COMPONENT
     }
+    print("remove", type_id, "from", entity)
     index := ctx.entity_indices[entity][type_id]
 
     array_len := ctx.components[type_id]^.len
     array := ctx.components[type_id]^.data
-    entity_map := ctx.component_indices[type_id]
 
-    delete_key(&entity_map, entity)
+    delete_key(&ctx.entity_indices[entity], type_id)
     delete_key(&ctx.component_indices[type_id], entity)
 
     //relevant entity tracking
