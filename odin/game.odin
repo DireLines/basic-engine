@@ -15,6 +15,7 @@ frame_counter: u64
 average_frame_length: f64
 
 Game :: struct {
+    game_timer: GameTimer,
     renderer:      ^SDL.Renderer,
     window:        ^SDL.Window,
     id_generator:  IDGenerator,
@@ -28,7 +29,6 @@ Game :: struct {
 new_game :: proc(window_width, window_height: i32) -> Game {
     game := Game{}
     init(&game, window_width, window_height)
-    game.objects = ecs.init_ecs()
     return game
 }
 initSDL :: proc(game: ^Game) {
@@ -61,12 +61,14 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
     game.window_width = window_width
     game.window_height = window_height
     game.input_system = input_system()
+    game.objects = ecs.init_ecs()
     append(&game.systems, physics_system(), collision_system(), script_runner(), renderer())
     initSDL(game)
 }
 
 add_system :: proc(game: ^Game, system: ^System) {
     append(&game.systems, system)
+    ecs.track_entities_with_components(&game.objects,system.components_needed[:])
 }
 
 add_systems :: proc(game: ^Game, systems: ..^System) {
@@ -91,6 +93,7 @@ start :: proc(game: ^Game) {
         system->start(game)
     }
     initialize(game)
+    game.game_timer = GameTimer{}
     start_tick := time.tick_now()
     game.start_tick = start_tick
     should_quit := false
@@ -100,6 +103,8 @@ start :: proc(game: ^Game) {
         if duration > ms_per_frame {
             average_frame_length += duration
             start_tick = now
+            game.game_timer.delta_time = duration / 1000
+            game.game_timer.time += game.game_timer.delta_time
             game.input_system->update(game)
             should_quit = update(game)
             game.input_system->postupdate(game)

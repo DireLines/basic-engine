@@ -2,6 +2,7 @@ package ecs
 import "base:runtime"
 import "core:container/queue"
 import "core:fmt"
+import "core:mem"
 import "core:slice"
 import "core:strings"
 import "core:time"
@@ -14,6 +15,7 @@ import "core:time"
 //and wants all the relevant components 
 //of all entities that have all relevant components
 
+print :: fmt.println
 Entity :: distinct uint
 
 Context :: struct {
@@ -31,11 +33,13 @@ ECS_Error :: enum {
     ENTITY_ALREADY_HAS_THIS_COMPONENT,
     COMPONENT_NOT_REGISTERED,
     COMPONENT_IS_ALREADY_REGISTERED,
+    INDEX_OUT_OF_BOUNDS,
 }
 
 Tracked_Entities :: struct {
-    components:     [dynamic]typeid,
-    entity_indices: map[Entity]map[typeid]uint,
+    components:         [dynamic]typeid, //set of components tracked, e.g. {Transform, Rigidbody}
+    entity_indices:     map[Entity]int, //entity -> index within component_pointers
+    component_pointers: map[typeid][dynamic]rawptr, //pointers to Context.components
 }
 
 Entities :: struct {
@@ -48,7 +52,6 @@ Entity_And_Some_Info :: struct {
     entity:   Entity,
     is_valid: bool,
 }
-
 
 
 init_ecs :: proc() -> (ctx: Context) {
@@ -129,7 +132,7 @@ register_component :: proc(ctx: ^Context, $T: typeid) -> ECS_Error {
 
     array := new([dynamic]T)
     ctx.components[T] = cast(^runtime.Raw_Dynamic_Array)array
-    array^ = make_dynamic_array([dynamic]T)
+    array^ = make_dynamic_array_len([dynamic]T,100000)
 
     return .NO_ERROR
 }
@@ -157,11 +160,26 @@ add_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> (^T, ECS_
             continue
         }
         if has_all_components(ctx, entity, v.components[:]) {
-            relevant_components := make(map[typeid]uint)
-            for component in v.components {
-                relevant_components[component] = ctx.component_indices[component][entity]
+            //insert pointers
+            component_pointer := rawptr(&array[comp_map[entity]])
+            if T not_in v.component_pointers {
+                v.component_pointers[T] = make([dynamic]rawptr)
             }
-            v.entity_indices[entity] = relevant_components
+            component_pointers := &v.component_pointers[T]
+            index := len(component_pointers)
+            for comp in v.components {
+                if comp not_in v.component_pointers {
+                    v.component_pointers[comp] = make([dynamic]rawptr)
+                }
+                base_ptr := uintptr(ctx.components[comp]^.data)
+                struct_size := uint(type_info_of(comp).size)
+                ind := ctx.component_indices[comp][entity]
+                offset_ptr := uintptr(uint(type_info_of(comp).size) * ind)
+                ptr := rawptr(base_ptr + offset_ptr)
+                // print(comp, rawptr(base_ptr), "+", struct_size, "*", ind, "=", ptr)
+                append(&v.component_pointers[comp], ptr)
+            }
+            v.entity_indices[entity] = index
         }
     }
 
@@ -189,14 +207,34 @@ remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typ
 
     //relevant entity tracking
     for k, &v in ctx.relevant_entities {
-        if entity in v.entity_indices {
-            delete(v.entity_indices[entity])
+        index, present := v.entity_indices[entity]
+        if present {
             delete_key(&v.entity_indices, entity)
+            for comp in v.components {
+                unordered_remove(&v.component_pointers[comp], int(index))
+            }
         }
     }
 
     return .NO_ERROR
 }
+
+get_component_by_index :: proc(
+    ctx: ^Context,
+    $T: typeid,
+    index: uint,
+) -> (
+    component: ^T,
+    error: ECS_Error,
+) {
+    length := ctx.components[T]^.len
+    if index >= uint(length) {
+        return nil, .INDEX_OUT_OF_BOUNDS
+    }
+    array := cast(^[dynamic]T)ctx.components[T]
+    return &array[index], .NO_ERROR
+}
+
 
 get_component :: proc(
     ctx: ^Context,
@@ -250,22 +288,32 @@ is_entity_valid :: proc(ctx: ^Context, entity: Entity) -> bool {
 }
 
 
-get_relevant_components :: proc(
+get_tracking_info :: proc(
     ctx: ^Context,
     components: []typeid,
 ) -> (
-    entity_indices: map[Entity]map[typeid]uint,
+    tracking_info: Tracked_Entities,
 ) {
     key := get_key_from_typeids(components)
     if key in ctx.relevant_entities {
-        return ctx.relevant_entities[key].entity_indices
+        return ctx.relevant_entities[key]
     }
-    entity_indices = make(map[Entity]map[typeid]uint)
+    component_pointers := make(map[typeid][dynamic]rawptr)
+    entity_indices := make(map[Entity]int)
+    components_dyn := [dynamic]typeid{}
+    for component in components {
+        append(&components_dyn, component)
+    }
+    tracking_info = Tracked_Entities {
+        entity_indices     = entity_indices,
+        component_pointers = component_pointers,
+        components         = components_dyn,
+    }
     if len(components) <= 0 {
-        return entity_indices
+        return
     }
     if components[0] not_in ctx.component_indices {
-        return entity_indices
+        return
     }
     for entity, _ in ctx.component_indices[components[0]] {
 
@@ -278,28 +326,35 @@ get_relevant_components :: proc(
         }
 
         if has_all_needed_components {
-            relevant_components := make(map[typeid]uint)
-            for component in components {
-                relevant_components[component] = ctx.component_indices[component][entity]
+            relevant_tracking := &ctx.relevant_entities[key]
+            index: int
+            for ty, arr in relevant_tracking.component_pointers {
+                index = len(arr)
+                break
             }
-            entity_indices[entity] = relevant_components
+            for component in components {
+                c_ptr := cast(^[dynamic]rawptr)&ctx.components[component]
+                append(&relevant_tracking.component_pointers[component], c_ptr)
+            }
+            relevant_tracking.entity_indices[entity] = index
         }
 
     }
     return
 }
-get_entities_with_components :: proc(
-    ctx: ^Context,
-    components: []typeid,
-) -> (
-    entities: [dynamic]Entity,
-) {
-    entity_indices := get_relevant_components(ctx, components)
-    for k, _ in entity_indices {
-        append(&entities, k)
-    }
-    return
-}
+
+// get_entities_with_components :: proc(
+//     ctx: ^Context,
+//     components: []typeid,
+// ) -> (
+//     entities: [dynamic]Entity,
+// ) {
+//     entity_indices := get_relevant_components(ctx, components)
+//     for k, _ in entity_indices {
+//         append(&entities, k)
+//     }
+//     return
+// }
 
 has_all_components :: proc(ctx: ^Context, entity: Entity, components: []typeid) -> bool {
     for comp_type in components {
@@ -356,13 +411,6 @@ track_entities_with_components :: proc(ctx: ^Context, components: []typeid) {
     if key in ctx.relevant_entities {
         return
     }
-    new_components := make([dynamic]typeid, len(components))
-    for _, i in components {
-        new_components[i] = components[i]
-    }
     rel_ents := &ctx.relevant_entities
-    rel_ents[key] = Tracked_Entities {
-        entity_indices = get_relevant_components(ctx, components),
-        components     = new_components,
-    }
+    rel_ents[key] = get_tracking_info(ctx, components)
 }

@@ -3,6 +3,7 @@ package main
 import "core:fmt"
 import glm "core:math/linalg/glsl"
 import "core:time"
+import "ecs"
 import "rigidbody"
 import "transform"
 
@@ -44,12 +45,34 @@ test_system :: proc() -> ^System {
 }
 
 physics_system :: proc() -> ^System {
+    move :: proc(rb: ^rigidbody.Rigidbody, t: ^transform.Transform, dt: f32) {
+        acceleration: glm.vec2 = rb.force / rb.mass
+        rb.velocity += acceleration * dt
+        t.position += rb.velocity * dt
+        angular_accel := rb.torque / rb.moment_of_inertia
+        rb.angular_velocity += angular_accel * dt
+        t.rotation += rb.angular_velocity * dt
+        rb.force = glm.vec2{}
+        rb.torque = 0
+    }
+    physics_update :: proc(system: ^System, game: ^Game) {
+        timer := timer()
+        using ecs, rigidbody, transform
+        world := &game.objects
+        dt := game.game_timer.delta_time
+        objects := get_tracking_info(world, system.components_needed[:]).component_pointers
+        print(#procedure, len(objects[Transform]))
+        for index in 0 ..< len(objects[Transform]) {
+            t := cast(^Transform)objects[Transform][index]
+            rb := cast(^Rigidbody)objects[Rigidbody][index]
+            move(rb, t, f32(dt))
+        }
+    }
     return new_clone(System {
         components_needed = {transform.Transform, rigidbody.Rigidbody},
         start = proc(system: ^System, game: ^Game) {
         },
-        update = proc(system: ^System, game: ^Game) {
-        },
+        update = physics_update,
         needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
             return true
         },
@@ -63,43 +86,47 @@ physics_system :: proc() -> ^System {
     })
 }
 collision_system :: proc() -> ^System {
-    return new_clone(System {
-        // components_needed = {transform.Transform,collider.Collider},
-        start = proc(system: ^System, game: ^Game) {
-        },
-        update = proc(system: ^System, game: ^Game) {
+    return new_clone(
+        System {
+            // components_needed = {transform.Transform,collider.Collider},
+            start = proc(system: ^System, game: ^Game) {
+            },
+            update = proc(system: ^System, game: ^Game) {
 
-        },
-        needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
-            return true
-        },
-        addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+            },
+            needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
+                return true
+            },
+            addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
 
-        },
-        removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+            },
+            removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
 
+            },
+            name = "CollisionSystem",
         },
-        name = "CollisionSystem",
-    })
+    )
 }
 script_runner :: proc() -> ^System {
-    return new_clone(System {
-        // components_needed = {Script},
-        start = proc(system: ^System, game: ^Game) {
-        },
-        update = proc(system: ^System, game: ^Game) {
-        },
-        needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
-            return true
-        },
-        addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+    return new_clone(
+        System {
+            // components_needed = {Script},
+            start = proc(system: ^System, game: ^Game) {
+            },
+            update = proc(system: ^System, game: ^Game) {
+            },
+            needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
+                return true
+            },
+            addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
 
-        },
-        removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+            },
+            removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
 
+            },
+            name = "ScriptRunner",
         },
-        name = "ScriptRunner",
-    })
+    )
 }
 renderer :: proc() -> ^System {
     renderer_update :: proc(system: ^System, using game: ^Game) {
