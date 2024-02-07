@@ -22,9 +22,10 @@ main :: proc() {
         ctx := init_ecs();world := &ctx;defer deinit_ecs(world)
         timer->time("init")
         track_entities_with_components(world, {string, u64, bool})
-        timer->time("start tracking entities with components")
+        timer->time("register systems")
         for i in 0 ..< 10000 {
             e := create_entity(world)
+            add_component(world, e, i)
             if i % 2 == 0 {
                 add_component(world, e, "hello")
             }
@@ -38,13 +39,16 @@ main :: proc() {
                 add_component(world, e, u64(i))
             }
         }
+        print("num transforms", world.components[int]^.len)
         timer->time("create 10000")
         for i in 0 ..< 2500 {
             destroy_entity(world, Entity(i))
         }
+        print("num transforms", world.components[int]^.len)
         timer->time("destroy 2500")
         for i in 0 ..< 10000 {
             e := create_entity(world)
+            add_component(world, e, i)
             if i % 2 == 0 {
                 add_component(world, e, "hello")
             }
@@ -58,6 +62,7 @@ main :: proc() {
                 add_component(world, e, u64(i))
             }
         }
+        print("num transforms", world.components[int]^.len)
         timer->time("create 10000 more")
         ents := get_entities_with_components(world, {string, u64, bool})
         print(len(ents))
@@ -66,8 +71,13 @@ main :: proc() {
         print(len(ents))
         timer->time("find entities with components (no cache)")
         comps := get_relevant_components(world, {string, u64, bool})
-        print(len(comps))
+        total_comps := 0
+        for e, c in comps {
+            total_comps += len(c)
+        }
+        print(total_comps)
         timer->time("find relevant components (w cache)")
+        print(check_relevant_tracking_correct(world))
     }
     // WINDOW_WIDTH :: 1200
     // WINDOW_HEIGHT :: 800

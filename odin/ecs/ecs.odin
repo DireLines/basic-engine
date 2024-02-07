@@ -4,7 +4,33 @@ import "core:container/queue"
 import "core:fmt"
 import "core:slice"
 import "core:strings"
+import "core:time"
+
+//debug
+timing_logs :: #config(timing_logs, false)
+Timer :: struct {
+    loc:   runtime.Source_Code_Location,
+    start: time.Tick,
+    time:  proc(state: ^Timer, msg: string),
+}
+timer :: proc(loc := #caller_location) -> Timer {
+    return Timer{loc = loc, start = time.tick_now(), time = proc(state: ^Timer, msg: string) {
+                when timing_logs {
+                    elapsed := time.tick_since(state.start)
+                    prefix := state.loc.procedure
+                    fmt.printf(
+                        "%v: %v took %v micros\n",
+                        prefix,
+                        msg,
+                        int(time.duration_microseconds(elapsed)),
+                    )
+                    state.start = time.tick_now()
+                }
+            }}
+}
 print :: fmt.println
+
+
 ECS_Error :: enum {
     NO_ERROR,
     ENTITY_DOES_NOT_HAVE_THIS_COMPONENT,
@@ -136,6 +162,7 @@ has_component :: proc(ctx: ^Context, entity: Entity, T: typeid) -> bool {
 @(private)
 remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typeid) -> ECS_Error {
     using ctx.entities
+    timer := timer()
 
     if !has_component(ctx, entity, type_id) {
         return .ENTITY_DOES_NOT_HAVE_THIS_COMPONENT
@@ -149,21 +176,10 @@ remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typ
     info := type_info_of(type_id)
     struct_size := info.size
     array_in_bytes := slice.bytes_from_ptr(array, array_len * struct_size)
-
     byte_index := int(index) * struct_size
     last_byte_index := (len(array_in_bytes)) - struct_size
     e_index := entity_map[entity]
     e_back := uint(array_len - 1)
-    if e_index != e_back {
-        slice.swap_with_slice(
-            array_in_bytes[byte_index:byte_index + struct_size],
-            array_in_bytes[last_byte_index:],
-        )
-        // TODO: Remove this and replace it with something that dosen't have to do a lot of searching.
-        for _, value in &entity_map {
-            if value == e_back {value = e_index}
-        }
-    }
 
     delete_key(&entity_map, entity)
     delete_key(&ctx.component_indices[type_id], entity)
@@ -296,36 +312,11 @@ get_entities_with_components :: proc(
 ) -> (
     entities: [dynamic]Entity,
 ) {
-    key := get_key_from_typeids(components)
-    if key in ctx.relevant_entities {
-        for k, _ in ctx.relevant_entities[key].entity_indices {
-            append(&entities, k)
-        }
-        return
+    entity_indices := get_relevant_components(ctx, components)
+    for k, _ in entity_indices {
+        append(&entities, k)
     }
-    entities = make([dynamic]Entity)
-    if len(components) <= 0 {
-        return entities
-    }
-    if components[0] not_in ctx.component_indices {
-        return entities
-    }
-    for entity, _ in ctx.component_indices[components[0]] {
-
-        has_all_needed_components := true
-        for comp_type in components[1:] {
-            if !has_component(ctx, entity, comp_type) {
-                has_all_needed_components = false
-                break
-            }
-        }
-
-        if has_all_needed_components {
-            append_elem(&entities, entity)
-        }
-
-    }
-    return entities
+    return
 }
 
 destroy_entity :: proc(ctx: ^Context, entity: Entity) {
@@ -400,4 +391,21 @@ track_entities_with_components :: proc(ctx: ^Context, components: []typeid) {
         entity_indices = get_relevant_components(ctx, components),
         components     = new_components,
     }
+}
+
+check_relevant_tracking_correct :: proc(ctx: ^Context) -> (correct: bool) {
+    correct = true
+    for k, &v in ctx.relevant_entities {
+        predicted_comps := get_relevant_components(ctx, v.components[:])
+        for entity, comps in predicted_comps {
+            for comp, i in comps {
+                true_index := ctx.entity_indices[entity][comp]
+                if true_index != i {
+                    print("mismatch for", entity, "and", comp, ":", i, "!=", true_index)
+                    correct = false
+                }
+            }
+        }
+    }
+    return correct
 }
