@@ -39,60 +39,25 @@ main :: proc() {
         timer->time("init")
         track_entities_with_components(world, {string, u64, bool})
         timer->time("register systems")
-        for i in 0 ..< 100000 {
+        for i in 0 ..< 10 {
             e := create_entity(world)
             add_component(world, e, Transform{})
-            if i % 2 == 0 {
-                add_component(world, e, "hello")
-            }
-            if i % 3 == 0 {
-                add_component(world, e, i)
-            }
-            if i % 4 == 0 {
-                add_component(world, e, false)
-            }
-            if i % 5 == 0 {
-                add_component(world, e, u64(i))
-            }
+            add_component(world, e, "hello")
+            add_component(world, e, u64(i))
+            add_component(world, e, false)
         }
-        timer->time("create 100000 entities")
-        for i in 0 ..< 25000 {
-            destroy_entity(world, Entity(i))
-        }
-        timer->time("destroy 25000 entities")
-        for i in 0 ..< 25100 {
-            e := create_entity(world)
-            add_component(world, e, Transform{})
-            if i % 2 == 0 {
-                add_component(world, e, "hello")
-            }
-            if i % 3 == 0 {
-                add_component(world, e, i)
-            }
-            if i % 4 == 0 {
-                add_component(world, e, false)
-            }
-            if i % 5 == 0 {
-                add_component(world, e, u64(i))
-            }
-            if i % 5 == 0 {
-                destroy_entity(world, Entity(e))
-            }
-        }
-        timer->time("create and destroy 25100 more entities")
-        comps := get_relevant_components(world, {string, u64, bool})
-        total_comps := 0
-        for e, c in comps {
-            total_comps += len(c)
-        }
-        print(total_comps, "components")
-        timer->time("find relevant components (w cache)")
-        ents := get_entities_with_components(world, {string, u64, bool})
-        print(len(ents), "entities")
-        timer->time("find entities with components (w cache)")
-        ents = get_entities_with_components_prev(world, {string, u64, bool})
-        print(len(ents), "entities")
-        timer->time("find entities with components (no cache)")
+        destroy_entity(world, Entity(1))
+        e := create_entity(world)
+        add_component(world, e, Transform{})
+        add_component(world, e, "hello")
+        add_component(world, e, false)
+        add_component(world, e, u64(e))
+        destroy_entity(world, Entity(e))
+        add_component(world, e, Transform{})
+        add_component(world, e, "hello")
+        add_component(world, e, false)
+        add_component(world, e, u64(e))
+        destroy_entity(world, Entity(0))
         print(check_relevant_tracking_correct(world))
     }
     // WINDOW_WIDTH :: 1200
