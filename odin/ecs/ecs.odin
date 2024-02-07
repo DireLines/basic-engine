@@ -13,7 +13,6 @@ import "core:time"
 //each system cares about a particular set of components,
 //and wants all the relevant components 
 //of all entities that have all relevant components
-print :: fmt.println
 
 ECS_Error :: enum {
     NO_ERROR,
@@ -108,12 +107,9 @@ register_component :: proc(ctx: ^Context, $T: typeid) -> ECS_Error {
 
 add_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> (^T, ECS_Error) {
     register_component(ctx, T)
-    print("attempt add", typeid_of(T), "to", entity)
     if has_component(ctx, entity, T) {
-        print(typeid_of(T), "already on", entity)
         return nil, .ENTITY_ALREADY_HAS_THIS_COMPONENT
     }
-    print("add", typeid_of(T), "to", entity)
 
     array := cast(^[dynamic]T)ctx.components[T]
     comp_map := &ctx.component_indices[T]
@@ -129,11 +125,9 @@ add_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> (^T, ECS_
     //relevant entity tracking
     for k, &v in ctx.relevant_entities {
         if entity in v.entity_indices {
-            print("already tracking", entity)
             continue
         }
         if has_all_components(ctx, entity, v.components[:]) {
-            print("track", entity)
             relevant_components := make(map[typeid]uint)
             for component in v.components {
                 relevant_components[component] = ctx.component_indices[component][entity]
@@ -152,13 +146,10 @@ has_component :: proc(ctx: ^Context, entity: Entity, T: typeid) -> bool {
 @(private)
 remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typeid) -> ECS_Error {
     using ctx.entities
-    print("attempt remove", type_id, "from", entity)
 
     if !has_component(ctx, entity, type_id) {
-        print(type_id, "not on", entity)
         return .ENTITY_DOES_NOT_HAVE_THIS_COMPONENT
     }
-    print("remove", type_id, "from", entity)
     index := ctx.entity_indices[entity][type_id]
 
     array_len := ctx.components[type_id]^.len
@@ -232,13 +223,11 @@ create_entity :: proc(ctx: ^Context) -> Entity {
     if queue.len(available_slots) <= 0 {
         append_elem(&entities, Entity_And_Some_Info{Entity(current_entity_id), true})
         ctx.entity_indices[Entity(current_entity_id)] = make(map[typeid]uint)
-        print("create", current_entity_id)
         current_entity_id += 1
         return Entity(current_entity_id - 1)
     } else {
         index := queue.pop_front(&available_slots)
         entities[index] = Entity_And_Some_Info{Entity(index), true}
-        print("create", index)
         return Entity(index)
     }
 
@@ -306,7 +295,6 @@ get_entities_with_components :: proc(
 
 destroy_entity :: proc(ctx: ^Context, entity: Entity) {
     using ctx.entities
-    print("destroy", entity)
 
     for T, component in &ctx.entity_indices[entity] {
         remove_component_with_typeid(ctx, entity, T)
