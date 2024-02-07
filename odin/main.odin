@@ -56,11 +56,11 @@ main :: proc() {
             }
         }
         timer->time("create 100000 entities")
-        for i in 0 ..< 25000{
+        for i in 0 ..< 25000 {
             destroy_entity(world, Entity(i))
         }
         timer->time("destroy 25000 entities")
-        for i in 0 ..< 100000 {
+        for i in 0 ..< 25100 {
             e := create_entity(world)
             add_component(world, e, Transform{})
             if i % 2 == 0 {
@@ -75,21 +75,23 @@ main :: proc() {
             if i % 5 == 0 {
                 add_component(world, e, u64(i))
             }
-            destroy_entity(world, Entity(e))
+            if i % 5 == 0 {
+                destroy_entity(world, Entity(e))
+            }
         }
-        timer->time("create and destroy 100000 more entities")
+        timer->time("create and destroy 25100 more entities")
         comps := get_relevant_components(world, {string, u64, bool})
         total_comps := 0
         for e, c in comps {
             total_comps += len(c)
         }
-        print(total_comps,"components")
+        print(total_comps, "components")
         timer->time("find relevant components (w cache)")
         ents := get_entities_with_components(world, {string, u64, bool})
-        print(len(ents),"entities")
+        print(len(ents), "entities")
         timer->time("find entities with components (w cache)")
         ents = get_entities_with_components_prev(world, {string, u64, bool})
-        print(len(ents),"entities")
+        print(len(ents), "entities")
         timer->time("find entities with components (no cache)")
         print(check_relevant_tracking_correct(world))
     }
