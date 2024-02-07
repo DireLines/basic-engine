@@ -13,6 +13,7 @@ import "core:time"
 //each system cares about a particular set of components,
 //and wants all the relevant components 
 //of all entities that have all relevant components
+print :: fmt.println
 
 ECS_Error :: enum {
     NO_ERROR,
@@ -47,7 +48,6 @@ Entity_And_Some_Info :: struct {
     is_valid: bool,
 }
 Entity :: distinct uint
-
 
 
 init_ecs :: proc() -> (ctx: Context) {
@@ -225,11 +225,13 @@ create_entity :: proc(ctx: ^Context) -> Entity {
     if queue.len(available_slots) <= 0 {
         append_elem(&entities, Entity_And_Some_Info{Entity(current_entity_id), true})
         ctx.entity_indices[Entity(current_entity_id)] = make(map[typeid]uint)
+        print("create", current_entity_id)
         current_entity_id += 1
         return Entity(current_entity_id - 1)
     } else {
         index := queue.pop_front(&available_slots)
         entities[index] = Entity_And_Some_Info{Entity(index), true}
+        print("create", index)
         return Entity(index)
     }
 
@@ -297,6 +299,7 @@ get_entities_with_components :: proc(
 
 destroy_entity :: proc(ctx: ^Context, entity: Entity) {
     using ctx.entities
+    print("destroy", entity)
 
     for T, component in &ctx.entity_indices[entity] {
         remove_component_with_typeid(ctx, entity, T)
