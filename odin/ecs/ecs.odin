@@ -6,30 +6,13 @@ import "core:slice"
 import "core:strings"
 import "core:time"
 
-//debug
-timing_logs :: #config(timing_logs, false)
-Timer :: struct {
-    loc:   runtime.Source_Code_Location,
-    start: time.Tick,
-    time:  proc(state: ^Timer, msg: string),
-}
-timer :: proc(loc := #caller_location) -> Timer {
-    return Timer{loc = loc, start = time.tick_now(), time = proc(state: ^Timer, msg: string) {
-                when timing_logs {
-                    elapsed := time.tick_since(state.start)
-                    prefix := state.loc.procedure
-                    fmt.printf(
-                        "%v: %v took %v micros\n",
-                        prefix,
-                        msg,
-                        int(time.duration_microseconds(elapsed)),
-                    )
-                    state.start = time.tick_now()
-                }
-            }}
-}
-print :: fmt.println
-
+//largely adapted from https://github.com/NoahR02/odin-ecs
+//I added different means of tracking indices
+//and an optimization similar to archetype ECS
+//to aid the common access pattern for systems:
+//each system cares about a particular set of components,
+//and wants all the relevant components 
+//of all entities that have all relevant components
 
 ECS_Error :: enum {
     NO_ERROR,
@@ -162,7 +145,6 @@ has_component :: proc(ctx: ^Context, entity: Entity, T: typeid) -> bool {
 @(private)
 remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typeid) -> ECS_Error {
     using ctx.entities
-    timer := timer()
 
     if !has_component(ctx, entity, type_id) {
         return .ENTITY_DOES_NOT_HAVE_THIS_COMPONENT
@@ -172,14 +154,6 @@ remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typ
     array_len := ctx.components[type_id]^.len
     array := ctx.components[type_id]^.data
     entity_map := ctx.component_indices[type_id]
-
-    info := type_info_of(type_id)
-    struct_size := info.size
-    array_in_bytes := slice.bytes_from_ptr(array, array_len * struct_size)
-    byte_index := int(index) * struct_size
-    last_byte_index := (len(array_in_bytes)) - struct_size
-    e_index := entity_map[entity]
-    e_back := uint(array_len - 1)
 
     delete_key(&entity_map, entity)
     delete_key(&ctx.component_indices[type_id], entity)
@@ -339,6 +313,7 @@ has_all_components :: proc(ctx: ^Context, entity: Entity, components: []typeid) 
     return true
 }
 
+//the slow but more straightforwardly correct way, for comparison
 get_entities_with_components_prev :: proc(
     ctx: ^Context,
     components: []typeid,
@@ -391,21 +366,4 @@ track_entities_with_components :: proc(ctx: ^Context, components: []typeid) {
         entity_indices = get_relevant_components(ctx, components),
         components     = new_components,
     }
-}
-
-check_relevant_tracking_correct :: proc(ctx: ^Context) -> (correct: bool) {
-    correct = true
-    for k, &v in ctx.relevant_entities {
-        predicted_comps := get_relevant_components(ctx, v.components[:])
-        for entity, comps in predicted_comps {
-            for comp, i in comps {
-                true_index := ctx.entity_indices[entity][comp]
-                if true_index != i {
-                    print("mismatch for", entity, "and", comp, ":", i, "!=", true_index)
-                    correct = false
-                }
-            }
-        }
-    }
-    return correct
 }

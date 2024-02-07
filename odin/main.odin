@@ -17,6 +17,22 @@ initialize :: proc(game: ^Game) {
 main :: proc() {
     using ecs
     using transform
+    check_relevant_tracking_correct :: proc(ctx: ^ecs.Context) -> (correct: bool) {
+        correct = true
+        for k, &v in ctx.relevant_entities {
+            predicted_comps := get_relevant_components(ctx, v.components[:])
+            for entity, comps in predicted_comps {
+                for comp, i in comps {
+                    true_index := ctx.entity_indices[entity][comp]
+                    if true_index != i {
+                        print("mismatch for", entity, "and", comp, ":", i, "!=", true_index)
+                        correct = false
+                    }
+                }
+            }
+        }
+        return correct
+    }
     for repetition in 0 ..< 5 {
         timer := timer()
         ctx := init_ecs();world := &ctx;defer deinit_ecs(world)
@@ -39,13 +55,11 @@ main :: proc() {
                 add_component(world, e, u64(i))
             }
         }
-        timer->time("create 100000")
-        print("num transforms", world.components[Transform]^.len)
+        timer->time("create 100000 entities")
         for i in 0 ..< 25000{
             destroy_entity(world, Entity(i))
         }
-        timer->time("destroy 25000")
-        print("num transforms", world.components[Transform]^.len)
+        timer->time("destroy 25000 entities")
         for i in 0 ..< 100000 {
             e := create_entity(world)
             add_component(world, e, Transform{})
@@ -63,8 +77,7 @@ main :: proc() {
             }
             destroy_entity(world, Entity(e))
         }
-        timer->time("create and destroy 100000 more")
-        print("num transforms", world.components[Transform]^.len)
+        timer->time("create and destroy 100000 more entities")
         comps := get_relevant_components(world, {string, u64, bool})
         total_comps := 0
         for e, c in comps {
