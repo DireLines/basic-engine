@@ -3,17 +3,20 @@ package main
 import "core:fmt"
 import glm "core:math/linalg/glsl"
 import "core:time"
+import "rigidbody"
+import "transform"
 
 import gl "vendor:OpenGL"
 import SDL "vendor:sdl2"
 
 System :: struct {
-    start:        proc(system: ^System, game: ^Game),
-    update:       proc(system: ^System, game: ^Game),
-    needObject:   proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool,
-    addObject:    proc(system: ^System, game: ^Game, obj: ^GameObject),
-    removeObject: proc(system: ^System, game: ^Game, obj: ^GameObject),
-    name:         string,
+    components_needed: [dynamic]typeid,
+    start:             proc(system: ^System, game: ^Game),
+    update:            proc(system: ^System, game: ^Game),
+    needObject:        proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool,
+    addObject:         proc(system: ^System, game: ^Game, obj: ^GameObject),
+    removeObject:      proc(system: ^System, game: ^Game, obj: ^GameObject),
+    name:              string,
 }
 
 program: u32
@@ -42,6 +45,7 @@ test_system :: proc() -> ^System {
 
 physics_system :: proc() -> ^System {
     return new_clone(System {
+        components_needed = {transform.Transform, rigidbody.Rigidbody},
         start = proc(system: ^System, game: ^Game) {
         },
         update = proc(system: ^System, game: ^Game) {
@@ -60,6 +64,7 @@ physics_system :: proc() -> ^System {
 }
 collision_system :: proc() -> ^System {
     return new_clone(System {
+        // components_needed = {transform.Transform,collider.Collider},
         start = proc(system: ^System, game: ^Game) {
         },
         update = proc(system: ^System, game: ^Game) {
@@ -79,6 +84,7 @@ collision_system :: proc() -> ^System {
 }
 script_runner :: proc() -> ^System {
     return new_clone(System {
+        // components_needed = {Script},
         start = proc(system: ^System, game: ^Game) {
         },
         update = proc(system: ^System, game: ^Game) {
@@ -146,6 +152,7 @@ renderer :: proc() -> ^System {
     }
     return new_clone(
         System {
+            // components_needed = {transform.Transform,Sprite},
             start = proc(system: ^System, using game: ^Game) {
                 gl_context := SDL.GL_CreateContext(window)
                 SDL.GL_MakeCurrent(window, gl_context)

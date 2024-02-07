@@ -198,10 +198,6 @@ remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typ
     return .NO_ERROR
 }
 
-remove_component :: proc(ctx: ^Context, entity: Entity, $T: typeid) -> ECS_Error {
-    return remove_component_with_typeid(ctx, entity, T)
-}
-
 get_component :: proc(
     ctx: ^Context,
     entity: Entity,
