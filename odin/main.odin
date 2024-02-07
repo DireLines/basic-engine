@@ -33,26 +33,32 @@ main :: proc() {
         }
         return correct
     }
-    timer := timer()
-    ctx := init_ecs();world := &ctx;defer deinit_ecs(world)
-    timer->time("init")
-    track_entities_with_components(world, {string, u64, bool})
-    timer->time("register systems")
-    for i in 0 ..< 100 {
-        e := create_entity(world)
-        add_component(world, e, Transform{})
-        if i % 2 == 0 {
+    for repetition in 0 ..< 5 {
+        timer := timer()
+        ctx := init_ecs();world := &ctx;defer deinit_ecs(world)
+        timer->time("init")
+        track_entities_with_components(world, {string, u64, bool})
+        timer->time("register systems")
+        for i in 0 ..< 10 {
+            e := create_entity(world)
+            add_component(world, e, Transform{})
             add_component(world, e, "hello")
-        }
-        if i % 3 == 0 {
-            add_component(world, e, i)
-        }
-        if i % 4 == 0 {
+            add_component(world, e, u64(i))
             add_component(world, e, false)
         }
-        if i % 5 == 0 {
-            add_component(world, e, u64(i))
-        }
+        destroy_entity(world, Entity(1))
+        e := create_entity(world)
+        add_component(world, e, Transform{})
+        add_component(world, e, "hello")
+        add_component(world, e, false)
+        add_component(world, e, u64(e))
+        destroy_entity(world, Entity(e))
+        add_component(world, e, Transform{})
+        add_component(world, e, "hello")
+        add_component(world, e, false)
+        add_component(world, e, u64(e))
+        destroy_entity(world, Entity(0))
+        print(check_relevant_tracking_correct(world))
     }
     timer->time("create 100 entities")
     for i in 0 ..< 25 {
