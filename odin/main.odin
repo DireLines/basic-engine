@@ -83,13 +83,13 @@ main :: proc() {
         for e, c in comps {
             total_comps += len(c)
         }
-        print(total_comps)
+        print(total_comps,"components")
         timer->time("find relevant components (w cache)")
         ents := get_entities_with_components(world, {string, u64, bool})
-        print(len(ents))
+        print(len(ents),"entities")
         timer->time("find entities with components (w cache)")
         ents = get_entities_with_components_prev(world, {string, u64, bool})
-        print(len(ents))
+        print(len(ents),"entities")
         timer->time("find entities with components (no cache)")
         print(check_relevant_tracking_correct(world))
     }

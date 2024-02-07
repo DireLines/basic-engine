@@ -48,6 +48,8 @@ Entity_And_Some_Info :: struct {
 }
 Entity :: distinct uint
 
+
+
 init_ecs :: proc() -> (ctx: Context) {
     create_entities :: proc(ctx: ^Context) {
         ctx.entities.entities = make([dynamic]Entity_And_Some_Info)
@@ -343,14 +345,16 @@ get_entities_with_components_prev :: proc(
     return entities
 }
 
+builder: strings.Builder
 get_key_from_typeids :: proc(components: []typeid) -> (key: string) {
+    defer strings.builder_reset(&builder)
     component_u64s := make([]u64, len(components))
     for component, i in components {
         component_u64s[i] = transmute(u64)component
     }
     slice.sort(component_u64s)
-    builder := strings.builder_make()
-    return fmt.sbprint(&builder, component_u64s)
+    k := fmt.sbprint(&builder, component_u64s)
+    return k
 }
 track_entities_with_components :: proc(ctx: ^Context, components: []typeid) {
     key := get_key_from_typeids(components)
