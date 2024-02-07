@@ -49,7 +49,6 @@ Entity_And_Some_Info :: struct {
 Entity :: distinct uint
 
 
-
 init_ecs :: proc() -> (ctx: Context) {
     create_entities :: proc(ctx: ^Context) {
         ctx.entities.entities = make([dynamic]Entity_And_Some_Info)
@@ -155,9 +154,8 @@ remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typ
 
     array_len := ctx.components[type_id]^.len
     array := ctx.components[type_id]^.data
-    entity_map := ctx.component_indices[type_id]
 
-    delete_key(&entity_map, entity)
+    delete_key(&ctx.entity_indices[entity], type_id)
     delete_key(&ctx.component_indices[type_id], entity)
 
     //relevant entity tracking
