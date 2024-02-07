@@ -3,7 +3,7 @@ import "base:runtime"
 import "core:container/queue"
 import "core:fmt"
 import "core:slice"
-
+import "core:strings"
 print :: fmt.println
 ECS_Error :: enum {
     NO_ERROR,
@@ -14,11 +14,17 @@ ECS_Error :: enum {
     COMPONENT_IS_ALREADY_REGISTERED,
 }
 
+Tracked_Entities :: struct {
+    components:     [dynamic]typeid,
+    entity_indices: map[Entity]map[typeid]uint,
+}
+
 Context :: struct {
     entities:          Entities,
     components:        map[typeid]^runtime.Raw_Dynamic_Array,
     entity_indices:    map[Entity]map[typeid]uint,
     component_indices: map[typeid]map[Entity]uint,
+    relevant_entities: map[string]Tracked_Entities, //maintain desired lists for faster querying
 }
 
 Entities :: struct {
@@ -43,6 +49,7 @@ init_ecs :: proc() -> (ctx: Context) {
     create_component_map :: proc(ctx: ^Context) {
         ctx.entity_indices = make(map[Entity]map[typeid]uint)
         ctx.component_indices = make(map[typeid]map[Entity]uint)
+        ctx.relevant_entities = make(map[string]Tracked_Entities)
     }
 
     create_component_map(&ctx)
@@ -93,6 +100,7 @@ add_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> (^T, ECS_
     if has_component(ctx, entity, T) {
         return nil, .ENTITY_ALREADY_HAS_THIS_COMPONENT
     }
+
     array := cast(^[dynamic]T)ctx.components[T]
     comp_map := &ctx.component_indices[T]
     // Add a new component to the component array.
@@ -103,6 +111,20 @@ add_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> (^T, ECS_
     comp_ind[entity] = len(array) - 1
     ent_ind := &ctx.entity_indices[entity]
     ent_ind[T] = len(array) - 1
+
+    //relevant entity tracking
+    for k, &v in ctx.relevant_entities {
+        if entity in v.entity_indices {
+            continue
+        }
+        if has_all_components(ctx, entity, v.components[:]) {
+            relevant_components := make(map[typeid]uint)
+            for component in v.components {
+                relevant_components[component] = ctx.component_indices[component][entity]
+            }
+            v.entity_indices[entity] = relevant_components
+        }
+    }
 
     return &array[comp_map[entity]], .NO_ERROR
 }
@@ -145,6 +167,14 @@ remove_component_with_typeid :: proc(ctx: ^Context, entity: Entity, type_id: typ
 
     delete_key(&entity_map, entity)
     delete_key(&ctx.component_indices[type_id], entity)
+
+    //relevant entity tracking
+    for k, &v in ctx.relevant_entities {
+        if entity in v.entity_indices {
+            delete(v.entity_indices[entity])
+            delete_key(&v.entity_indices, entity)
+        }
+    }
 
     return .NO_ERROR
 }
@@ -221,9 +251,104 @@ is_entity_valid :: proc(ctx: ^Context, entity: Entity) -> bool {
     return ctx.entities.entities[uint(entity)].is_valid
 }
 
-// This is slow. 
-// This will be significantly faster when an archetype or sparse set ECS is implemented.
+
+get_relevant_components :: proc(
+    ctx: ^Context,
+    components: []typeid,
+) -> (
+    entity_indices: map[Entity]map[typeid]uint,
+) {
+    key := get_key_from_typeids(components)
+    if key in ctx.relevant_entities {
+        return ctx.relevant_entities[key].entity_indices
+    }
+    entity_indices = make(map[Entity]map[typeid]uint)
+    if len(components) <= 0 {
+        return entity_indices
+    }
+    if components[0] not_in ctx.component_indices {
+        return entity_indices
+    }
+    for entity, _ in ctx.component_indices[components[0]] {
+
+        has_all_needed_components := true
+        for comp_type in components[1:] {
+            if !has_component(ctx, entity, comp_type) {
+                has_all_needed_components = false
+                break
+            }
+        }
+
+        if has_all_needed_components {
+            relevant_components := make(map[typeid]uint)
+            for component in components {
+                relevant_components[component] = ctx.component_indices[component][entity]
+            }
+            entity_indices[entity] = relevant_components
+        }
+
+    }
+    return
+}
 get_entities_with_components :: proc(
+    ctx: ^Context,
+    components: []typeid,
+) -> (
+    entities: [dynamic]Entity,
+) {
+    key := get_key_from_typeids(components)
+    if key in ctx.relevant_entities {
+        for k, _ in ctx.relevant_entities[key].entity_indices {
+            append(&entities, k)
+        }
+        return
+    }
+    entities = make([dynamic]Entity)
+    if len(components) <= 0 {
+        return entities
+    }
+    if components[0] not_in ctx.component_indices {
+        return entities
+    }
+    for entity, _ in ctx.component_indices[components[0]] {
+
+        has_all_needed_components := true
+        for comp_type in components[1:] {
+            if !has_component(ctx, entity, comp_type) {
+                has_all_needed_components = false
+                break
+            }
+        }
+
+        if has_all_needed_components {
+            append_elem(&entities, entity)
+        }
+
+    }
+    return entities
+}
+
+destroy_entity :: proc(ctx: ^Context, entity: Entity) {
+    using ctx.entities
+
+    for T, component in &ctx.entity_indices[entity] {
+        remove_component_with_typeid(ctx, entity, T)
+    }
+
+    entities[uint(entity)] = {}
+    queue.push_back(&available_slots, uint(entity))
+}
+
+has_all_components :: proc(ctx: ^Context, entity: Entity, components: []typeid) -> bool {
+    for comp_type in components {
+        if !has_component(ctx, entity, comp_type) {
+            return false
+        }
+    }
+    return true
+}
+
+get_entities_with_components_prev :: proc(
     ctx: ^Context,
     components: []typeid,
 ) -> (
@@ -252,13 +377,27 @@ get_entities_with_components :: proc(
     return entities
 }
 
-destroy_entity :: proc(ctx: ^Context, entity: Entity) {
-    using ctx.entities
-
-    for T, component in &ctx.entity_indices[entity] {
-        remove_component_with_typeid(ctx, entity, T)
+get_key_from_typeids :: proc(components: []typeid) -> (key: string) {
+    component_u64s := make([]u64, len(components))
+    for component, i in components {
+        component_u64s[i] = transmute(u64)component
     }
-
-    entities[uint(entity)] = {}
-    queue.push_back(&available_slots, uint(entity))
+    slice.sort(component_u64s)
+    builder := strings.builder_make()
+    return fmt.sbprint(&builder, component_u64s)
+}
+track_entities_with_components :: proc(ctx: ^Context, components: []typeid) {
+    key := get_key_from_typeids(components)
+    if key in ctx.relevant_entities {
+        return
+    }
+    new_components := make([dynamic]typeid, len(components))
+    for _, i in components {
+        new_components[i] = components[i]
+    }
+    rel_ents := &ctx.relevant_entities
+    rel_ents[key] = Tracked_Entities {
+        entity_indices = get_relevant_components(ctx, components),
+        components     = new_components,
+    }
 }

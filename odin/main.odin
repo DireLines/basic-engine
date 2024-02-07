@@ -2,6 +2,7 @@ package main
 
 import "core:fmt"
 import glm "core:math/linalg/glsl"
+import "core:strings"
 import "core:time"
 import "ecs"
 import "transform"
@@ -14,44 +15,60 @@ initialize :: proc(game: ^Game) {
 }
 
 main :: proc() {
-    print("start")
     using ecs
     using transform
-    timer := timer()
-    ctx := init_ecs();world := &ctx;defer deinit_ecs(world)
-    for i in 0 ..< 10000 {
-        e := create_entity(world)
-        if i % 2 == 0 {
-            add_component(world, e, "hello")
+    for repetition in 0 ..< 5 {
+        timer := timer()
+        ctx := init_ecs();world := &ctx;defer deinit_ecs(world)
+        timer->time("init")
+        track_entities_with_components(world, {string, u64, bool})
+        timer->time("start tracking entities with components")
+        for i in 0 ..< 10000 {
+            e := create_entity(world)
+            if i % 2 == 0 {
+                add_component(world, e, "hello")
+            }
+            if i % 3 == 0 {
+                add_component(world, e, Transform{})
+            }
+            if i % 4 == 0 {
+                add_component(world, e, false)
+            }
+            if i % 5 == 0 {
+                add_component(world, e, u64(i))
+            }
         }
-        if i % 3 == 0 {
-            add_component(world, e, i)
+        timer->time("create 10000")
+        for i in 0 ..< 2500 {
+            destroy_entity(world, Entity(i))
         }
-        if i % 4 == 0 {
-            add_component(world, e, false)
+        timer->time("destroy 2500")
+        for i in 0 ..< 10000 {
+            e := create_entity(world)
+            if i % 2 == 0 {
+                add_component(world, e, "hello")
+            }
+            if i % 3 == 0 {
+                add_component(world, e, Transform{})
+            }
+            if i % 4 == 0 {
+                add_component(world, e, false)
+            }
+            if i % 5 == 0 {
+                add_component(world, e, u64(i))
+            }
         }
-        if i % 5 == 0 {
-            add_component(world, e, u64(i))
-        }
+        timer->time("create 10000 more")
+        ents := get_entities_with_components(world, {string, u64, bool})
+        print(len(ents))
+        timer->time("find entities with components (w cache)")
+        ents = get_entities_with_components_prev(world, {string, u64, bool})
+        print(len(ents))
+        timer->time("find entities with components (no cache)")
+        comps := get_relevant_components(world, {string, u64, bool})
+        print(len(comps))
+        timer->time("find relevant components (w cache)")
     }
-    timer->time("create 10000")
-    for i in 0 ..< 2500 {
-        destroy_entity(world, Entity(i))
-    }
-    timer->time("destroy 2500")
-    for i in 0 ..< 10000 {
-        e := create_entity(world)
-        if i % 2 == 0 {
-            add_component(world, e, u64(i))
-            add_component(world, e, "hello")
-        } else {
-            add_component(world, e, "hello")
-        }
-    }
-    timer->time("create 10000 more")
-    ents := get_entities_with_components(world, {string,u64,bool})
-    print(len(ents))
-    timer->time("find entities")
     // WINDOW_WIDTH :: 1200
     // WINDOW_HEIGHT :: 800
     // game := new_game(WINDOW_WIDTH, WINDOW_HEIGHT)
