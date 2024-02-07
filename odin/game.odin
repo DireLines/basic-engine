@@ -7,7 +7,7 @@ import SDL "vendor:sdl2"
 import SDL_IMG "vendor:sdl2/image"
 import SDL_TTF "vendor:sdl2/ttf"
 
-import ecs "ecs"
+import "ecs"
 
 frames_per_sec :: 120
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
@@ -63,6 +63,16 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
     game.input_system = input_system()
     append(&game.systems, physics_system(), collision_system(), script_runner(), renderer())
     initSDL(game)
+}
+
+add_system :: proc(game: ^Game, system: ^System) {
+    append(&game.systems, system)
+}
+
+add_systems :: proc(game: ^Game, systems: ..^System) {
+    for system in systems {
+        add_system(game, system)
+    }
 }
 
 quit :: proc(game: ^Game) {

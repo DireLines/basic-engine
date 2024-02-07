@@ -7,6 +7,10 @@ Transform :: struct {
     rotation: f32,
 }
 
+default_transform :: proc() -> Transform {
+    return Transform{scale = {1, 1}}
+}
+
 unpivot :: proc(t: ^Transform) -> (result: glm.mat3) {
     using t
     return translate_vec2(-pivot)

@@ -14,6 +14,16 @@ import "core:time"
 //and wants all the relevant components 
 //of all entities that have all relevant components
 
+Entity :: distinct uint
+
+Context :: struct {
+    entities:          Entities,
+    components:        map[typeid]^runtime.Raw_Dynamic_Array,
+    entity_indices:    map[Entity]map[typeid]uint,
+    component_indices: map[typeid]map[Entity]uint,
+    relevant_entities: map[string]Tracked_Entities, //maintain desired lists for faster querying
+}
+
 ECS_Error :: enum {
     NO_ERROR,
     ENTITY_DOES_NOT_HAVE_THIS_COMPONENT,
@@ -28,14 +38,6 @@ Tracked_Entities :: struct {
     entity_indices: map[Entity]map[typeid]uint,
 }
 
-Context :: struct {
-    entities:          Entities,
-    components:        map[typeid]^runtime.Raw_Dynamic_Array,
-    entity_indices:    map[Entity]map[typeid]uint,
-    component_indices: map[typeid]map[Entity]uint,
-    relevant_entities: map[string]Tracked_Entities, //maintain desired lists for faster querying
-}
-
 Entities :: struct {
     current_entity_id: uint,
     entities:          [dynamic]Entity_And_Some_Info,
@@ -46,7 +48,7 @@ Entity_And_Some_Info :: struct {
     entity:   Entity,
     is_valid: bool,
 }
-Entity :: distinct uint
+
 
 
 init_ecs :: proc() -> (ctx: Context) {
@@ -88,6 +90,33 @@ deinit_ecs :: proc(ctx: ^Context) {
     destroy_component_map(ctx)
 }
 
+create_entity :: proc(ctx: ^Context) -> Entity {
+    using ctx.entities
+
+    if queue.len(available_slots) <= 0 {
+        append_elem(&entities, Entity_And_Some_Info{Entity(current_entity_id), true})
+        ctx.entity_indices[Entity(current_entity_id)] = make(map[typeid]uint)
+        current_entity_id += 1
+        return Entity(current_entity_id - 1)
+    } else {
+        index := queue.pop_front(&available_slots)
+        entities[index] = Entity_And_Some_Info{Entity(index), true}
+        return Entity(index)
+    }
+
+    return Entity(current_entity_id)
+}
+
+destroy_entity :: proc(ctx: ^Context, entity: Entity) {
+    using ctx.entities
+
+    for T, component in &ctx.entity_indices[entity] {
+        remove_component_with_typeid(ctx, entity, T)
+    }
+
+    entities[uint(entity)] = {}
+    queue.push_back(&available_slots, uint(entity))
+}
 
 @(private)
 register_component :: proc(ctx: ^Context, $T: typeid) -> ECS_Error {
@@ -217,23 +246,6 @@ set_component :: proc(ctx: ^Context, entity: Entity, component: $T) -> ECS_Error
 }
 
 
-create_entity :: proc(ctx: ^Context) -> Entity {
-    using ctx.entities
-
-    if queue.len(available_slots) <= 0 {
-        append_elem(&entities, Entity_And_Some_Info{Entity(current_entity_id), true})
-        ctx.entity_indices[Entity(current_entity_id)] = make(map[typeid]uint)
-        current_entity_id += 1
-        return Entity(current_entity_id - 1)
-    } else {
-        index := queue.pop_front(&available_slots)
-        entities[index] = Entity_And_Some_Info{Entity(index), true}
-        return Entity(index)
-    }
-
-    return Entity(current_entity_id)
-}
-
 is_entity_valid :: proc(ctx: ^Context, entity: Entity) -> bool {
     if uint(entity) >= len(ctx.entities.entities) {
         return false
@@ -291,17 +303,6 @@ get_entities_with_components :: proc(
         append(&entities, k)
     }
     return
-}
-
-destroy_entity :: proc(ctx: ^Context, entity: Entity) {
-    using ctx.entities
-
-    for T, component in &ctx.entity_indices[entity] {
-        remove_component_with_typeid(ctx, entity, T)
-    }
-
-    entities[uint(entity)] = {}
-    queue.push_back(&available_slots, uint(entity))
 }
 
 has_all_components :: proc(ctx: ^Context, entity: Entity, components: []typeid) -> bool {
