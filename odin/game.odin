@@ -1,13 +1,14 @@
 package main
 
 import "core:fmt"
+import "core:strings"
 import "core:time"
 
-import SDL "vendor:sdl2"
-import SDL_IMG "vendor:sdl2/image"
-import SDL_TTF "vendor:sdl2/ttf"
+import "vendor:raylib"
 
-import "ecs"
+import "rigidbody"
+import "transform"
+
 
 frames_per_sec :: 120
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
@@ -15,45 +16,21 @@ frame_counter: u64
 average_frame_length: f64
 
 Game :: struct {
-    game_timer: GameTimer,
-    renderer:      ^SDL.Renderer,
-    window:        ^SDL.Window,
+    game_timer:    GameTimer,
     id_generator:  IDGenerator,
     window_width:  i32,
     window_height: i32,
     input_system:  ^Input,
     systems:       [dynamic]^System,
-    objects:       ecs.Context,
+    textures:      map[string]raylib.Texture2D,
+    objects:      [dynamic]GameObject,
     start_tick:    time.Tick,
 }
+
 new_game :: proc(window_width, window_height: i32) -> Game {
     game := Game{}
     init(&game, window_width, window_height)
     return game
-}
-initSDL :: proc(game: ^Game) {
-    SDL_TTF.Init()
-    SDL_IMG.Init(SDL_IMG.INIT_PNG)
-    SDL.Init(SDL.INIT_VIDEO)
-    game.window = SDL.CreateWindow(
-        "Game",
-        SDL.WINDOWPOS_UNDEFINED,
-        SDL.WINDOWPOS_UNDEFINED,
-        game.window_width,
-        game.window_height,
-        {.OPENGL},
-    )
-    if game.window == nil {
-        fmt.eprintln("Failed to create window")
-        return
-    }
-}
-
-quitSDL :: proc(game: ^Game) {
-    print("Quitting sdl")
-    SDL.DestroyWindow(game.window)
-    SDL_IMG.Quit()
-    SDL_TTF.Quit()
 }
 
 init :: proc(game: ^Game, window_width, window_height: i32) {
@@ -61,14 +38,25 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
     game.window_width = window_width
     game.window_height = window_height
     game.input_system = input_system()
-    game.objects = ecs.init_ecs()
-    append(&game.systems, physics_system(), collision_system(), script_runner(), renderer())
-    initSDL(game)
+    game.objects = make([dynamic]GameObject)
+    game.textures = make(map[string]raylib.Texture2D)
+    physics_system := physics_system()
+    collision_system := collision_system()
+    script_runner := script_runner()
+    renderer := renderer()
+    add_systems(game, physics_system, collision_system, script_runner, renderer)
+    init_raylib(game)
+}
+
+init_raylib :: proc(game: ^Game) {
+    using raylib
+    SetTraceLogLevel(.NONE)
+    InitWindow(game.window_width, game.window_height, "Game")
+    SetTargetFPS(120)
 }
 
 add_system :: proc(game: ^Game, system: ^System) {
     append(&game.systems, system)
-    ecs.track_entities_with_components(&game.objects,system.components_needed[:])
 }
 
 add_systems :: proc(game: ^Game, systems: ..^System) {
@@ -77,15 +65,27 @@ add_systems :: proc(game: ^Game, systems: ..^System) {
     }
 }
 
+add_sprite :: proc(game: ^Game, sprite_filename: string) -> ^raylib.Texture2D {
+    if sprite_filename in game.textures{
+        return &game.textures[sprite_filename]
+    }
+    game.textures[sprite_filename] = raylib.LoadTexture(strings.clone_to_cstring(sprite_filename))
+    return &game.textures[sprite_filename]
+}
+
 quit :: proc(game: ^Game) {
     using game
+    quit_raylib(game)
     average_frame_length /= f64(frame_counter)
     print("average frame took", average_frame_length, "milliseconds")
     average_fps := 1000.0 / average_frame_length
     print("target fps:", frames_per_sec)
     print("actual fps:", average_fps)
-    quitSDL(game)
-    ecs.deinit_ecs(&objects)
+}
+
+quit_raylib :: proc(game: ^Game) {
+    using raylib
+    CloseWindow()
 }
 
 start :: proc(game: ^Game) {
@@ -111,41 +111,25 @@ start :: proc(game: ^Game) {
         }
     }
 }
-update :: proc(game: ^Game) -> bool {
+update :: proc(game: ^Game) -> (should_quit: bool) {
     using game
-    event: SDL.Event
     timer := timer()
     for system in systems {
         system->update(game)
         timer->time(system.name)
-        SDL.PollEvent(&event)
-        #partial switch event.type {
-        case .KEYDOWN:
-            #partial switch event.key.keysym.sym {
-            case .ESCAPE:
-                return true
-            case:
-                input_system->poll(event)
-            // print(event.key.keysym.sym, "pressed")
-            }
-        case .QUIT:
-            return true
-        case:
-            input_system->poll(event)
-        }
     }
     //TODO: clear(objects_to_delete)
     frame_counter += 1
-    return false
+    return raylib.WindowShouldClose()
 }
-instantiate :: proc(game: ^Game, obj: ^GameObject) {
+instantiate :: proc(game: ^Game, obj: GameObject) {
     using game
-    using ecs
-    entity := create_entity(&objects)
     //TODO instantiate child GameObjects
-    for system in systems {
-        if system->needObject(game, obj) {
-            system->addObject(game, obj)
+    append(&game.objects, obj)
+    new_obj := &game.objects[len(game.objects)-1]
+    for system in game.systems {
+        if system->needObject(game, new_obj) {
+            system->addObject(game, new_obj)
         }
     }
 }
