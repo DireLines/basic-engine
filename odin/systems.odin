@@ -16,9 +16,9 @@ System :: struct {
     components_needed: bit_set[Component],
     start:             proc(system: ^System, game: ^Game),
     update:            proc(system: ^System, game: ^Game),
-    needObject:        proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool,
-    addObject:         proc(system: ^System, game: ^Game, obj: ^GameObject),
-    removeObject:      proc(system: ^System, game: ^Game, obj: ^GameObject),
+    needObject:        proc(system: ^System, game: ^Game, obj_index: int) -> bool,
+    addObject:         proc(system: ^System, game: ^Game, obj_index: int),
+    removeObject:      proc(system: ^System, game: ^Game, obj_index: int),
 }
 test_system :: proc() -> ^System {
     return new_clone(System {
@@ -29,13 +29,15 @@ test_system :: proc() -> ^System {
         update = proc(system: ^System, game: ^Game) {
             print("update")
         },
-        needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
+        needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
             return true
         },
-        addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        addObject = proc(system: ^System, game: ^Game, obj_index: int) {
+            obj := game.objects[obj_index]
             print("object added:", obj.name)
         },
-        removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
+            obj := game.objects[obj_index]
             print("object removed:", obj.name)
         },
     })
@@ -70,13 +72,14 @@ physics_system :: proc() -> ^System {
         start = proc(system: ^System, game: ^Game) {
         },
         update = physics_update,
-        needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
-            return has_desired_components(obj, system.components_needed)
+        needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
+            obj := game.objects[obj_index]
+            return has_desired_components(&obj, system.components_needed)
         },
-        addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        addObject = proc(system: ^System, game: ^Game, obj_index: int) {
 
         },
-        removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
 
         },
     })
@@ -90,13 +93,14 @@ collision_system :: proc() -> ^System {
         update = proc(system: ^System, game: ^Game) {
 
         },
-        needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
-            return has_desired_components(obj, system.components_needed)
+        needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
+            obj := game.objects[obj_index]
+            return has_desired_components(&obj, system.components_needed)
         },
-        addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        addObject = proc(system: ^System, game: ^Game, obj_index: int) {
 
         },
-        removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
 
         },
     })
@@ -109,13 +113,14 @@ script_runner :: proc() -> ^System {
         },
         update = proc(system: ^System, game: ^Game) {
         },
-        needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
-            return has_desired_components(obj, system.components_needed)
+        needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
+            obj := game.objects[obj_index]
+            return has_desired_components(&obj, system.components_needed)
         },
-        addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        addObject = proc(system: ^System, game: ^Game, obj_index: int) {
 
         },
-        removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
+        removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
 
         },
     })
@@ -131,14 +136,13 @@ renderer :: proc() -> ^System {
         timer := timer()
         BeginDrawing();defer EndDrawing()
         ClearBackground(darkgray)
-        print(len(game.objects))
         SpriteTransform :: struct {
             sprite:    ^sprite.Sprite,
             transform: ^transform.Transform,
         }
         sprite_transforms := [dynamic]SpriteTransform{} //TODO: persist between frames so that nearly-sorted order can be maintained
-        for &obj in game.objects {
-            if !system->needObject(game, &obj) {
+        for &obj, ind in game.objects {
+            if !system->needObject(game, ind) {
                 continue
             }
             t := &obj.transform
@@ -157,33 +161,34 @@ renderer :: proc() -> ^System {
             DrawTextureEx(
                 texture = s.image^,
                 position = {pos.x, pos.y},
-                rotation = t.rotation,
+                rotation = math.to_degrees(t.rotation),
                 scale = t.scale.x, //TODO: change to draw call with independent x/y scaling
                 tint = s.color,
             )
         }
+        timer->time("render actually")
     }
-    return new_clone(
-        System {
-            name = "Renderer",
-            components_needed = {.Transform, .Sprite},
-            start = proc(system: ^System, using game: ^Game) {
+    addObject :: proc(system: ^System, game: ^Game, obj_index: int) {
+        obj_file := game.objects[obj_index].file
+        texture := add_sprite(game, obj_file)
+        game.objects[obj_index].image = texture
+        // //TODO: figure out how to not set this
+        game.objects[obj_index].pivot = {f32(texture.width / 2), f32(texture.height / 2)}
+    }
+    return new_clone(System {
+        name = "Renderer",
+        components_needed = {.Transform, .Sprite},
+        start = proc(system: ^System, using game: ^Game) {
 
-            },
-            update = renderer_update,
-            needObject = proc(system: ^System, game: ^Game, obj: ^GameObject) -> bool {
-                return has_desired_components(obj, system.components_needed)
-            },
-            addObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
-                sprite_filename := obj.file
-                texture := add_sprite(game, sprite_filename)
-                obj.image = texture
-                //TODO: figure out how to not set this
-                obj.pivot = {f32(texture.width / 2), f32(texture.height / 2)}
-            },
-            removeObject = proc(system: ^System, game: ^Game, obj: ^GameObject) {
-
-            },
         },
-    )
+        update = renderer_update,
+        needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
+            obj := game.objects[obj_index]
+            return has_desired_components(&obj, system.components_needed)
+        },
+        addObject = addObject,
+        removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
+
+        },
+    })
 }

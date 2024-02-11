@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:slice"
 import "core:strings"
 import "core:time"
 
@@ -23,7 +24,7 @@ Game :: struct {
     input_system:  ^Input,
     systems:       [dynamic]^System,
     textures:      map[string]raylib.Texture2D,
-    objects:      [dynamic]GameObject,
+    objects:       #soa[dynamic]GameObject,
     start_tick:    time.Tick,
 }
 
@@ -38,7 +39,7 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
     game.window_width = window_width
     game.window_height = window_height
     game.input_system = input_system()
-    game.objects = make([dynamic]GameObject)
+    game.objects = make_soa(#soa[dynamic]GameObject)
     game.textures = make(map[string]raylib.Texture2D)
     physics_system := physics_system()
     collision_system := collision_system()
@@ -66,7 +67,7 @@ add_systems :: proc(game: ^Game, systems: ..^System) {
 }
 
 add_sprite :: proc(game: ^Game, sprite_filename: string) -> ^raylib.Texture2D {
-    if sprite_filename in game.textures{
+    if sprite_filename in game.textures {
         return &game.textures[sprite_filename]
     }
     game.textures[sprite_filename] = raylib.LoadTexture(strings.clone_to_cstring(sprite_filename))
@@ -125,16 +126,16 @@ update :: proc(game: ^Game) -> (should_quit: bool) {
 instantiate :: proc(game: ^Game, obj: GameObject) {
     using game
     //TODO instantiate child GameObjects
-    append(&game.objects, obj)
-    new_obj := &game.objects[len(game.objects)-1]
+    append_soa(&game.objects, obj)
+    index := len(game.objects) - 1
     for system in game.systems {
-        if system->needObject(game, new_obj) {
-            system->addObject(game, new_obj)
+        if system->needObject(game, index) {
+            system->addObject(game, index)
         }
     }
 }
-destroy :: proc(game: ^Game, obj: ^GameObject) {
+destroy :: proc(game: ^Game, obj_index: int) {
     for system in game.systems {
-        system->removeObject(game, obj)
+        system->removeObject(game, obj_index)
     }
 }
