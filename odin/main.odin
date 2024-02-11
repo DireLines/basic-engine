@@ -27,8 +27,8 @@ initialize :: proc(game: ^Game) {
                 sprite = sprite.default_sprite(),
                 rigidbody = rigidbody.default_rigidbody(),
             }
-            // a.position = {-150 + f32(x * 2), -150 + f32(y * 2)}
-            // a.velocity = {f32(x)*0.4,f32(y)*0.4}
+            a.position = {-150 + f32(x * 2), -150 + f32(y * 2)}
+            a.velocity = {f32(x)*0.4,f32(y)*0.4}
             a.rotation = math.to_radians_f32(90)
             // a.scale = {f32(x)*0.1,f32(x)*0.1}
             instantiate(game, a)
