@@ -128,7 +128,7 @@ script_runner :: proc() -> ^System {
 
 renderer :: proc() -> ^System {
     mat_vec_mul :: proc(m: glm.mat3, v: glm.vec2) -> glm.vec2 {
-        return {v.x * m[0][0] + v.y * m[1][0] + m[2][0], v.x * m[0][1] + v.y * m[1][1] + m[2][1]}
+        return {v.x * m[0, 0] + v.y * m[0, 1] + m[0, 2], v.x * m[1, 0] + v.y * m[1, 1] + m[1, 2]}
     }
     darkgray :: raylib.Color{32, 32, 30, 255}
     renderer_update :: proc(system: ^System, using game: ^Game) {
