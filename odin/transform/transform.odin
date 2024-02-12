@@ -20,9 +20,9 @@ unpivot :: proc(using t: ^Transform) -> (result: mat3) {
     return translate_vec2(-pivot)
 }
 identity :: proc() -> (result: mat3) {
-    result[0][0] = 1
-    result[1][1] = 1
-    result[2][2] = 1
+    result[0, 0] = 1
+    result[1, 1] = 1
+    result[2, 2] = 1
     return
 }
 translate_vec2 :: proc(v: vec2) -> (result: mat3) {
@@ -30,8 +30,8 @@ translate_vec2 :: proc(v: vec2) -> (result: mat3) {
 }
 translate_xy :: proc(x, y: f32) -> (result: mat3) {
     result = identity()
-    result[2][0] = x
-    result[2][1] = y
+    result[0, 2] = x
+    result[1, 2] = y
     return
 }
 translate :: proc {
@@ -42,10 +42,10 @@ translate :: proc {
 rotate :: proc(r: f32) -> (result: mat3) {
     using math
     result = identity()
-    result[0][0] = cos(r)
-    result[1][0] = -sin(r)
-    result[0][1] = sin(r)
-    result[1][1] = cos(r)
+    result[0, 0] = cos(r)
+    result[0, 1] = -sin(r)
+    result[1, 0] = sin(r)
+    result[1, 1] = cos(r)
     return
 }
 
@@ -54,8 +54,8 @@ scale_vec2 :: proc(v: vec2) -> (result: mat3) {
 }
 scale_xy :: proc(x, y: f32) -> (result: mat3) {
     result = identity()
-    result[0][0] = x
-    result[1][1] = y
+    result[0, 0] = x
+    result[1, 1] = y
     return
 }
 scale :: proc {
