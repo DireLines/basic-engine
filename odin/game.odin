@@ -39,8 +39,6 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
     game.window_width = window_width
     game.window_height = window_height
     game.input_system = input_system()
-    game.objects = make_soa(#soa[dynamic]GameObject)
-    game.textures = make(map[string]raylib.Texture2D)
     physics_system := physics_system()
     collision_system := collision_system()
     script_runner := script_runner()
@@ -123,7 +121,7 @@ update :: proc(game: ^Game) -> (should_quit: bool) {
     frame_counter += 1
     return raylib.WindowShouldClose()
 }
-instantiate :: proc(game: ^Game, obj: GameObject) {
+instantiate :: proc(game: ^Game, obj: GameObject) -> int {
     using game
     //TODO instantiate child GameObjects
     append_soa(&game.objects, obj)
@@ -133,9 +131,11 @@ instantiate :: proc(game: ^Game, obj: GameObject) {
             system->addObject(game, index)
         }
     }
+    return index
 }
 destroy :: proc(game: ^Game, obj_index: int) {
     for system in game.systems {
         system->removeObject(game, obj_index)
     }
+    game.objects[obj_index] = {}
 }
