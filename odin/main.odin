@@ -45,6 +45,7 @@ initialize :: proc(game: ^Game) {
                 transform = transform.default_transform(),
                 sprite = sprite.default_sprite(),
                 rigidbody = rigidbody.default_rigidbody(),
+                script = test_script(),
             }
             a.position = {-150 + f32(x * 2), -150 + f32(y * 2)}
             a.velocity = {500 * sin(f32(x + y)), 500 * sin(f32(x * y))}
