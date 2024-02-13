@@ -17,7 +17,7 @@ Game :: struct {
     id_generator:  IDGenerator,
     window_width:  i32,
     window_height: i32,
-    // input_system:  ^Input,
+    input_system:  ^Input,
     systems:       [dynamic]^System,
     textures:      map[string]raylib.Texture2D,
     objects:       #soa[dynamic]GameObject,
