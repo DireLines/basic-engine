@@ -23,6 +23,7 @@ GameObject :: struct {
     using transform: transform.Transform,
     using rigidbody: rigidbody.Rigidbody,
     using sprite:    sprite.Sprite,
+    using script:    Script,
 }
 
 

@@ -112,20 +112,28 @@ script_runner :: proc() -> ^System {
         start = proc(system: ^System, game: ^Game) {
         },
         update = proc(system: ^System, game: ^Game) {
+            for &obj, ind in game.objects {
+                if !system->needObject(game, ind) {
+                    continue
+                }
+                s := obj.script
+                s.update(ind, game)
+            }
         },
         needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
             obj := game.objects[obj_index]
             return has_desired_components(&obj, system.components_needed)
         },
         addObject = proc(system: ^System, game: ^Game, obj_index: int) {
-
+            s := game.objects[obj_index].script
+            s.awake(obj_index, game)
+            s.start(obj_index, game)
         },
         removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
 
         },
     })
 }
-
 renderer :: proc() -> ^System {
     mat_vec_mul :: proc(m: glm.mat3, v: glm.vec2) -> glm.vec2 {
         return {v.x * m[0, 0] + v.y * m[0, 1] + m[0, 2], v.x * m[1, 0] + v.y * m[1, 1] + m[1, 2]}

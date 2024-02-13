@@ -38,10 +38,10 @@ print_matrix :: proc(m: mat3) {
 //game-specific initialization code
 initialize :: proc(game: ^Game) {
     using math, transform
-    for x in 0 ..< 200 {
-        for y in 0 ..< 200 {
+    for x in 0 ..< 2 {
+        for y in 0 ..< 2 {
             a := GameObject {
-                component_set = {.Transform, .Rigidbody, .Sprite},
+                component_set = {.Transform, .Sprite, .Script},
                 transform = transform.default_transform(),
                 sprite = sprite.default_sprite(),
                 rigidbody = rigidbody.default_rigidbody(),
