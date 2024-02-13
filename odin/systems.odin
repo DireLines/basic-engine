@@ -20,6 +20,7 @@ System :: struct {
     addObject:         proc(system: ^System, game: ^Game, obj_index: int),
     removeObject:      proc(system: ^System, game: ^Game, obj_index: int),
 }
+
 test_system :: proc() -> ^System {
     return new_clone(System {
         name = "system",
@@ -112,13 +113,22 @@ script_runner :: proc() -> ^System {
         start = proc(system: ^System, game: ^Game) {
         },
         update = proc(system: ^System, game: ^Game) {
+            for &obj, ind in game.objects {
+                if !system->needObject(game, ind) {
+                    continue
+                }
+                s := obj.script
+                s.update(ind, game)
+            }
         },
         needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
             obj := game.objects[obj_index]
             return has_desired_components(&obj, system.components_needed)
         },
         addObject = proc(system: ^System, game: ^Game, obj_index: int) {
-
+            s := game.objects[obj_index].script
+            s.awake(obj_index, game)
+            s.start(obj_index, game)
         },
         removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
 

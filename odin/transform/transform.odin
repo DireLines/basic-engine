@@ -76,3 +76,16 @@ reverse :: proc(using t: ^Transform) -> (result: mat3) {
     using glm
     return scale_vec2(1 / scale) * rotate(radians_f32(-rotation)) * translate(-position)
 }
+
+print_matrix :: proc(m: mat3) {
+    using fmt
+    println("[")
+    for i in 0 ..< 3 {
+        print("\t")
+        for j in 0 ..< 3 {
+            printf("%4.2f ", m[i, j])
+        }
+        print("\n")
+    }
+    println("]")
+}
