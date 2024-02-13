@@ -1,7 +1,7 @@
 package main
 
 Input :: struct {
-    buttons:         map[u8]struct {},
+    // buttons:         map[u8]struct {},
     update:          proc(input: ^Input),
     postupdate:      proc(input: ^Input),
     button_pressed:  proc(input: ^Input, button: u8) -> bool,
