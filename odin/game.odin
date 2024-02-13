@@ -7,9 +7,6 @@ import "core:time"
 
 import "vendor:raylib"
 
-import "rigidbody"
-import "transform"
-
 
 frames_per_sec :: 120
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
@@ -17,7 +14,6 @@ frame_counter: u64
 average_frame_length: f64
 
 Game :: struct {
-    game_timer:    GameTimer,
     id_generator:  IDGenerator,
     window_width:  i32,
     window_height: i32,
@@ -38,12 +34,8 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
     game.id_generator = id_generator()
     game.window_width = window_width
     game.window_height = window_height
-    game.input_system = input_system()
-    physics_system := physics_system()
-    collision_system := collision_system()
     script_runner := script_runner()
-    renderer := renderer()
-    add_systems(game, physics_system, collision_system, script_runner, renderer)
+    add_systems(game, script_runner)
     init_raylib(game)
 }
 
@@ -92,7 +84,6 @@ start :: proc(game: ^Game) {
         system->start(game)
     }
     initialize(game)
-    game.game_timer = GameTimer{}
     start_tick := time.tick_now()
     game.start_tick = start_tick
     should_quit := false
@@ -102,20 +93,14 @@ start :: proc(game: ^Game) {
         if duration > ms_per_frame {
             average_frame_length += duration
             start_tick = now
-            game.game_timer.delta_time = duration / 1000
-            game.game_timer.time += game.game_timer.delta_time
-            game.input_system->update(game)
             should_quit = update(game)
-            game.input_system->postupdate(game)
         }
     }
 }
 update :: proc(game: ^Game) -> (should_quit: bool) {
     using game
-    timer := timer()
     for system in systems {
         system->update(game)
-        timer->time(system.name)
     }
     //TODO: clear(objects_to_delete)
     frame_counter += 1

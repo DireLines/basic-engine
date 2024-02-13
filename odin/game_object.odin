@@ -1,7 +1,4 @@
 package main
-import "rigidbody"
-import "sprite"
-import "transform"
 
 Component :: enum {
     Transform,
@@ -15,15 +12,12 @@ Component :: enum {
 }
 
 GameObject :: struct {
-    name:            string,
-    component_set:   bit_set[Component],
+    name:          string,
+    component_set: bit_set[Component],
     // components_disabled:   bit_set[Component],
-    parent:          ^GameObject,
-    children:        [dynamic]^GameObject,
-    using transform: transform.Transform,
-    using rigidbody: rigidbody.Rigidbody,
-    using sprite:    sprite.Sprite,
-    using script:    Script,
+    parent:        ^GameObject,
+    children:      [dynamic]^GameObject,
+    script:        Script,
 }
 
 
