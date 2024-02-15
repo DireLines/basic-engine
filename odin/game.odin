@@ -55,15 +55,3 @@ add_systems :: proc(game: ^Game, systems: ..^System) {
         add_system(game, system)
     }
 }
-
-
-instantiate :: proc(game: ^Game, obj: GameObject) -> int {
-    using game
-    //TODO instantiate child GameObjects
-    append_soa(&game.objects, obj)
-    index := len(game.objects) - 1
-    return index
-}
-destroy :: proc(game: ^Game, obj_index: int) {
-    game.objects[obj_index] = {}
-}
