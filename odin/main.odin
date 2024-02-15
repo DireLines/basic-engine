@@ -80,3 +80,14 @@ instantiate :: proc(game: ^Game, obj: GameObject) -> int {
     // Internal Compiler Error: Type_Info for 'Tick' could not be found
     return 0
 }
+
+IDGenerator :: struct {
+    id:   int,
+    next: proc(_: ^IDGenerator) -> int,
+}
+id_generator :: proc() -> IDGenerator {
+    return IDGenerator{id = 0, next = proc(gen: ^IDGenerator) -> int {
+                gen.id += 1
+                return gen.id
+            }}
+}

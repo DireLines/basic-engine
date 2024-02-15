@@ -36,9 +36,3 @@ remove_component :: proc(obj: ^GameObject, components: ..Component) {
 has_desired_components :: proc(obj: ^GameObject, desired_components: bit_set[Component]) -> bool {
     return (obj.component_set & desired_components) == desired_components
 }
-// disable_component :: proc(obj: ^GameObject, components: ..Component) {
-//     obj.components_disabled |= slice_to_bit_set(components)
-// }
-// enable_component :: proc(obj: ^GameObject, components: ..Component) {
-//     obj.components_disabled &~= (slice_to_bit_set(components))
-// }
