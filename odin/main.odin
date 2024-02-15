@@ -1,57 +1,29 @@
 package main
 
-import "core:fmt"
-import "core:time"
-
-//it turns out the frequency with which the race condition is hit
-//depends highly on where the definition of GameObject is
-//above initialize: always broken
-//below initialize: always fixed
-//I have gotten half and half but lost what state the code was in when that happened
-GameObject :: struct {
-    name:          string,
-    component_set: bit_set[Component],
-    parent:        ^GameObject,
-    children:      [dynamic]^GameObject,
-    script:        Script,
-}
-
-//game-specific initialization code
-initialize :: proc(game: ^Game) {
-}
-
 main :: proc() {
-    base_width :: 2400
     game := new_game()
 }
 
-print :: fmt.println
-vec2 :: [2]f32
-mat3 :: matrix[3, 3]f32
-frames_per_sec :: 120
-ms_per_frame :: (1.0 / frames_per_sec) * 1000
-frame_counter: u64
-average_frame_length: f64
+//it turns out the frequency with which the race condition is hit
+//depends highly on where the definition of GameObject is
+// above first mention of the type Game: fails
+// below first mention of the type Game: works
+//I have gotten half and half but lost what state the code was in when that happened
+GameObject :: struct {
+    name:          string, //commenting out either of these produces crazy error src/llvm_backend_expr.cpp(2254): Panic: Invalid type conversion: 'Allocator' to 'int' for procedure '_proclit$anon-1'
+    component_set: bit_set[Component], //commenting out either of these produces crazy error src/llvm_backend_expr.cpp(2254): Panic: Invalid type conversion: 'Allocator' to 'int' for procedure '_proclit$anon-1'
+    script:        Script,
+}
 
 Game :: struct {
-    systems:    [dynamic]System,
-    objects:    #soa[dynamic]GameObject,
-    start_tick: time.Tick,
+    systems: [dynamic]System,
+    objects: #soa[dynamic]GameObject,
 }
 
 new_game :: proc() -> Game {
     game := Game{}
-    init(&game)
+    append(&game.systems, script_runner())
     return game
-}
-
-init :: proc(game: ^Game) {
-    script_runner := script_runner()
-    add_system(game, script_runner)
-}
-
-add_system :: proc(game: ^Game, system: System) {
-    append(&game.systems, system)
 }
 
 System :: struct {
@@ -71,12 +43,5 @@ Script :: struct {
 }
 
 Component :: enum {
-    Transform,
-    Rigidbody,
-    Collider,
-    Sprite,
-    Animation,
     Script,
-    AdditionalScripts,
-    Children,
 }
