@@ -1,5 +1,7 @@
 package main
 
+// src/array.cpp(61): Assertion Failure: `cast(usize)index < cast(usize)count` Index 3 is out of bounds ranges 0..<3\\n
+//                                                                                   ^ matches number of fields in GameObject struct
 main :: proc() {
     game := new_game()
 }
@@ -33,7 +35,7 @@ script_runner :: proc() -> System {
     return System{needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
                 obj := game.objects[obj_index] //bug lurks somewhere here
                 // removing this line fixes one of the errors:
-                // src/array.cpp(61): Assertion Failure: `cast(usize)index < cast(usize)count` Index 5 is out of bounds ranges 0..<3\\n
+                // src/array.cpp(61): Assertion Failure: `cast(usize)index < cast(usize)count` Index 3 is out of bounds ranges 0..<3\\n
                 return true
             }}
 }
