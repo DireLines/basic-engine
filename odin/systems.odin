@@ -24,13 +24,10 @@ script_runner :: proc() -> ^System {
             update = proc(system: ^System, game: ^Game) {
             },
             needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
-                // making it return true fixes one of the bugs:
+                obj := game.objects[obj_index] //bug lurks somewhere here
+                // removing this line fixes one of the errors:
                 // src/array.cpp(61): Assertion Failure: `cast(usize)index < cast(usize)count` Index 5 is out of bounds ranges 0..<3\\n
-                //return true
-
-                //bug lurks somewhere here
-                obj := game.objects[obj_index]
-                return has_desired_components(&obj, system.components_needed)
+                return true
             },
         },
     )
