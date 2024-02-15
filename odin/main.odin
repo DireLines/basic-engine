@@ -47,22 +47,11 @@ new_game :: proc() -> Game {
 
 init :: proc(game: ^Game) {
     script_runner := script_runner()
-    add_systems(game, script_runner)
+    add_system(game, script_runner)
 }
 
 add_system :: proc(game: ^Game, system: System) {
     append(&game.systems, system)
-}
-
-add_systems :: proc(game: ^Game, systems: ..System) {
-    for system in systems {
-        add_system(game, system)
-    }
-}
-
-instantiate :: proc(game: ^Game, obj: GameObject) -> int {
-    append_soa(&game.objects, obj)
-    return 0
 }
 
 System :: struct {
