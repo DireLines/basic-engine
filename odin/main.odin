@@ -21,12 +21,6 @@ main :: proc() {
 print :: fmt.println
 printf :: fmt.printf
 
-Input :: struct {
-    buttons: map[u8]struct {}, //removing this field fixes one of the two errors:
-    //    Internal Compiler Error: Type_Info for 'Tick' could not be found
-}
-
-
 frames_per_sec :: 120
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
 frame_counter: u64
@@ -36,7 +30,6 @@ Game :: struct {
     id_generator:  IDGenerator,
     window_width:  i32,
     window_height: i32,
-    input_system:  ^Input,
     systems:       [dynamic]^System,
     textures:      map[string]raylib.Texture2D,
     objects:       #soa[dynamic]GameObject,
