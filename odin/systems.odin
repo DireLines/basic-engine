@@ -13,8 +13,6 @@ System :: struct {
     start:             proc(system: ^System, game: ^Game),
     update:            proc(system: ^System, game: ^Game),
     needObject:        proc(system: ^System, game: ^Game, obj_index: int) -> bool,
-    addObject:         proc(system: ^System, game: ^Game, obj_index: int),
-    removeObject:      proc(system: ^System, game: ^Game, obj_index: int),
 }
 script_runner :: proc() -> ^System {
     return new_clone(System {
@@ -27,12 +25,6 @@ script_runner :: proc() -> ^System {
         needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
             obj := game.objects[obj_index]
             return has_desired_components(&obj, system.components_needed)
-        },
-        addObject = proc(system: ^System, game: ^Game, obj_index: int) {
-
-        },
-        removeObject = proc(system: ^System, game: ^Game, obj_index: int) {
-
         },
     })
 }

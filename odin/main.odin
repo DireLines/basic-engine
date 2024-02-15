@@ -17,8 +17,10 @@ main :: proc() {
     game := new_game(window_width = base_width, window_height = (9.0 / 16.0) * base_width)
 }
 
-stop :: proc() {
-    panic("stopping early")
-}
 print :: fmt.println
 printf :: fmt.printf
+
+Input :: struct {
+    buttons: map[u8]struct {}, //removing this field fixes one of the two errors:
+    //    Internal Compiler Error: Type_Info for 'Tick' could not be found
+}
