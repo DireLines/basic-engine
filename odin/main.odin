@@ -30,7 +30,7 @@ Game :: struct {
     id_generator:  IDGenerator,
     window_width:  i32,
     window_height: i32,
-    systems:       [dynamic]^System,
+    systems:       [dynamic]System,
     textures:      map[string]raylib.Texture2D,
     objects:       #soa[dynamic]GameObject,
     start_tick:    time.Tick,
@@ -58,11 +58,11 @@ init_raylib :: proc(game: ^Game) {
     SetTargetFPS(120)
 }
 
-add_system :: proc(game: ^Game, system: ^System) {
+add_system :: proc(game: ^Game, system: System) {
     append(&game.systems, system)
 }
 
-add_systems :: proc(game: ^Game, systems: ..^System) {
+add_systems :: proc(game: ^Game, systems: ..System) {
     for system in systems {
         add_system(game, system)
     }
