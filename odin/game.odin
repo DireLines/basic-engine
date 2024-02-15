@@ -55,3 +55,11 @@ add_systems :: proc(game: ^Game, systems: ..^System) {
         add_system(game, system)
     }
 }
+
+instantiate :: proc(game: ^Game, obj: GameObject) -> int {
+    append_soa(&game.objects, obj)
+    return 0
+}
+destroy :: proc(game: ^Game, obj_index: int) {
+    game.objects[obj_index] = {}
+}
