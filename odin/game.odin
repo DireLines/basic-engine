@@ -2,7 +2,6 @@ package main
 
 import "core:fmt"
 import "core:slice"
-import "core:strings"
 import "core:time"
 
 
@@ -33,8 +32,6 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
 
 
 GameObject :: struct {
-    name:     string,
-    parent:   ^GameObject,
-    children: [dynamic]^GameObject,
-    script:   Script,
+    name:   string,
+    script: Script,
 }
