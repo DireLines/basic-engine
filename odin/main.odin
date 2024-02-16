@@ -6,9 +6,6 @@ import glm "core:math/linalg/glsl"
 import "core:strings"
 import "core:time"
 
-vec2 :: [2]f32
-mat3 :: matrix[3, 3]f32
-
 //game-specific initialization code
 initialize :: proc(game: ^Game) {
 }
@@ -26,11 +23,10 @@ Input :: struct {
 }
 
 System :: struct {
-    name:              string,
-    components_needed: bit_set[Component],
-    start:             proc(system: ^System, game: ^Game),
-    update:            proc(system: ^System, game: ^Game),
-    needObject:        proc(system: ^System, game: ^Game, obj_index: int) -> bool,
+    name:       string,
+    start:      proc(system: ^System, game: ^Game),
+    update:     proc(system: ^System, game: ^Game),
+    needObject: proc(system: ^System, game: ^Game, obj_index: int) -> bool,
 }
 
 

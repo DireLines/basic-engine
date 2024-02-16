@@ -32,14 +32,9 @@ init :: proc(game: ^Game, window_width, window_height: i32) {
 }
 
 
-Component :: enum {
-    Transform,
-}
-
 GameObject :: struct {
-    name:          string,
-    component_set: bit_set[Component],
-    parent:        ^GameObject,
-    children:      [dynamic]^GameObject,
-    script:        Script,
+    name:     string,
+    parent:   ^GameObject,
+    children: [dynamic]^GameObject,
+    script:   Script,
 }
