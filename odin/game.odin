@@ -5,8 +5,6 @@ import "core:slice"
 import "core:strings"
 import "core:time"
 
-import "vendor:raylib"
-
 
 frames_per_sec :: 120
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
@@ -18,7 +16,6 @@ Game :: struct {
     window_height: i32,
     input_system:  ^Input,
     systems:       [dynamic]^System,
-    textures:      map[string]raylib.Texture2D,
     objects:       #soa[dynamic]GameObject,
     start_tick:    time.Tick,
 }
@@ -32,26 +29,11 @@ new_game :: proc(window_width, window_height: i32) -> Game {
 init :: proc(game: ^Game, window_width, window_height: i32) {
     game.window_width = window_width
     game.window_height = window_height
-    init_raylib(game)
-}
-
-init_raylib :: proc(game: ^Game) {
-    using raylib
-    SetTraceLogLevel(.NONE)
-    InitWindow(game.window_width, game.window_height, "Game")
-    SetTargetFPS(120)
 }
 
 
 Component :: enum {
     Transform,
-    Rigidbody,
-    Collider,
-    Sprite,
-    Animation,
-    Script,
-    AdditionalScripts,
-    Children,
 }
 
 GameObject :: struct {

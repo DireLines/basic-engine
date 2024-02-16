@@ -33,6 +33,7 @@ System :: struct {
     needObject:        proc(system: ^System, game: ^Game, obj_index: int) -> bool,
 }
 
+
 Script :: struct {
     awake: proc(self_index: int, game: ^Game),
 }
