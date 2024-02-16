@@ -24,3 +24,21 @@ Input :: struct {
     buttons: map[u8]struct {}, //removing this field fixes one of the two errors:
     //    Internal Compiler Error: Type_Info for 'Tick' could not be found
 }
+
+System :: struct {
+    name:              string,
+    components_needed: bit_set[Component],
+    start:             proc(system: ^System, game: ^Game),
+    update:            proc(system: ^System, game: ^Game),
+    needObject:        proc(system: ^System, game: ^Game, obj_index: int) -> bool,
+}
+
+Script :: struct {
+    awake: proc(self_index: int, game: ^Game),
+}
+test_script :: proc() -> Script {
+    test_awake :: proc(self_index: int, game: ^Game) {
+        print("awake", self_index)
+    }
+    return Script{awake = test_awake}
+}

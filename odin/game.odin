@@ -14,7 +14,6 @@ frame_counter: u64
 average_frame_length: f64
 
 Game :: struct {
-    id_generator:  IDGenerator,
     window_width:  i32,
     window_height: i32,
     input_system:  ^Input,
@@ -31,11 +30,8 @@ new_game :: proc(window_width, window_height: i32) -> Game {
 }
 
 init :: proc(game: ^Game, window_width, window_height: i32) {
-    game.id_generator = id_generator()
     game.window_width = window_width
     game.window_height = window_height
-    script_runner := script_runner()
-    add_systems(game, script_runner)
     init_raylib(game)
 }
 
@@ -46,23 +42,6 @@ init_raylib :: proc(game: ^Game) {
     SetTargetFPS(120)
 }
 
-add_system :: proc(game: ^Game, system: ^System) {
-    append(&game.systems, system)
-}
-
-add_systems :: proc(game: ^Game, systems: ..^System) {
-    for system in systems {
-        add_system(game, system)
-    }
-}
-
-instantiate :: proc(game: ^Game, obj: GameObject) -> int {
-    append_soa(&game.objects, obj)
-    return 0
-}
-destroy :: proc(game: ^Game, obj_index: int) {
-    game.objects[obj_index] = {}
-}
 
 Component :: enum {
     Transform,
@@ -81,21 +60,4 @@ GameObject :: struct {
     parent:        ^GameObject,
     children:      [dynamic]^GameObject,
     script:        Script,
-}
-
-
-slice_to_bit_set :: proc(slice: []$T) -> (bitset: bit_set[T]) {
-    for thing in slice {
-        bitset |= bit_set[T]{thing}
-    }
-    return
-}
-add_component :: proc(obj: ^GameObject, components: ..Component) {
-    obj.component_set |= slice_to_bit_set(components)
-}
-remove_component :: proc(obj: ^GameObject, components: ..Component) {
-    obj.component_set &~= (slice_to_bit_set(components))
-}
-has_desired_components :: proc(obj: ^GameObject, desired_components: bit_set[Component]) -> bool {
-    return (obj.component_set & desired_components) == desired_components
 }
