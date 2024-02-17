@@ -3,6 +3,7 @@ package main
 import "core:fmt"
 import "core:math"
 import glm "core:math/linalg/glsl"
+import "core:math/rand"
 import "core:strings"
 import "core:time"
 import "rigidbody"
@@ -37,19 +38,24 @@ print_matrix :: proc(m: mat3) {
 
 //game-specific initialization code
 initialize :: proc(game: ^Game) {
+    drift_down :: proc(ind: int, game: ^Game) {
+        // rigidbody.add_force(&game.objects[ind].rigidbody, {0, 20})
+        game.objects[ind].angular_velocity += rand.float32_range(0, 1) * 0.01
+    }
     using math, transform
-    for x in 0 ..< 2 {
-        for y in 0 ..< 2 {
+    for x in 0 ..< 200 {
+        for y in 0 ..< 200 {
             a := GameObject {
-                component_set = {.Transform, .Sprite, .Script},
+                component_set = {.Transform, .Sprite, .Rigidbody, .Script},
                 transform = transform.default_transform(),
                 sprite = sprite.default_sprite(),
                 rigidbody = rigidbody.default_rigidbody(),
-                script = test_script(),
+                script = default_script(),
             }
             a.position = {-150 + f32(x * 2), -150 + f32(y * 2)}
-            a.velocity = {500 * sin(f32(x + y)), 500 * sin(f32(x * y))}
+            // a.velocity = {500 * sin(f32(x + y)), 500 * sin(f32(x * y))} * 0.5
             a.rotation = to_radians_f32(f32(y))
+            a.update = drift_down
             a.scale = {f32(x) * 0.01, f32(x) * 0.01}
             instantiate(game, a)
         }

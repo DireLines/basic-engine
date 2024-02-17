@@ -9,7 +9,16 @@ Script :: struct {
     on_collision_exit:  proc(self_index: int, other_index: int, game: ^Game),
 }
 default_script :: proc() -> Script {
-    return Script{}
+    return(
+        Script {
+            awake = proc(self_index: int, game: ^Game) {},
+            start = proc(self_index: int, game: ^Game) {},
+            update = proc(self_index: int, game: ^Game) {},
+            on_collision_enter = proc(self_index: int, other_index: int, game: ^Game) {},
+            on_collision_stay = proc(self_index: int, other_index: int, game: ^Game) {},
+            on_collision_exit = proc(self_index: int, other_index: int, game: ^Game) {},
+        } \
+    )
 }
 test_script :: proc() -> Script {
     return Script{awake = proc(self_index: int, game: ^Game) {

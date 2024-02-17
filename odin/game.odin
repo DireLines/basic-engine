@@ -12,7 +12,7 @@ import "sprite"
 import "transform"
 
 
-frames_per_sec :: 120
+frames_per_sec :: 60
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
 frame_counter: u64
 average_frame_length: f64
