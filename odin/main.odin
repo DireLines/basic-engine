@@ -53,11 +53,11 @@ initialize :: proc(game: ^Game) {
                 script = default_script(),
             }
             a.position = {-150 + f32(x * 2), -150 + f32(y * 2)}
-            // a.velocity = {500 * sin(f32(x + y)), 500 * sin(f32(x * y))} * 0.5
+            a.velocity = {500 * sin(f32(x + y)), 500 * sin(f32(x * y))} * 0.5
             a.sprite.z = f32(-x)
             a.rotation = to_radians_f32(f32(y))
             a.update = drift_down
-            // a.scale = {f32(x) * 0.01, f32(x) * 0.01}
+            a.scale = {f32(x) * 0.01, f32(x) * 0.01}
             instantiate(game, a)
         }
     }
