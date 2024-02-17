@@ -22,10 +22,10 @@ Game :: struct {
     id_generator:  IDGenerator,
     window_width:  i32,
     window_height: i32,
+    objects:       #soa[dynamic]GameObject,
     input_system:  ^Input,
     systems:       [dynamic]^System,
     textures:      map[string]raylib.Texture2D,
-    objects:       #soa[dynamic]GameObject,
     start_tick:    time.Tick,
 }
 
