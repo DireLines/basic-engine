@@ -65,10 +65,6 @@ scale :: proc {
 
 apply :: proc(using t: ^Transform) -> mat3 {
     using glm
-    trans := translate(position)
-    rot := rotate(radians_f32(rotation))
-    scl := scale_vec2(scale)
-    // fmt.println("translate", trans, "rotate", rot, "scale", scl)
     return translate(position) * rotate(radians_f32(rotation)) * scale_vec2(scale)
 
 }

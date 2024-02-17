@@ -3,6 +3,7 @@ package main
 import "core:fmt"
 import "core:math"
 import glm "core:math/linalg/glsl"
+import "core:slice"
 import "core:time"
 import "vendor:raylib"
 
@@ -134,6 +135,8 @@ script_runner :: proc() -> ^System {
         },
     })
 }
+
+sprite_render_order: [dynamic]int
 renderer :: proc() -> ^System {
     mat_vec_mul :: proc(m: glm.mat3, v: glm.vec2) -> glm.vec2 {
         return {v.x * m[0, 0] + v.y * m[0, 1] + m[0, 2], v.x * m[1, 0] + v.y * m[1, 1] + m[1, 2]}
@@ -144,26 +147,20 @@ renderer :: proc() -> ^System {
         timer := timer()
         BeginDrawing();defer EndDrawing()
         ClearBackground(darkgray)
-        SpriteTransform :: struct {
-            sprite:    ^sprite.Sprite,
-            transform: ^transform.Transform,
+        timer->time("clear")
+        context.user_ptr = game
+        z_less :: proc(a, b: int) -> bool {
+            game := (^Game)(context.user_ptr)
+            return game.objects[a].sprite.z < game.objects[b].sprite.z
         }
-        sprite_transforms := [dynamic]SpriteTransform{} //TODO: persist between frames so that nearly-sorted order can be maintained
-        for &obj, ind in game.objects {
-            if !system->needObject(game, ind) {
-                continue
-            }
-            t := &obj.transform
-            s := &obj.sprite
-            append(&sprite_transforms, SpriteTransform{sprite = s, transform = t})
-        }
-        //TODO: sort by z
+        slice.stable_sort_by(sprite_render_order[:], z_less)
+        timer->time("sort")
         center := transform.translate(f32(game.window_width / 2), f32(game.window_height / 2))
         //TODO: add camera transform here
         cam_t := center
-        for st in sprite_transforms {
-            t := st.transform
-            s := st.sprite
+        for index in sprite_render_order {
+            t := &game.objects[index].transform
+            s := &game.objects[index].sprite
             disp_transform := cam_t * transform.apply(t) * transform.unpivot(t)
             pos := mat_vec_mul(disp_transform, {0, 0})
             DrawTextureEx(
@@ -174,7 +171,7 @@ renderer :: proc() -> ^System {
                 tint = s.color,
             )
         }
-        timer->time("render actually")
+        timer->time("draw")
     }
     addObject :: proc(system: ^System, game: ^Game, obj_index: int) {
         obj_file := game.objects[obj_index].file
@@ -182,12 +179,12 @@ renderer :: proc() -> ^System {
         game.objects[obj_index].image = texture
         // //TODO: figure out how to not set this
         game.objects[obj_index].pivot = {f32(texture.width / 2), f32(texture.height / 2)}
+        append(&sprite_render_order, obj_index)
     }
     return new_clone(System {
         name = "Renderer",
         components_needed = {.Transform, .Sprite},
         start = proc(system: ^System, using game: ^Game) {
-
         },
         update = renderer_update,
         needObject = proc(system: ^System, game: ^Game, obj_index: int) -> bool {
