@@ -1,6 +1,8 @@
 package main
 
 import "core:fmt"
+import "core:math"
+import glm "core:math/linalg/glsl"
 import "core:slice"
 import "core:strings"
 import "core:time"
@@ -14,7 +16,6 @@ import "transform"
 
 frames_per_sec :: 60
 ms_per_frame :: (1.0 / frames_per_sec) * 1000
-frame_counter: u64
 average_frame_length: f64
 
 Game :: struct {
@@ -27,6 +28,7 @@ Game :: struct {
     systems:       [dynamic]^System,
     textures:      map[string]raylib.Texture2D,
     start_tick:    time.Tick,
+    frame_counter: u64,
 }
 
 new_game :: proc(window_width, window_height: i32) -> Game {
@@ -76,7 +78,7 @@ add_sprite :: proc(game: ^Game, sprite_filename: string) -> ^raylib.Texture2D {
 quit :: proc(game: ^Game) {
     using game
     quit_raylib(game)
-    average_frame_length /= f64(frame_counter)
+    average_frame_length /= f64(frame_counter - 1) // minus 1 because skipped first frame
     print("average frame took", average_frame_length, "milliseconds")
     average_fps := 1000.0 / average_frame_length
     print("target fps:", frames_per_sec)
@@ -101,7 +103,11 @@ start :: proc(game: ^Game) {
         now := time.tick_now()
         duration := time.duration_milliseconds(time.tick_diff(start_tick, now))
         if duration > ms_per_frame {
-            average_frame_length += duration
+            if game.frame_counter > 1 {
+                //first frame usually has some slow init stuff going on
+                //don't count it toward fps
+                average_frame_length += duration
+            }
             start_tick = now
             game.game_timer.delta_time = duration / 1000
             game.game_timer.time += game.game_timer.delta_time
@@ -111,15 +117,35 @@ start :: proc(game: ^Game) {
         }
     }
 }
+make_some_new_dudes :: proc(game: ^Game) {
+    using glm
+    for x in 0 ..< 2 {
+        for y in 0 ..< 10 {
+            a := GameObject {
+                component_set = {.Transform, .Sprite, .Rigidbody, .Script},
+                transform = transform.default_transform(),
+                sprite = sprite.default_sprite(),
+                rigidbody = rigidbody.default_rigidbody(),
+                script = default_script(),
+            }
+            a.position = {-150 + f32(x * 2), -150 + f32(y * 2)}
+            a.velocity = {500 * sin(f32(x + y)), 500 * sin(f32(x * y))} * 0.5
+            a.sprite.z = f32(-x)
+            a.rotation = math.to_radians_f32(f32(y))
+            // a.scale = {f32(x) * 0.01, f32(x) * 0.01}
+            instantiate(game, a)
+        }
+    }
+}
 update :: proc(game: ^Game) -> (should_quit: bool) {
-    using game
+    make_some_new_dudes(game)
     timer := timer()
-    for system in systems {
+    for system in game.systems {
         system->update(game)
         timer->time(system.name)
     }
     //TODO: clear(objects_to_delete)
-    frame_counter += 1
+    game.frame_counter += 1
     return raylib.WindowShouldClose()
 }
 instantiate :: proc(game: ^Game, obj: GameObject) -> int {

@@ -153,7 +153,13 @@ renderer :: proc() -> ^System {
             game := (^Game)(context.user_ptr)
             return game.objects[a].sprite.z < game.objects[b].sprite.z
         }
-        slice.stable_sort_by(sprite_render_order[:], z_less)
+        if game.frame_counter == 0 {
+            //first frame - unstable sort is way faster
+            slice.sort_by(sprite_render_order[:], z_less)
+        } else {
+            //stable sort is still fast if nearly sorted to begin with and looks nicer
+            slice.stable_sort_by(sprite_render_order[:], z_less)
+        }
         timer->time("sort")
         center := transform.translate(f32(game.window_width / 2), f32(game.window_height / 2))
         //TODO: add camera transform here
