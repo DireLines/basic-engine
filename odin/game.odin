@@ -24,6 +24,7 @@ Game :: struct {
     window_width:  i32,
     window_height: i32,
     objects:       #soa[dynamic]GameObject,
+    // scripts:       #soa[dynamic]Script,
     input_system:  ^Input,
     systems:       [dynamic]^System,
     textures:      map[string]raylib.Texture2D,
@@ -138,7 +139,7 @@ make_some_new_dudes :: proc(game: ^Game) {
     }
 }
 update :: proc(game: ^Game) -> (should_quit: bool) {
-    make_some_new_dudes(game)
+    // make_some_new_dudes(game)
     timer := timer()
     for system in game.systems {
         system->update(game)
