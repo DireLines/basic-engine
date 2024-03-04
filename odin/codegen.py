@@ -35,7 +35,6 @@ def all_files_of_types(filetypes, path=''):
         result.extend(Path(path).rglob('*.'+filetype))
     return result
 
-components_needed = set()
 object_types_declared = set()
 
 # construct an odin assignment statement
@@ -51,61 +50,6 @@ def assign(base_path,value):
     base_path = '.'.join(base_path)
     return f'{base_path} = {str(value)}\n'
 
-# add a component and get a pointer to it
-def declare(var_type, var_name, owner_name):
-    return f'{var_name} : {var_type} = add_component({owner_name},{var_type});\n'
-
-# get a pointer to an existing component
-def modify(var_type, var_name, owner_name):
-    return f'{var_type}* {var_name} = {owner_name}->getComponent<{var_type}>();\n'
-
-def component_code(component, owner_name, modify_comps=True):
-    result = ""
-    spaces = "    "
-    component_type = component
-    if(type(component) == dict):
-        component_type = list(component.keys())[0]
-    if component_type in ignore_changes:
-        return result
-    if component_type in game_object_fields:
-        result += spaces + assign(owner_name, component_type, component[component_type])
-        return result
-    components_needed.add(component_type)
-    component_name = variable_name(component_type)
-    statement = ""
-    if(modify_comps):
-        statement = modify(component_type,component_name, owner_name)
-    else:
-        statement = declare(component_type,component_name, owner_name)
-    result += spaces + statement
-    if(type(component) == dict):
-        fields = component[component_type]
-        if fields is not None:
-            for field in fields:
-                result += spaces + assign(component_name, field, fields[field])
-    return result
-
-def constructor_body(components, owner_name, child = True):
-    result = ""
-    spaces = "    "
-    if components is None:
-        return result
-    for component in components:
-        component_type = component
-        if(type(component) == dict):
-            component_type = list(component.keys())[0]
-            if(type(component[component_type]) == list):#another GameObject
-                new_obj_name = variable_name(component_type)
-                if(child):
-                    result += spaces + modify(component_type, new_obj_name, owner_name)
-                else:
-                    result += spaces + declare(component_type, new_obj_name, owner_name)
-                result += constructor_body(component[component_type],new_obj_name)
-            else:
-                result += component_code(component, owner_name, modify_comps=child)
-        else:
-            result += component_code(component, owner_name, modify_comps=child)
-    return result
 basic_components = ["transform","rigidbody","collider","sprite","animation"]
 #for one component, get component bits to set
 def get_component_set(component):
