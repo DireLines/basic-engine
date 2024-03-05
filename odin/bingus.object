@@ -1,5 +1,6 @@
-- foo:
-    foo: 5
-- bar
 - transform:
-    position: {4,5}
+    rotation: 90
+- rigidbody:
+    velocity.x: 20
+- sprite:
+    file: Circle.png

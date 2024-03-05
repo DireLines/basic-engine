@@ -59,6 +59,7 @@ initialize :: proc(game: ^Game) {
             a.update = drift_down
             a.scale = {f32(x) * 0.01, f32(x) * 0.01}
             instantiate(game, a)
+            // instantiate(game, bingus())
         }
     }
 }

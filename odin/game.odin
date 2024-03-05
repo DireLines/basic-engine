@@ -176,7 +176,6 @@ Component :: enum {
     Sprite,
     Animation,
     Script,
-    AdditionalScripts,
     Children,
 }
 
